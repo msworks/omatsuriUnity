@@ -1,0 +1,357 @@
+fileFormatVersion: 2
+guid: 156f4ebfc0a151b4b93600fc45882631
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: reel_off_5b
+    21300002: reel_on_5b
+    21300004: reel_off_1b
+    21300006: reel_on_4b
+    21300008: reel_off_3b
+    21300010: reel_on_3b
+    21300012: reel_off_7b
+    21300014: reel_on_2b
+    21300016: reel_on_6b
+    21300018: reel_off_2b
+    21300020: reel_on_1b
+    21300022: reel_off_4b
+    21300024: reel_off_6b
+    21300026: reel_on_7b
+    21300028: reel_off_5
+    21300030: reel_on_2
+    21300032: reel_on_4
+    21300034: reel_on_6
+    21300036: reel_on_1
+    21300038: reel_on_3
+    21300040: reel_off_3
+    21300042: reel_on_5
+    21300044: reel_off_4
+    21300046: reel_off_7
+    21300048: reel_off_1
+    21300050: reel_off_2
+    21300052: reel_on_7
+    21300054: reel_off_6
+    21300056: 4threel_off 2
+    21300058: 4threel_on 2
+  serializedVersion: 2
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 1
+    linearTexture: 0
+    correctGamma: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: .25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 0
+  seamlessCubemap: 0
+  textureFormat: -3
+  maxTextureSize: 4096
+  textureSettings:
+    filterMode: 1
+    aniso: 16
+    mipBias: -1
+    wrapMode: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: .5, y: .5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 100
+  alphaIsTransparency: 1
+  textureType: 8
+  buildTargetSettings: []
+  spriteSheet:
+    sprites:
+    - name: reel_on_1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 512
+        height: 256
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: reel_on_3
+      rect:
+        serializedVersion: 2
+        x: 513
+        y: 0
+        width: 512
+        height: 256
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: reel_off_3
+      rect:
+        serializedVersion: 2
+        x: 1026
+        y: 0
+        width: 512
+        height: 256
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: reel_on_2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 257
+        width: 512
+        height: 256
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: reel_on_4
+      rect:
+        serializedVersion: 2
+        x: 513
+        y: 257
+        width: 512
+        height: 256
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: reel_on_6
+      rect:
+        serializedVersion: 2
+        x: 1026
+        y: 257
+        width: 512
+        height: 256
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: reel_on_5
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 514
+        width: 512
+        height: 256
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: reel_off_2
+      rect:
+        serializedVersion: 2
+        x: 513
+        y: 514
+        width: 512
+        height: 256
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: reel_on_7
+      rect:
+        serializedVersion: 2
+        x: 1026
+        y: 514
+        width: 512
+        height: 256
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: reel_off_6
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 771
+        width: 512
+        height: 256
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: reel_off_4
+      rect:
+        serializedVersion: 2
+        x: 513
+        y: 771
+        width: 512
+        height: 256
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: reel_off_7
+      rect:
+        serializedVersion: 2
+        x: 1026
+        y: 771
+        width: 512
+        height: 256
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: reel_off_1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1028
+        width: 512
+        height: 256
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: reel_off_3b
+      rect:
+        serializedVersion: 2
+        x: 513
+        y: 1028
+        width: 512
+        height: 256
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: reel_on_3b
+      rect:
+        serializedVersion: 2
+        x: 1026
+        y: 1028
+        width: 512
+        height: 256
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: reel_off_7b
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1285
+        width: 512
+        height: 256
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: reel_on_4b
+      rect:
+        serializedVersion: 2
+        x: 513
+        y: 1285
+        width: 512
+        height: 256
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: reel_off_5b
+      rect:
+        serializedVersion: 2
+        x: 1026
+        y: 1285
+        width: 512
+        height: 256
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: reel_on_5b
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1542
+        width: 512
+        height: 256
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: reel_off_1b
+      rect:
+        serializedVersion: 2
+        x: 513
+        y: 1542
+        width: 512
+        height: 256
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: reel_on_2b
+      rect:
+        serializedVersion: 2
+        x: 1026
+        y: 1542
+        width: 512
+        height: 256
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: reel_off_6b
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1799
+        width: 512
+        height: 256
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: reel_on_7b
+      rect:
+        serializedVersion: 2
+        x: 513
+        y: 1799
+        width: 512
+        height: 256
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: reel_off_5
+      rect:
+        serializedVersion: 2
+        x: 1026
+        y: 1799
+        width: 512
+        height: 256
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: reel_off_4b
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 2056
+        width: 512
+        height: 256
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: reel_on_6b
+      rect:
+        serializedVersion: 2
+        x: 513
+        y: 2056
+        width: 512
+        height: 256
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: reel_off_2b
+      rect:
+        serializedVersion: 2
+        x: 1026
+        y: 2056
+        width: 512
+        height: 256
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: reel_on_1b
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 2313
+        width: 512
+        height: 256
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+  spritePackingTag: 
+  userData: 

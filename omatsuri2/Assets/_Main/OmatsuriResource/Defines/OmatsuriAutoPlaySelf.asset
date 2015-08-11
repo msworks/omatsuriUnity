@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09d41fb7ceac8f840b683065b2456e5d, type: 3}
+  m_Name: OmatsuriAutoPlaySelf
+  m_EditorClassIdentifier: UnityEngine:UnityEngine:ScriptableObject
+  normal:
+  - isStopReverse: 0
+    targetRow: ffffffffffffffffffffffff
+  bigReach:
+  - isStopReverse: 0
+    targetRow: 010000001300000002000000
+  - isStopReverse: 0
+    targetRow: 0e0000001100000011000000
+  regReach:
+  - isStopReverse: 0
+    targetRow: 0e0000000d00000009000000
+  big:
+  - isStopReverse: 0
+    targetRow: 010000000000000000000000
+  bigReverse:
+  - isStopReverse: 1
+    targetRow: 010000000000000000000000
+  regular:
+  - isStopReverse: 0
+    targetRow: ffffffffffffffffffffffff
