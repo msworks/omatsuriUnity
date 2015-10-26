@@ -29,7 +29,7 @@ public class CasinoData : MonoBehaviour {
         yen,
         gen,
         euro,
-        dl
+        doller
     }
     public EXCHANGE exchange;
     [SerializeField] private UISprite[] exchangeSprites = null;
@@ -108,7 +108,7 @@ public class CasinoData : MonoBehaviour {
     {
         this.UpdateGameCounter();
         this.Update1Per();
-        this.ChangeExchangeMark(EXCHANGE.dl);
+        this.ChangeExchangeMark(EXCHANGE.doller);
     }
 
     //----------------------------------------------------------------------------------------------------

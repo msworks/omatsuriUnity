@@ -179,7 +179,7 @@ public class GameManager : MonoBehaviour {
         LoadPlayData();
 
         // WebView表示
-        WebViewManager.Instance.Open();
+        //WebViewManager.Instance.Open();
 	}
 
     /// <summary>
@@ -240,14 +240,18 @@ public class GameManager : MonoBehaviour {
     /// </summary>
     /// <returns></returns>
     IEnumerator MainLoop() {
+
         while (true) {
             try {
                 core.exec();
 
                 // コインが無くなったら自動で補充
                 if (mOmatsuri.int_s_value[Defines.DEF_INT_SLOT_COIN_NUM] <= 3) {
-                    // クレジットを50追加
-                    mOmatsuri.GPW_chgCredit(50);
+                    // 500ドル分のクレジットを設定
+                    // 500ドル １枚20セント
+                    // 1ドル 5枚
+                    // 500 ドル * 5枚 = 2500枚
+                    mOmatsuri.GPW_chgCredit(2500);
                 }
 
             } catch (Exception e) {
@@ -279,15 +283,6 @@ public class GameManager : MonoBehaviour {
         casinoData.UpdatePastRB(playData.dailyData[1].RB, playData.dailyData[0].RB);
         casinoData.UpdatePastAT(playData.dailyData[1].AT, playData.dailyData[0].AT);
 
-        /*
-        for (int i = 0; i < 10; i++) {
-            casinoData.AddHistory(0);
-        }
-        foreach (int history in playData.history) {
-            // 履歴(当たり時のゲーム数で保持)を100単位で切り上げて表示;
-            casinoData.AddHistory((history + 99) / 100);
-        }
-         */
         UpdateCommonUIAvg();
     }
 
@@ -365,8 +360,15 @@ public class GameManager : MonoBehaviour {
     /// 共通UI更新
     /// </summary>
     void UpdateCommonUI() {
-        // TODO 仮処理。本番ではコイン枚入数ではなく金額を表示。
-        casinoData.Exchange = mOmatsuri.int_s_value[Defines.DEF_INT_SLOT_COIN_NUM];
+
+        // コイン枚数を金額に変換する
+        var coin = mOmatsuri.int_s_value[Defines.DEF_INT_SLOT_COIN_NUM];
+        var cent = Rate.Instanse.Coin2Cent(coin);
+
+        // floatでやるの嫌なんだよな。。
+        var doller = cent / 100f;
+
+        casinoData.Exchange = doller;
     }
 
     /// <summary>
