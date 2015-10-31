@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
+using System.Linq;
 
 public class CasinoData : MonoBehaviour {
 	//====================================================================================================
@@ -403,75 +405,42 @@ public class CasinoData : MonoBehaviour {
     //----------------------------------------------------------------------------------------------------
     private void UpdateExchange()
     {
-        if (this.exchangeNum == 0)
+        var value = (int)(this.exchangeNum * 100);
+        var str = value.ToString("0000000");
+        var sprites = this.exchangeSprites;
+
+        // 00123400 -> **
+        var str2 = str.ToCharArray()
+                      .TakeWhile(c => c == '0')
+                      .Select(c => '*');
+
+        // 00123400 -> **123400
+        var str3 = new string(str2.ToArray()) + value.ToString();
+
+        var char2stringName = new Dictionary<char, string>()
         {
-            this.exchangeSprites [0].spriteName = this.sevenSegSpriteName [2, 10];
-            this.exchangeSprites [1].spriteName = this.sevenSegSpriteName [2, 10];
-            this.exchangeSprites [2].spriteName = this.sevenSegSpriteName [2, 10];
-            this.exchangeSprites [3].spriteName = this.sevenSegSpriteName [2, 10];
-            this.exchangeSprites [4].spriteName = this.sevenSegSpriteName [2, 10];
-            this.exchangeSprites[5].spriteName = this.sevenSegSpriteName[2, 10];
-            this.exchangeSprites[6].spriteName = this.sevenSegSpriteName[2, 10];
-            this.exchangeDotSprites.color = new Color(1, 1, 1, 0.05f);
-        }
-        else
-        {
-            this.exchangeDotSprites.color = Color.white;
-            if(this.exchangeNum < 1){
-                this.exchangeSprites [0].spriteName = this.sevenSegSpriteName [2, 10];
-                this.exchangeSprites [1].spriteName = this.sevenSegSpriteName [2, 10];
-                this.exchangeSprites [2].spriteName = this.sevenSegSpriteName [2, 10];
-                this.exchangeSprites [3].spriteName = this.sevenSegSpriteName [2, 10];
-                this.exchangeSprites [4].spriteName = this.sevenSegSpriteName [2, 0];
-                this.exchangeSprites[5].spriteName = this.sevenSegSpriteName[2, int.Parse(this.exchangeNum.ToString()[2].ToString())];
-                this.exchangeSprites[6].spriteName = this.sevenSegSpriteName[2, int.Parse(this.exchangeNum.ToString()[3].ToString())];
-            }
-            else
-            {
-                string count = string.Empty;
-                bool dot = false;
-                foreach(char c in this.exchangeNum.ToString()){
-                    if(c.ToString() == ".")
-                        dot = true;
-                }
-                int digit = ((int)this.exchangeNum).ToString().Length;
-                if (digit < 5)
-                {
-                    for(int i = 0; i < (5 - digit); ++i){
-                        count += "0";
-                    }
-                }
-                count += this.exchangeNum.ToString();
-                if(dot){
-                    for (int i = 0; i < 8; ++i)
-                    {
-                        if(i < 5){
-                            if(5 - digit > i)
-                                this.exchangeSprites[i].spriteName = this.sevenSegSpriteName[2, 10];
-                            else
-                                this.exchangeSprites[i].spriteName = this.sevenSegSpriteName[2, int.Parse(count[i].ToString())];
-                        }else if(i == 6){
-                            this.exchangeSprites[i - 1].spriteName = this.sevenSegSpriteName[2, int.Parse(count[i].ToString())];
-                        }
-                        else if (i == 7)
-                        {
-                            this.exchangeSprites[i - 1].spriteName = this.sevenSegSpriteName[2, int.Parse(count[i].ToString())];
-                        }
-                    }
-                }else{
-                    for (int i = 0; i < 5; ++i)
-                    {
-                        if(5 - digit > i)
-                            this.exchangeSprites[i].spriteName = this.sevenSegSpriteName[2, 10];
-                        else{
-                            this.exchangeSprites[i].spriteName = this.sevenSegSpriteName[2, int.Parse(count[i].ToString())];
-                        }
-                    }
-                    this.exchangeSprites[5].spriteName = this.sevenSegSpriteName[2, 0];
-                    this.exchangeSprites[6].spriteName = this.sevenSegSpriteName[2, 0];
-                }
-            }
-        }
+            { '0', sevenSegSpriteName [2, 0] },
+            { '1', sevenSegSpriteName [2, 1] },
+            { '2', sevenSegSpriteName [2, 2] },
+            { '3', sevenSegSpriteName [2, 3] },
+            { '4', sevenSegSpriteName [2, 4] },
+            { '5', sevenSegSpriteName [2, 5] },
+            { '6', sevenSegSpriteName [2, 6] },
+            { '7', sevenSegSpriteName [2, 7] },
+            { '8', sevenSegSpriteName [2, 8] },
+            { '9', sevenSegSpriteName [2, 9] },
+            { '*', sevenSegSpriteName [2, 10] },
+        };
+
+        var names = str3.ToCharArray()
+                        .Select(c => char2stringName[c])
+                        .ToArray();
+
+        sprites.Select((sprite, index) => new { sprite, name = names[index] })
+               .ToList()
+               .ForEach(sn => sn.sprite.spriteName = sn.name);
+
+        return;
     }
     
     //----------------------------------------------------------------------------------------------------

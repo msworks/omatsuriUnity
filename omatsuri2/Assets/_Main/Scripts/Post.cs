@@ -3,129 +3,150 @@ using UnityEngine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 public class Post : MonoBehaviour
 {
-    private string URI = "http://web.ee-gaming.net/game/";
+    string head = "http://web.ee-gaming.net/ps/";
 
-    public void Quit()
+    enum MODE
     {
-        Application.Quit();
+        WEB,
+        DESKTOP,
     }
 
-    public Post StartCommand(FsmEvent success, FsmEvent failed)
-    {
+    MODE mode = MODE.DESKTOP;
 
-        var postURI = URI + "Start.json";
+    [ActionCategory("Ginpara")]
+    public class GetParameter : FsmStateAction
+    {
+        public override void OnEnter()
+        {
+            // Webページに対してパラメータ送信要求
+            Application.ExternalCall("GetParameter");
+        }
+    }
+
+    [ActionCategory("Ginpara")]
+    public class Open : FsmStateAction
+    {
+        public Post post;
+
+        public override void OnEnter()
+        {
+            post._Open();
+        }
+    }
+
+    [ActionCategory("Ginpara")]
+    public class ConnectionFailed : FsmStateAction
+    {
+        public Post post;
+
+        public override void OnEnter()
+        {
+            Application.ExternalCall("AlertByUnity", "ConnectionFailed");
+        }
+    }
+
+    [ActionCategory("Ginpara")]
+    public class Config : FsmStateAction
+    {
+        public Post post;
+
+        public override void OnEnter()
+        {
+        }
+    }
+
+    public void PostConfig()
+    {
+        var url = head + "login.html";
         var fsm = GetComponent<PlayMakerFSM>();
 
-        POST(postURI,
-             new Dictionary<string, string>(){
-                { "sv", "ohana" },
-                { "ap", "1" } },
-             www =>
-             {
-                 Debug.Log(www.text);
-                 fsm.SendEvent(success.Name);
-             },
-             www =>
-             {
-                 Debug.Log(www.error);
-                 fsm.SendEvent(failed.Name);
-             }
-        );
-
-        return this;
-    }
-
-    public Post UpdateCommand(FsmEvent success, FsmEvent failed)
-    {
-        var postURI = URI + "Update.json";
-        var fsm = GetComponent<PlayMakerFSM>();
-
-        POST(postURI,
-             new Dictionary<string, string>(){
-                { "sv", "ohana" },
-                { "ap", "1" },
-                { "id", "000001"},
-                { "cval", "255" },
-                { "stat", "0" },
-                { "count", "99" },
-                { "dat", "0,0,0,0,1,1,1,1,1,1" },
-             },
-             www =>
-             {
-                 Debug.Log(www.text);
-                 fsm.SendEvent(success.Name);
-             },
-             www =>
-             {
-                 Debug.Log(www.error);
-                 fsm.SendEvent(failed.Name);
-             }
-        );
-
-        return this;
-    }
-
-    public Post EndCommand(FsmEvent success, FsmEvent failed)
-    {
-        var postURI = URI + "End.json";
-        var fsm = GetComponent<PlayMakerFSM>();
-
-        POST(postURI,
-             new Dictionary<string, string>(){
-                { "sv", "ohana" },
-                { "ap", "1" },
-                { "id", "000001"},
-                { "cval", "255" },
-                { "stat", "0" },
-                { "count", "99" },
-                { "hall", "1" },
-                { "dai", "255" },
-                { "cd", "123456789" },
-                { "dat", "0,0,0,0,1,1,1,1,1,1" },
-             },
-             www =>
-             {
-                 Debug.Log(www.text);
-                 fsm.SendEvent(success.Name);
-             },
-             www =>
-             {
-                 Debug.Log(www.error);
-                 fsm.SendEvent(failed.Name);
-             }
-        );
-
-        return this;
-    }
-
-    /// <summary>
-    /// ログイン（テスト）
-    /// ログインの目的はtokenを得ること。
-    /// Web版ではResponseでtokenが得られるので、
-    /// 本番では使わない。
-    /// </summary>
-    public void TestLogin()
-    {
-        // Wallet Api 7 POST / authenticate.html
-        var WalletApi = "http://web.ee-gaming.net/apis/wallet1_1/";
-        var authenticate = WalletApi + "login.html";
-
-        POST(authenticate,
+        PostWWW(url,
             HashCalculation(new Dictionary<string, string>()
             {
                 { "gameId", "1" },
-                //{ "key1", "value1" },
-                //{ "key2", "value2SECRET" },
                 { "login", "ttakekawa@manasoft.co.jp" },
                 { "password", "L18mmTR3" },
                 { "providerId", "33" },
                 { "siteId", "1" }
-            }),
-            www => { Debug.Log(www.text); },
-            www => { Debug.LogError(www.text); }
+            }, "test123"),
+            www => { fsm.SendEvent("Succeed"); },
+            www => { fsm.SendEvent("Failed"); }
+        );
+    }
+
+    /// <summary>
+    /// ログイン
+    /// </summary>
+    public void _Open()
+    {
+        var fsm = GetComponent<PlayMakerFSM>();
+
+        if (mode == MODE.DESKTOP)
+        {
+            // TEST CODE
+            var WalletApi = "http://web.ee-gaming.net/apis/wallet1_1/";
+            var authenticate = WalletApi + "login.html";
+
+            PostWWW(authenticate,
+                HashCalculation(new Dictionary<string, string>()
+                {
+                    { "gameId", "2" },
+                    { "login", "ttakekawa@manasoft.co.jp" },
+                    { "password", "L18mmTR3" },
+                    { "providerId", "33" },
+                    { "siteId", "1" }
+                }, "test123"),
+                www => { 
+                    var text = www.text;
+
+                    // {"token":"HQWQQ5D9IUQC70KKXK5ZFFHFPPG36TQ9"}
+                    var json = new JSONObject(text);
+                    var token = json.GetField("token").str;
+
+                    //gameId=2&token=aaa&language=ja&operatorId=1&mode=1
+
+                    var msg = string.Format("gameId=2&token={0}&language=ja&operatorId=1&mode=1", token);
+
+                    var kvs = msg.Split('&')
+                               .Select(query => query.Split('='))
+                               .Select(strings => new KeyValuePair<string, string>(strings[0], strings[1]));
+
+                    var param = new Dictionary<string, string>();
+                    foreach (var kv in kvs)
+                    {
+                        param.Add(kv.Key, kv.Value);
+                    }
+
+                    PostOpen(param);
+                },
+                www => { fsm.SendEvent("Failed"); }
+            );
+        }
+        else if (mode == MODE.WEB)
+        {
+            // Webページに対してパラメータ送信要求
+            Application.ExternalCall("GetParameter");
+        }
+        else
+        {
+            fsm.SendEvent("Failed");
+        }
+    }
+
+    public void PostOpen(Dictionary<string, string> param)
+    {
+        // http://web.ee-gaming.net/ps/open.html?gameId=1&operator=1&token=abc&language=en&mode=1
+
+        var fsm = GetComponent<PlayMakerFSM>();
+        var url = head + "open.html";
+
+        PostWWW(url, param,
+            www => { fsm.SendEvent("Succeed"); },
+            www => { fsm.SendEvent("Failed"); }
         );
     }
 
@@ -134,28 +155,28 @@ public class Post : MonoBehaviour
     /// </summary>
     public void Response(string msg)
     {
+        //[msg]
+        //gameId=2&token=aaa&language=ja&operatorId=1&mode=1
+
         // デバッグ用にアラートを出す
-        Application.ExternalCall("AlertByUnity", msg);
+        //Application.ExternalCall("AlertByUnity", msg);
 
-        // レスポンスからtokenを取り出す
-        var token = msg.Split('=')[1];
+        var param = new Dictionary<string, string>();
 
-        // Wallet Api 7 POST / authenticate.html
-        var WalletApi = "http://web.finnplay.com/apis/wallet/";
-        var authenticate = WalletApi + "authenticate.html";
+        var kvs = msg.Split('&')
+           .Select(query => query.Split('='))
+           .Select(strings => new KeyValuePair<string, string>(strings[0], strings[1]));
 
-        POST(authenticate,
-            HashCalculation( new Dictionary<string, string>()
-            {
-                { "token", token },
-                { "providerId", "10" }
-            }),
-            www => { Application.ExternalCall("AlertByUnity", www.text); },
-            www => { Application.ExternalCall("AlertByUnity", www.text); }
-        );
+        foreach(var kv in kvs)
+        {
+            param.Add(kv.Key, kv.Value);
+        }
+
+        // OpenをPOST
+        PostOpen(param);
     }
 
-    Dictionary<string, string> HashCalculation(Dictionary<string, string> i)
+    Dictionary<string, string> HashCalculation(Dictionary<string, string> i, string himitsu)
     {
         Func<string> f = () =>
         {
@@ -167,7 +188,7 @@ public class Post : MonoBehaviour
             return String.Join("&", list.ToArray());
         };
 
-        var s = f();
+        var s = f() + himitsu;
 
         Debug.Log("PRE HASH:" + s);
 
@@ -189,12 +210,17 @@ public class Post : MonoBehaviour
         return i;
     }
 
-    private void POST(string url, Dictionary<string, string> post, Action<WWW> success, Action<WWW> failed)
+    void PostWWW(
+        string url,
+        Dictionary<string, string> post,
+        Action<WWW> success,
+        Action<WWW> failed
+    )
     {
-        StartCoroutine(PostCore(url, post, success, failed));
+        StartCoroutine(PostWWWCore(url, post, success, failed));
     }
 
-    private IEnumerator PostCore(string url, Dictionary<string, string> post, Action<WWW> success, Action<WWW> failed)
+    IEnumerator PostWWWCore(string url, Dictionary<string, string> post, Action<WWW> success, Action<WWW> failed)
     {
         Debug.Log("POST:url=" + url);
 
@@ -202,8 +228,6 @@ public class Post : MonoBehaviour
         foreach (KeyValuePair<string, string> post_arg in post)
         {
             form.AddField(post_arg.Key, post_arg.Value);
-
-            Debug.Log("POST:" + post_arg.Key + "=" + post_arg.Value);
         }
         WWW www = new WWW(url, form);
 
@@ -216,66 +240,6 @@ public class Post : MonoBehaviour
         else
         {
             failed(www);
-        }
-    }
-
-    [ActionCategory("Ginpara")]
-    public class PostStart : FsmStateAction
-    {
-        public Post post;
-        public FsmEvent success;
-        public FsmEvent failed;
-
-        public override void OnEnter()
-        {
-            post.StartCommand(success, failed);
-        }
-    }
-
-    [ActionCategory("Ginpara")]
-    public class PostUpdate : FsmStateAction
-    {
-        public Post post;
-        public FsmEvent success;
-        public FsmEvent failed;
-
-        public override void OnEnter()
-        {
-            post.UpdateCommand(success, failed);
-        }
-    }
-
-    [ActionCategory("Ginpara")]
-    public class PostEnd : FsmStateAction
-    {
-        public Post post;
-        public FsmEvent success;
-        public FsmEvent failed;
-
-        public override void OnEnter()
-        {
-            post.EndCommand(success, failed);
-        }
-    }
-
-    [ActionCategory("Ginpara")]
-    public class GetParameter : FsmStateAction
-    {
-        public override void OnEnter()
-        {
-            // Webページに対してパラメータ送信要求
-            Application.ExternalCall("GetParameter");
-        }
-    }
-
-    [ActionCategory("Ginpara")]
-    public class Login : FsmStateAction
-    {
-        public Post post;
-
-        public override void OnEnter()
-        {
-            post.TestLogin();
         }
     }
 }
