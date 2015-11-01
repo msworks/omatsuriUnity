@@ -8,7 +8,7 @@ public class FixCameraAspectRatio : MonoBehaviour {
         Camera camera = GetComponent<Camera>();
         float windowAspect = (float)Screen.width / (float)Screen.height;
         float scaleHeight = targetAspect / windowAspect;
-        Debug.Log("FixCameraAspectRatio:TGT=" + targetAspect + " CUR:" + windowAspect + " SCL:" + scaleHeight);
+        //Debug.Log("FixCameraAspectRatio:TGT=" + targetAspect + " CUR:" + windowAspect + " SCL:" + scaleHeight);
         camera.orthographicSize = size * scaleHeight;
     }
 }

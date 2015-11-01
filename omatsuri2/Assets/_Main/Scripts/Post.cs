@@ -7,15 +7,52 @@ using System.Linq;
 
 public class Post : MonoBehaviour
 {
-    string head = "http://web.ee-gaming.net/ps/";
-
     enum MODE
     {
         WEB,
         DESKTOP,
     }
 
-    MODE mode = MODE.DESKTOP;
+    // WEB - 本番
+    // DESKTOP - TEST MODE
+    //MODE mode = MODE.WEB;
+    MODE mode = MODE.WEB;
+
+    static string serverHead = "http://web.ee-gaming.net/ps/";
+    static string logicHead = "http://localhost:9876/";
+
+    static Dictionary<string, string> verbsLogic = new Dictionary<string, string>()
+    {
+        {"config", "config"},
+        {"init", "init"},
+        {"play", "play"},
+        {"collect", "collect"},
+    };
+
+    static Dictionary<string, string> verbsServer = new Dictionary<string, string>()
+    {
+        {"config", "login.html"},
+        {"init", "init.html"},
+        {"play", "play.html"},
+        {"collect", "collect.html"},
+    };
+
+    string head = logicHead;
+    Dictionary<string, string> verbs = verbsLogic;
+
+    void Start()
+    {
+        if( mode==MODE.WEB)
+        {
+            head = serverHead;
+            verbs = verbsServer;
+        }
+        else if( mode == MODE.DESKTOP)
+        {
+            head = logicHead;
+            verbs = verbsLogic;
+        }
+    }
 
     [ActionCategory("Ginpara")]
     public class GetParameter : FsmStateAction
@@ -56,24 +93,176 @@ public class Post : MonoBehaviour
 
         public override void OnEnter()
         {
+            post.PostConfig();
+        }
+    }
+
+    [ActionCategory("Ginpara")]
+    public class Init : FsmStateAction
+    {
+        public Post post;
+
+        public override void OnEnter()
+        {
+            post.PostInit();
+        }
+    }
+
+    [ActionCategory("Ginpara")]
+    public class Play : FsmStateAction
+    {
+        public Post post;
+
+        public override void OnEnter()
+        {
+            post.PostPlay();
+        }
+    }
+
+    [ActionCategory("Ginpara")]
+    public class Collect : FsmStateAction
+    {
+        public Post post;
+
+        public override void OnEnter()
+        {
+            post.PostCollect();
         }
     }
 
     public void PostConfig()
     {
-        var url = head + "login.html";
+        var verb = verbs["config"];
+        var url = head + verb;
         var fsm = GetComponent<PlayMakerFSM>();
 
-        PostWWW(url,
-            HashCalculation(new Dictionary<string, string>()
+        var param = new Dictionary<string, string>()
+        {
+            { "gameId", "2" },
+            { "userId", "1" },
+        };
+
+        PostWWW(
+            url,
+            param,
+            www => {
+                Debug.Log(www.text);
+                fsm.SendEvent("Succeed");
+            },
+            www => { fsm.SendEvent("Failed"); }
+        );
+    }
+
+    public void PostInit()
+    {
+        var verb = verbs["init"];
+        var url = head + verb;
+        var fsm = GetComponent<PlayMakerFSM>();
+        var param = null as Dictionary<string, string>;
+
+        if (mode == MODE.DESKTOP)
+        {
+            param = new Dictionary<string, string>()
             {
-                { "gameId", "1" },
-                { "login", "ttakekawa@manasoft.co.jp" },
-                { "password", "L18mmTR3" },
-                { "providerId", "33" },
-                { "siteId", "1" }
-            }, "test123"),
-            www => { fsm.SendEvent("Succeed"); },
+                { "gameId", "2" },
+                { "userId", "1" },
+            };
+        }
+        else if(mode == MODE.WEB)
+        {
+            param = new Dictionary<string, string>()
+            {
+            };
+        }
+
+        PostWWW(
+            url,
+            param,
+            www =>
+            {
+                Debug.Log(www.text);
+                fsm.SendEvent("Succeed");
+            },
+            www => { fsm.SendEvent("Failed"); }
+        );
+    }
+
+    public void PostPlay()
+    {
+        var verb = verbs["play"];
+        var url = head + verb;
+        var fsm = GetComponent<PlayMakerFSM>();
+        var param = null as Dictionary<string, string>;
+
+        if (mode == MODE.DESKTOP)
+        {
+            param = new Dictionary<string, string>()
+            {
+                { "gameId", "2" },
+                { "userId", "1" },
+                { "betcount", "1" },
+                { "rate", "1" },
+            };
+        }
+        else if (mode == MODE.WEB)
+        {
+            param = new Dictionary<string, string>()
+            {
+                { "betcount", "1" },
+                { "rate", "1" },
+            };
+        }
+
+        PostWWW(
+            url,
+            param,
+            www =>
+            {
+                Debug.Log(www.text);
+                fsm.SendEvent("Succeed");
+            },
+            www => { fsm.SendEvent("Failed"); }
+        );
+    }
+
+    public void PostCollect()
+    {
+        var verb = verbs["collect"];
+        var url = head + verb;
+        var fsm = GetComponent<PlayMakerFSM>();
+        var param = null as Dictionary<string, string>;
+
+        if (mode == MODE.DESKTOP)
+        {
+            param = new Dictionary<string, string>()
+            {
+                { "gameId", "2" },
+                { "userId", "1" },
+                { "reelstopleft", "1" },
+                { "reelstopcenter", "1" },
+                { "reelstopright", "1" },
+                { "oshijun", "1" },
+            };
+        }
+        else if (mode == MODE.WEB)
+        {
+            param = new Dictionary<string, string>()
+            {
+                { "reelstopleft", "1" },
+                { "reelstopcenter", "1" },
+                { "reelstopright", "1" },
+                { "oshijun", "1" },
+            };
+        }
+
+        PostWWW(
+            url,
+            param,
+            www =>
+            {
+                Debug.Log(www.text);
+                fsm.SendEvent("Succeed");
+            },
             www => { fsm.SendEvent("Failed"); }
         );
     }
@@ -139,8 +328,6 @@ public class Post : MonoBehaviour
 
     public void PostOpen(Dictionary<string, string> param)
     {
-        // http://web.ee-gaming.net/ps/open.html?gameId=1&operator=1&token=abc&language=en&mode=1
-
         var fsm = GetComponent<PlayMakerFSM>();
         var url = head + "open.html";
 
@@ -151,13 +338,11 @@ public class Post : MonoBehaviour
     }
 
     /// <summary>
-    /// WEBページからのレスポンス
+    /// Webページからのレスポンス
     /// </summary>
+    /// <param name="msg">gameId=2&token=aaa&language=ja&operatorId=1&mode=1</param>
     public void Response(string msg)
     {
-        //[msg]
-        //gameId=2&token=aaa&language=ja&operatorId=1&mode=1
-
         // デバッグ用にアラートを出す
         //Application.ExternalCall("AlertByUnity", msg);
 
@@ -190,7 +375,7 @@ public class Post : MonoBehaviour
 
         var s = f() + himitsu;
 
-        Debug.Log("PRE HASH:" + s);
+        //Debug.Log("PRE HASH:" + s);
 
         var data = System.Text.Encoding.UTF8.GetBytes(s);
         var md5 = new System.Security.Cryptography.MD5CryptoServiceProvider();
@@ -203,7 +388,7 @@ public class Post : MonoBehaviour
         }
 
         //結果を表示
-        Debug.Log("POST HASH:"+result.ToString());
+        //Debug.Log("POST HASH:"+result.ToString());
 
         i.Add("hash", result.ToString());
 
@@ -225,10 +410,15 @@ public class Post : MonoBehaviour
         Debug.Log("POST:url=" + url);
 
         WWWForm form = new WWWForm();
-        foreach (KeyValuePair<string, string> post_arg in post)
+
+        if (post != null)
         {
-            form.AddField(post_arg.Key, post_arg.Value);
+            foreach (KeyValuePair<string, string> post_arg in post)
+            {
+                form.AddField(post_arg.Key, post_arg.Value);
+            }
         }
+
         WWW www = new WWW(url, form);
 
         yield return www;

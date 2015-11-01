@@ -10,6 +10,8 @@ using System.Linq;
 /// </summary>
 public class GameManager : MonoBehaviour {
 
+    SlotMachineState slotMachineState;
+
     /// <summary>
     /// シングルトン
     /// </summary>
@@ -170,6 +172,10 @@ public class GameManager : MonoBehaviour {
     }
 
 	void Start () {
+
+        slotMachineState = GameObject.Find("SlotMachineState")
+                                     .GetComponent<SlotMachineState>();
+
         // リールをセットアップ
         //SetupReelTexture();
         Setup4thReelTexture();
@@ -244,6 +250,11 @@ public class GameManager : MonoBehaviour {
         while (true) {
             try {
                 core.exec();
+
+                if (IsAllReelStopped())
+                {
+                    slotMachineState.PlayEnd();
+                }
 
                 // コインが無くなったら自動で補充
                 if (mOmatsuri.int_s_value[Defines.DEF_INT_SLOT_COIN_NUM] <= 3) {
@@ -377,6 +388,8 @@ public class GameManager : MonoBehaviour {
     public void OnCoinInsert() {
         LitCoinInsertSlotLamp();
         Invoke("UnLitCoinInsertSlotLamp", 0.03f);
+
+        slotMachineState.InsertCoin();
     }
 
     /// <summary>
@@ -606,6 +619,9 @@ public class GameManager : MonoBehaviour {
     /// プレイ開始時処理
     /// </summary>
     public void OnStartPlay() {
+
+        slotMachineState.Lever();
+
         // レバーをアニメーションさせる
         lever.SetTrigger("On");
         // オートプレイ用停止パターン要求

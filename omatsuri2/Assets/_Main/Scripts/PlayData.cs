@@ -52,7 +52,7 @@ public class PlayData {
         try {
             BinaryFormatter b = new BinaryFormatter();
             using (FileStream fs = new FileStream(playDataSaveFileName, FileMode.Create)) {
-                Debug.Log("遊戯データセーブ");
+                //Debug.Log("遊戯データセーブ");
                 b.Serialize(fs, o);
             }
         } catch (Exception e) {
@@ -69,7 +69,7 @@ public class PlayData {
         try {
             BinaryFormatter b = new BinaryFormatter();
             using(FileStream fs = new FileStream(playDataSaveFileName, FileMode.OpenOrCreate)){
-                Debug.Log("遊戯データロード");
+                //Debug.Log("遊戯データロード");
                 return (PlayData)b.Deserialize(fs);
             }
         } catch (Exception e) {
@@ -94,9 +94,9 @@ public class PlayData {
         DateTime latest = data.dailyData[2].timestamp; // 2番が最新データ
         latest = new DateTime(latest.Year, latest.Month, latest.Day, 0, 0, 0);
         int diffDays = (now - latest).Days;
-        Debug.Log("最新遊戯データ日付差:" + diffDays +
-            " NOW:" + now.ToShortDateString() +
-            " LATEST:" + latest.ToShortDateString());
+        //Debug.Log("最新遊戯データ日付差:" + diffDays +
+        //    " NOW:" + now.ToShortDateString() +
+        //    " LATEST:" + latest.ToShortDateString());
         PushBlankPlayData(data, diffDays);
     }
 

@@ -28,3 +28,4 @@ MonoBehaviour:
   events:
   - "\u70B9\u706F"
   - TAP
+  - ConfigFinished
