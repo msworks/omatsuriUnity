@@ -350,6 +350,7 @@ PlayerSettings:
     2: __COM_TYPE__;__COM_TYPE2__;__DEBUG__;__BONUS_CUT__;__DRAW_SLOT2__;__FPS_TYPE2__;__CLIP_FALSE__;__SON_VOLUME__;__GP_TRACE__;_DOCOMO;_UNITY_CONVERT_;__DEBUG_DRAW_YAKU__
     4: __COM_TYPE__;__COM_TYPE2__;__DEBUG__;__BONUS_CUT__;__DRAW_SLOT2__;__FPS_TYPE2__;__CLIP_FALSE__;__SON_VOLUME__;__GP_TRACE__;_DOCOMO;_UNITY_CONVERT_;__DEBUG_DRAW_YAKU__
     7: __COM_TYPE__;__COM_TYPE2__;__DEBUG__;__BONUS_CUT__;__DRAW_SLOT2__;__FPS_TYPE2__;__CLIP_FALSE__;__SON_VOLUME__;__GP_TRACE__;_DOCOMO;_UNITY_CONVERT_;__DEBUG_DRAW_YAKU__
+    13: __COM_TYPE__;__COM_TYPE2__;__DEBUG__;__BONUS_CUT__;__DRAW_SLOT2__;__FPS_TYPE2__;__CLIP_FALSE__;__SON_VOLUME__;__GP_TRACE__;_DOCOMO;_UNITY_CONVERT_;__DEBUG_DRAW_YAKU__
   metroPackageName: oh
   metroPackageLogo: 
   metroPackageLogo140: 
@@ -493,7 +494,7 @@ PlayerSettings:
   WebGL::ScriptingBackend: 1
   WebGL::audioCompressionFormat: 4
   WebGL::exceptionSupport: 0
-  WebGL::memorySize: 256
+  WebGL::memorySize: 512
   iOS::Architecture: 0
   iOS::EnableIncrementalBuildSupportForIl2cpp: 0
   iOS::ScriptingBackend: 0

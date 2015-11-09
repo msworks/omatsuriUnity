@@ -4,6 +4,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
+using System.IO;
 
 public class Post : MonoBehaviour
 {
@@ -18,7 +20,7 @@ public class Post : MonoBehaviour
     //MODE mode = MODE.WEB;
     MODE mode = MODE.WEB;
 
-    static string serverHead = "http://web.ee-gaming.net/ps/";
+    static string serverHead = "http://web.ee-gaming.net/ps/pachinko/";
     static string logicHead = "http://localhost:9876/";
 
     static Dictionary<string, string> verbsLogic = new Dictionary<string, string>()
@@ -31,7 +33,7 @@ public class Post : MonoBehaviour
 
     static Dictionary<string, string> verbsServer = new Dictionary<string, string>()
     {
-        {"config", "login.html"},
+        {"config", "config.html"},
         {"init", "init.html"},
         {"play", "play.html"},
         {"collect", "collect.html"},
@@ -130,27 +132,87 @@ public class Post : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// サーバーにConfigコマンド発行
+    /// </summary>
     public void PostConfig()
     {
         var verb = verbs["config"];
         var url = head + verb;
         var fsm = GetComponent<PlayMakerFSM>();
 
-        var param = new Dictionary<string, string>()
+        var webParam = new Dictionary<string, string>()
+        {
+        };
+
+        var desktopParam = new Dictionary<string, string>()
         {
             { "gameId", "2" },
             { "userId", "1" },
         };
 
-        PostWWW(
-            url,
-            param,
-            www => {
-                Debug.Log(www.text);
-                fsm.SendEvent("Succeed");
-            },
-            www => { fsm.SendEvent("Failed"); }
-        );
+        Action<WWW> failed = (www) =>
+        {
+            fsm.SendEvent("Failed");
+        };
+
+        Action<WWW> desktopAction = (www) =>
+        {
+            Debug.Log(www.text);
+            var json = new JSONObject(www.text);
+            var setting = json.GetField("setting").ToString().ParseInt();
+            var reelleft = json.GetField("reelleft").ToString().ParseInt();
+            var reelcenter = json.GetField("reelcenter").ToString().ParseInt();
+            var reelright = json.GetField("reelright").ToString().ParseInt();
+            var seed = json.GetField("seed").ToString().ParseInt();
+
+            clOHHB_V23.mInitializaion(seed);
+            clOHHB_V23.setWork(Defines.DEF_WAVENUM, (ushort)setting);
+
+            fsm.SendEvent("Succeed");
+        };
+
+        Action<WWW> webAction = (www) =>
+        {
+            Debug.Log(www.text);
+
+            var xmlDoc = new XmlDocument();
+            xmlDoc.Load(new StringReader(www.text));
+            var res = xmlDoc.GetElementsByTagName("response");
+            var associate = new Dictionary<string, string>();
+            foreach (XmlNode node in res[0].ChildNodes)
+            {
+                associate.Add(node.Name, node.InnerText);
+            }
+
+            var balance = Decimal.Parse(associate["balance"].ToString());
+            var setting = associate["setting"].ToString().ParseInt();
+            var reelleft = associate["reelLeft"].ToString().ParseInt();
+            var reelcenter = associate["reelCenter"].ToString().ParseInt();
+            var reelright = associate["reelRight"].ToString().ParseInt();
+            var seed = associate["seed"].ToString().ParseInt();
+
+            clOHHB_V23.mInitializaion(seed);
+            clOHHB_V23.setWork(Defines.DEF_WAVENUM, (ushort)setting);
+
+            // コインチャージ
+            // balance  : 所持金($)
+            // balanceCent : 所持金（セント）
+            // rateCent : コイン１毎あたりの値段（単位：セント）
+            // coinNum  : コイン枚数
+            // coinNum = balanceCent / rateCent
+            var rateCent = Rate.Instanse.GetRate();
+            var balanceCent = balance * 100;
+            var coinNum = (int)(balanceCent / rateCent);
+            mOmatsuri.GPW_chgCredit(coinNum);
+
+            fsm.SendEvent("Succeed");
+        };
+
+        var param = mode == MODE.WEB ? webParam : desktopParam;
+        var success = mode == MODE.WEB ? webAction : desktopAction;
+
+        PostWWW(url, param, success, failed);
     }
 
     public void PostInit()
@@ -158,33 +220,50 @@ public class Post : MonoBehaviour
         var verb = verbs["init"];
         var url = head + verb;
         var fsm = GetComponent<PlayMakerFSM>();
-        var param = null as Dictionary<string, string>;
-
-        if (mode == MODE.DESKTOP)
+        var webParam = new Dictionary<string, string>()
         {
-            param = new Dictionary<string, string>()
-            {
-                { "gameId", "2" },
-                { "userId", "1" },
-            };
-        }
-        else if(mode == MODE.WEB)
-        {
-            param = new Dictionary<string, string>()
-            {
-            };
-        }
+        };
 
-        PostWWW(
-            url,
-            param,
-            www =>
+        var desktopParam = new Dictionary<string, string>()
+        {
+            { "gameId", "2" },
+            { "userId", "1" },
+        };
+
+        Action<WWW> failed = (www) =>
+        {
+            fsm.SendEvent("Failed");
+        };
+
+        Action<WWW> desktopAction = (www) =>
+        {
+            Debug.Log(www.text);
+            var json = new JSONObject(www.text);
+            fsm.SendEvent("Succeed");
+        };
+
+        Action<WWW> webAction = (www) =>
+        {
+            Debug.Log(www.text);
+
+            var xmlDoc = new XmlDocument();
+            xmlDoc.Load(new StringReader(www.text));
+            var res = xmlDoc.GetElementsByTagName("response");
+            var associate = new Dictionary<string, string>();
+            foreach (XmlNode node in res[0].ChildNodes)
             {
-                Debug.Log(www.text);
-                fsm.SendEvent("Succeed");
-            },
-            www => { fsm.SendEvent("Failed"); }
-        );
+                associate.Add(node.Name, node.InnerText);
+            }
+
+            var balance = Decimal.Parse(associate["balance"].ToString());
+
+            fsm.SendEvent("Succeed");
+        };
+
+        var param = mode == MODE.WEB ? webParam : desktopParam;
+        var success = mode == MODE.WEB ? webAction : desktopAction;
+
+        PostWWW(url, param, success, failed);
     }
 
     public void PostPlay()
@@ -192,37 +271,65 @@ public class Post : MonoBehaviour
         var verb = verbs["play"];
         var url = head + verb;
         var fsm = GetComponent<PlayMakerFSM>();
-        var param = null as Dictionary<string, string>;
 
-        if (mode == MODE.DESKTOP)
-        {
-            param = new Dictionary<string, string>()
-            {
-                { "gameId", "2" },
-                { "userId", "1" },
-                { "betcount", "1" },
-                { "rate", "1" },
-            };
-        }
-        else if (mode == MODE.WEB)
-        {
-            param = new Dictionary<string, string>()
-            {
-                { "betcount", "1" },
-                { "rate", "1" },
-            };
-        }
+        var betcount = 3;
+        var rate = (float)Rate.Instanse.GetRate() / 100;
 
-        PostWWW(
-            url,
-            param,
-            www =>
+        var webParam = new Dictionary<string, string>()
+        {
+            { "rate", rate.ToString() },
+            { "betCount",betcount.ToString() },
+            { "power", "0" },
+        };
+
+        var desktopParam = new Dictionary<string, string>()
+        {
+            { "gameId", "2" },
+            { "userId", "1" },
+            { "betcount", betcount.ToString() },
+            { "rate", rate.ToString() },
+            { "power", "0" },
+        };
+
+        Action<WWW> failed = (www) =>
+        {
+            fsm.SendEvent("Failed");
+        };
+
+        Action<WWW> desktopAction = (www) =>
+        {
+            Debug.Log(www.text);
+            var json = new JSONObject(www.text);
+
+            var yaku = json.GetField("yaku").ToString().ParseInt();
+
+            fsm.SendEvent("Succeed");
+        };
+
+        Action<WWW> webAction = (www) =>
+        {
+            Debug.Log(www.text);
+
+            var xmlDoc = new XmlDocument();
+            xmlDoc.Load(new StringReader(www.text));
+            var res = xmlDoc.GetElementsByTagName("response");
+            var associate = new Dictionary<string, string>();
+            foreach (XmlNode node in res[0].ChildNodes)
             {
-                Debug.Log(www.text);
-                fsm.SendEvent("Succeed");
-            },
-            www => { fsm.SendEvent("Failed"); }
-        );
+                associate.Add(node.Name, node.InnerText);
+            }
+
+            var yaku = associate["yaku"].ToString().ParseInt();
+            var balance = Decimal.Parse(associate["balance"].ToString());
+
+            fsm.SendEvent("Succeed");
+        };
+
+        var param = mode == MODE.WEB ? webParam : desktopParam;
+        var success = mode == MODE.WEB ? webAction : desktopAction;
+
+        PostWWW(url, param, success, failed);
+
     }
 
     public void PostCollect()
@@ -230,41 +337,65 @@ public class Post : MonoBehaviour
         var verb = verbs["collect"];
         var url = head + verb;
         var fsm = GetComponent<PlayMakerFSM>();
-        var param = null as Dictionary<string, string>;
 
-        if (mode == MODE.DESKTOP)
+        var webParam = new Dictionary<string, string>()
         {
-            param = new Dictionary<string, string>()
-            {
-                { "gameId", "2" },
-                { "userId", "1" },
-                { "reelstopleft", "1" },
-                { "reelstopcenter", "1" },
-                { "reelstopright", "1" },
-                { "oshijun", "1" },
-            };
-        }
-        else if (mode == MODE.WEB)
-        {
-            param = new Dictionary<string, string>()
-            {
-                { "reelstopleft", "1" },
-                { "reelstopcenter", "1" },
-                { "reelstopright", "1" },
-                { "oshijun", "1" },
-            };
-        }
+            { "reelStopLeft", "1" },
+            { "reelStopCenter", "1" },
+            { "reelStopRight", "1" },
+            { "oshijun", "1" },
+        };
 
-        PostWWW(
-            url,
-            param,
-            www =>
+        var desktopParam = new Dictionary<string, string>()
+        {
+            { "gameId", "2" },
+            { "userId", "1" },
+            { "reelstopleft", "1" },
+            { "reelstopcenter", "1" },
+            { "reelstopright", "1" },
+            { "oshijun", "1" },
+        };
+
+        Action<WWW> failed = (www) =>
+        {
+            fsm.SendEvent("Failed");
+        };
+
+        Action<WWW> desktopAction = (www) =>
+        {
+            Debug.Log(www.text);
+            var json = new JSONObject(www.text);
+
+            var result = json.GetField("result").ToString();
+            //var winnings = Decimal.Parse(json.GetField("winnings").ToString());
+
+            fsm.SendEvent("Succeed");
+        };
+
+        Action<WWW> webAction = (www) =>
+        {
+            Debug.Log(www.text);
+
+            var xmlDoc = new XmlDocument();
+            xmlDoc.Load(new StringReader(www.text));
+            var res = xmlDoc.GetElementsByTagName("response");
+            var associate = new Dictionary<string, string>();
+            foreach (XmlNode node in res[0].ChildNodes)
             {
-                Debug.Log(www.text);
-                fsm.SendEvent("Succeed");
-            },
-            www => { fsm.SendEvent("Failed"); }
-        );
+                associate.Add(node.Name, node.InnerText);
+            }
+
+            var balance = Decimal.Parse(associate["balance"].ToString());
+            var result = associate["result"].ToString();
+            var winnings = Decimal.Parse(associate["winnings"].ToString());
+
+            fsm.SendEvent("Succeed");
+        };
+
+        var param = mode == MODE.WEB ? webParam : desktopParam;
+        var success = mode == MODE.WEB ? webAction : desktopAction;
+
+        PostWWW(url, param, success, failed);
     }
 
     /// <summary>
@@ -343,22 +474,25 @@ public class Post : MonoBehaviour
     /// <param name="msg">gameId=2&token=aaa&language=ja&operatorId=1&mode=1</param>
     public void Response(string msg)
     {
+        var fsm = GetComponent<PlayMakerFSM>();
+        fsm.SendEvent("Succeed");
+
         // デバッグ用にアラートを出す
         //Application.ExternalCall("AlertByUnity", msg);
 
-        var param = new Dictionary<string, string>();
+        //var param = new Dictionary<string, string>();
 
-        var kvs = msg.Split('&')
-           .Select(query => query.Split('='))
-           .Select(strings => new KeyValuePair<string, string>(strings[0], strings[1]));
+        //var kvs = msg.Split('&')
+        //   .Select(query => query.Split('='))
+        //   .Select(strings => new KeyValuePair<string, string>(strings[0], strings[1]));
 
-        foreach(var kv in kvs)
-        {
-            param.Add(kv.Key, kv.Value);
-        }
+        //foreach(var kv in kvs)
+        //{
+        //    param.Add(kv.Key, kv.Value);
+        //}
 
-        // OpenをPOST
-        PostOpen(param);
+        //// OpenをPOST
+        //PostOpen(param);
     }
 
     Dictionary<string, string> HashCalculation(Dictionary<string, string> i, string himitsu)

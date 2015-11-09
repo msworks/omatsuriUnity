@@ -256,18 +256,20 @@ public class GameManager : MonoBehaviour {
                     slotMachineState.PlayEnd();
                 }
 
-                // コインが無くなったら自動で補充
-                if (mOmatsuri.int_s_value[Defines.DEF_INT_SLOT_COIN_NUM] <= 3) {
-                    // 500ドル分のクレジットを設定
-                    // 500ドル １枚20セント
-                    // 1ドル 5枚
-                    // 500 ドル * 5枚 = 2500枚
-                    mOmatsuri.GPW_chgCredit(2500);
-                }
+                //// コインが無くなったら自動で補充
+                //if (mOmatsuri.int_s_value[Defines.DEF_INT_SLOT_COIN_NUM] <= 3)
+                //{
+                //    // 500ドル分のクレジットを設定
+                //    // 500ドル １枚20セント
+                //    // 1ドル 5枚
+                //    // 500 ドル * 5枚 = 2500枚
+                //    mOmatsuri.GPW_chgCredit(2500);
+                //}
 
             } catch (Exception e) {
                 UIManager.Instance.errorText.text = e.ToString();
             }
+
             yield return new WaitForSeconds(0.02f); // TODO soy 要調整。とりあえず40msに合わせた
         }
     }
@@ -370,13 +372,11 @@ public class GameManager : MonoBehaviour {
     /// <summary>
     /// 共通UI更新
     /// </summary>
-    void UpdateCommonUI() {
-
+    void UpdateCommonUI()
+    {
         // コイン枚数を金額に変換する
         var coin = mOmatsuri.int_s_value[Defines.DEF_INT_SLOT_COIN_NUM];
         var cent = Rate.Instanse.Coin2Cent(coin);
-
-        // floatでやるの嫌なんだよな。。
         var doller = cent / 100f;
 
         casinoData.Exchange = doller;

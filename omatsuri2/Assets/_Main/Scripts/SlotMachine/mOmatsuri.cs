@@ -3985,7 +3985,7 @@ Defines.TRACE("全体描画");
     /// </summary>
     /// <param name="n">nﾋﾞｯﾄ左ｼﾌﾄ</param>
     /// <returns>ビット</returns>
-    [Obsolete("削除予定とのコメントあり")]
+    //[Obsolete("削除予定とのコメントあり")]
 	public static int BIT(int n) {
 		return 1 << n;
 	}
@@ -3999,11 +3999,11 @@ Defines.TRACE("全体描画");
 			// 重畳の場合
 			Mobile.playSound(id, false, Defines.DEF_SOUND_MULTI_SE);
 		} else {
-			// 非重畳の場合はボーナスゲームのＢＧＭを優先して鳴らす（＝ボーナスゲームでないときだけ鳴らせる）
-			if (!IS_BONUS_GAME()) {
-				// 非重畳の場合は第三引数に意味はない！！
-				Mobile.playSound(id, false, Defines.DEF_SOUND_MULTI_SE);
-			}
+            //// 非重畳の場合はボーナスゲームのＢＧＭを優先して鳴らす（＝ボーナスゲームでないときだけ鳴らせる）
+            //if (!IS_BONUS_GAME()) {
+            //    // 非重畳の場合は第三引数に意味はない！！
+            //    Mobile.playSound(id, false, Defines.DEF_SOUND_MULTI_SE);
+            //}
 		}
 	}
 

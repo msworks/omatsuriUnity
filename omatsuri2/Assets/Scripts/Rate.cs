@@ -13,6 +13,15 @@ public class Rate : MonoBehaviour {
         _instance = this;
 	}
 
+    /// <summary>
+    /// コイン１枚が何セントかを返却する
+    /// </summary>
+    /// <returns></returns>
+    public int GetRate()
+    {
+        return cent;
+    }
+
 	public Rate SetRate(int cent)
     {
         this.cent = cent;

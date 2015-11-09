@@ -1096,7 +1096,7 @@ public class Mobile {
                 }
             }
         } else {
-            ZZ.stopSound();
+            //ZZ.stopSound();
         }
     }
 
@@ -1116,7 +1116,7 @@ public class Mobile {
         if (Defines.DEF_USE_MULTI_SOUND) {
             ZZ.playSound(id, isRepeat, mode);
         } else {
-            ZZ.playSound(id, isRepeat);
+            //ZZ.playSound(id, isRepeat);
         }
     }
 #if __SON_VOLUME__
