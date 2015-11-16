@@ -18,7 +18,7 @@ public class Post : MonoBehaviour
     // WEB - 本番
     // DESKTOP - TEST MODE
     //MODE mode = MODE.WEB;
-    MODE mode = MODE.WEB;
+    MODE mode = MODE.DESKTOP;
 
     static string serverHead = "http://web.ee-gaming.net/ps/pachinko/";
     static string logicHead = "http://localhost:9876/";
@@ -114,10 +114,11 @@ public class Post : MonoBehaviour
     public class Play : FsmStateAction
     {
         public Post post;
+        public FsmInt bet;
 
         public override void OnEnter()
         {
-            post.PostPlay();
+            post.PostPlay(bet.Value);
         }
     }
 
@@ -266,13 +267,13 @@ public class Post : MonoBehaviour
         PostWWW(url, param, success, failed);
     }
 
-    public void PostPlay()
+    public void PostPlay(int bet)
     {
         var verb = verbs["play"];
         var url = head + verb;
         var fsm = GetComponent<PlayMakerFSM>();
 
-        var betcount = 3;
+        var betcount = bet;
         var rate = (float)Rate.Instanse.GetRate() / 100;
 
         var webParam = new Dictionary<string, string>()
@@ -286,7 +287,7 @@ public class Post : MonoBehaviour
         {
             { "gameId", "2" },
             { "userId", "1" },
-            { "betcount", betcount.ToString() },
+            { "betCount", betcount.ToString() },
             { "rate", rate.ToString() },
             { "power", "0" },
         };
@@ -350,9 +351,9 @@ public class Post : MonoBehaviour
         {
             { "gameId", "2" },
             { "userId", "1" },
-            { "reelstopleft", "1" },
-            { "reelstopcenter", "1" },
-            { "reelstopright", "1" },
+            { "reelStopLeft", "1" },
+            { "reelStopCenter", "1" },
+            { "reelStopRight", "1" },
             { "oshijun", "1" },
         };
 
@@ -459,6 +460,12 @@ public class Post : MonoBehaviour
 
     public void PostOpen(Dictionary<string, string> param)
     {
+        if (mode == MODE.DESKTOP)
+        {
+            // コインを補充
+            GameManager.Instance.InsertCoin(1000);
+        }
+
         var fsm = GetComponent<PlayMakerFSM>();
         var url = head + "open.html";
 

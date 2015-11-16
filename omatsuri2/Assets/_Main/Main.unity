@@ -1047,7 +1047,7 @@ MonoBehaviour:
           name: InsertCoin
           isSystemEvent: 0
           isGlobal: 0
-        toState: WAITPLAY
+        toState: Bet
         linkStyle: 0
         linkConstraint: 0
         colorIndex: 0
@@ -1103,12 +1103,14 @@ MonoBehaviour:
       actionData:
         actionNames:
         - Post+Play
+        - HutongGames.PlayMaker.Actions.SetIntValue
         customNames:
         - 
-        actionEnabled: 01
-        actionIsOpen: 01
-        actionStartIndex: 00000000
-        actionHashCodes: c00c2600
+        - 
+        actionEnabled: 0101
+        actionIsOpen: 0101
+        actionStartIndex: 0000000002000000
+        actionHashCodes: db9e69cf9ffa9c66
         unityObjectParams:
         - {fileID: 122713802}
         fsmGameObjectParams: []
@@ -1122,16 +1124,20 @@ MonoBehaviour:
         fsmStringParams: []
         fsmObjectParams: []
         fsmVarParams: []
-        byteData: 
+        byteData: 00000000014265740000000001426574000000000000
         arrayParamSizes: 
         arrayParamTypes: []
         customTypeSizes: 
         customTypeNames: []
-        paramDataType: 05000000
+        paramDataType: 0500000010000000100000001000000001000000
         paramName:
         - post
-        paramDataPos: 00000000
-        paramByteDataSize: 00000000
+        - bet
+        - intVariable
+        - intValue
+        - everyFrame
+        paramDataPos: 0000000000000000080000001000000015000000
+        paramByteDataSize: 0000000008000000080000000500000001000000
     - name: COLLECT
       description: 
       colorIndex: 0
@@ -1287,6 +1293,60 @@ MonoBehaviour:
         paramName: []
         paramDataPos: 
         paramByteDataSize: 
+    - name: Bet
+      description: 
+      colorIndex: 0
+      position:
+        serializedVersion: 2
+        x: 262
+        y: 249
+        width: 100
+        height: 32
+      isBreakpoint: 0
+      isSequence: 0
+      hideUnused: 0
+      transitions:
+      - fsmEvent:
+          name: FINISHED
+          isSystemEvent: 1
+          isGlobal: 0
+        toState: WAITPLAY
+        linkStyle: 0
+        linkConstraint: 0
+        colorIndex: 0
+      actionData:
+        actionNames:
+        - HutongGames.PlayMaker.Actions.IntAdd
+        customNames:
+        - 
+        actionEnabled: 01
+        actionIsOpen: 01
+        actionStartIndex: 00000000
+        actionHashCodes: 9ffa9c66
+        unityObjectParams: []
+        fsmGameObjectParams: []
+        fsmOwnerDefaultParams: []
+        animationCurveParams: []
+        functionCallParams: []
+        fsmTemplateControlParams: []
+        fsmEventTargetParams: []
+        fsmPropertyParams: []
+        layoutOptionParams: []
+        fsmStringParams: []
+        fsmObjectParams: []
+        fsmVarParams: []
+        byteData: 0000000001426574010000000000
+        arrayParamSizes: 
+        arrayParamTypes: []
+        customTypeSizes: 
+        customTypeNames: []
+        paramDataType: 100000001000000001000000
+        paramName:
+        - intVariable
+        - add
+        - everyFrame
+        paramDataPos: 00000000080000000d000000
+        paramByteDataSize: 080000000500000001000000
     events:
     - name: FINISHED
       isSystemEvent: 1
@@ -1309,7 +1369,13 @@ MonoBehaviour:
     globalTransitions: []
     variables:
       floatVariables: []
-      intVariables: []
+      intVariables:
+      - useVariable: 1
+        name: Bet
+        tooltip: 
+        showInInspector: 0
+        networkSync: 0
+        value: 0
       boolVariables: []
       stringVariables: []
       vector2Variables: []
@@ -17058,7 +17124,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1576610426}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 494.500061, z: 0}
+  m_LocalPosition: {x: 0, y: 380.499939, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 2112908462}
@@ -21725,7 +21791,7 @@ Transform:
   m_GameObject: {fileID: 1843079139}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -2, y: 0, z: 0}
-  m_LocalScale: {x: .00109349366, y: .00109349366, z: .00109349366}
+  m_LocalScale: {x: .00124921929, y: .00124921929, z: .00124921929}
   m_Children:
   - {fileID: 1354514797}
   - {fileID: 1576610427}

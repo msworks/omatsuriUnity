@@ -241,6 +241,11 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+    public void InsertCoin(int num)
+    {
+        mOmatsuri.GPW_chgCredit(1000);
+    }
+
     /// <summary>
     /// メインループ
     /// </summary>
@@ -255,16 +260,6 @@ public class GameManager : MonoBehaviour {
                 {
                     slotMachineState.PlayEnd();
                 }
-
-                //// コインが無くなったら自動で補充
-                //if (mOmatsuri.int_s_value[Defines.DEF_INT_SLOT_COIN_NUM] <= 3)
-                //{
-                //    // 500ドル分のクレジットを設定
-                //    // 500ドル １枚20セント
-                //    // 1ドル 5枚
-                //    // 500 ドル * 5枚 = 2500枚
-                //    mOmatsuri.GPW_chgCredit(2500);
-                //}
 
             } catch (Exception e) {
                 UIManager.Instance.errorText.text = e.ToString();
@@ -386,6 +381,7 @@ public class GameManager : MonoBehaviour {
     /// コイン投入時処理
     /// </summary>
     public void OnCoinInsert() {
+        Debug.Log("OnCoinInsert");
         LitCoinInsertSlotLamp();
         Invoke("UnLitCoinInsertSlotLamp", 0.03f);
 
