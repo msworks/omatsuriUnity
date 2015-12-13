@@ -11,6 +11,9 @@ public class MenuButton : MonoBehaviour {
     GameObject MenuPopup;
 
     [SerializeField]
+    MainPanel mainPanel;
+
+    [SerializeField]
     List<GameObject> DisplayPanels;
 
     [SerializeField]
@@ -35,6 +38,8 @@ public class MenuButton : MonoBehaviour {
         {
             panel.SetActive(false);
         }
+
+        mainPanel.Display();
 
         MenuPopup.SetActive(true);
     }

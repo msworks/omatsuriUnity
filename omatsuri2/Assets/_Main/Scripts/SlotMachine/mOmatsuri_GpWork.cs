@@ -269,13 +269,27 @@ static void chgYaku()
 		gp.gpif_bonus_n = 0;
 	}
 
+    if (GameManager.Instance.SettingZeroMode == true)
+    {
+        // 設定０のとき、17の倍数ゲーム（17､34､51､68・・・）に
+        // 強制フラグでハズレフラグに差し替える
+
+        var draw = GameManager.Instance.setting0Machine.Draw();
+        if (draw == DrawSetting0.Hazure)
+        {
+            clOHHB_V23.mSetForceFlag(Defines.ForceYakuFlag.NONE);
+        }
+    }
+
     flag = GameManager.forceYakuValue;
 
-	if( flag != 0 )
-	{// 強制役のセット
+	if( flag != Defines.ForceYakuFlag.NONE )
+	{
+        // 強制役のセット
 		clOHHB_V23.mSetForceFlag(flag);
 	}
 }
+
 // 設定変更が必要ならば、変更する
 static void chgWaveNum()
 {

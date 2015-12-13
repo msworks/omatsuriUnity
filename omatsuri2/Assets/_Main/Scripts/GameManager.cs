@@ -1,15 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
-using System.Collections.Generic;
 using UnityEngine.UI;
-using System.Linq;
 
 /// <summary>
 /// ゲーム管理クラス
 /// </summary>
-public class GameManager : MonoBehaviour {
-
+public class GameManager : MonoBehaviour
+{
     SlotMachineState slotMachineState;
 
     /// <summary>
@@ -18,19 +16,8 @@ public class GameManager : MonoBehaviour {
     public static GameManager Instance {
         get { return _instance; }
     }
-    private static GameManager _instance;
 
-    // PC版か否かで接続先が変わる
-    public string serverURL {
-        get {
-            if (Application.platform == RuntimePlatform.WindowsPlayer ||
-                Application.platform == RuntimePlatform.OSXPlayer) {
-                return "https://pc"; // TODO 要正式なURL
-            } else {
-                return "https://mobile"; // TODO 要正式なURL
-            }
-        }
-    }
+    private static GameManager _instance;
 
     public SlotMachine slotMachine;
 
@@ -63,6 +50,10 @@ public class GameManager : MonoBehaviour {
 
     [Header("入力制御")]
     public GameObject[] reelTouchAreas = new GameObject[3];
+
+    public bool SettingZeroMode = false;
+
+    public Setting0Machine setting0Machine = new Setting0Machine();
 
     /// <summary>
     /// 強制役設定
@@ -364,6 +355,9 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+    [SerializeField]
+    GameObject NoCreditPopup;
+
     /// <summary>
     /// 共通UI更新
     /// </summary>
@@ -375,6 +369,11 @@ public class GameManager : MonoBehaviour {
         var doller = cent / 100f;
 
         casinoData.Exchange = doller;
+
+        if( coin <= 2)
+        {
+            NoCreditPopup.SetActive(true);
+        }
     }
 
     /// <summary>

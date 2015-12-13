@@ -57,7 +57,7 @@
 						break;
 					}
 				});
-				u.initPlugin(jQuery("#unityPlayer")[0], "sl002.unity3d");
+				u.initPlugin(jQuery("#unityPlayer")[0], "game-2.unity3d");
 			});
 			
 			function GetParameter()
@@ -70,6 +70,19 @@
 			{
 				alert(arg);
 			}
+			
+			function transitionDeposite()
+			{
+				var path = "../index?from=/postlogin/payment/deposit";
+				window.location.href = path;
+			}
+
+			function transitionCampain()
+			{
+				var path = "../campain_1";
+				window.location.href = path;
+			}
+
 		-->
 		</script>
 		<style type="text/css">

@@ -1,17 +1,17 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿public enum Cents
+{
+    cent5   = 5,
+    cent20  = 20,
+    cent40  = 40,
+    cent100 = 100,
+}
 
-public class Rate : MonoBehaviour {
-
-    static Rate _instance;
+public class Rate
+{
+    static Rate _instance = new Rate();
     static public Rate Instanse { get { return _instance; } }
 
-    int cent = 20;
-
-	void Start ()
-    {
-        _instance = this;
-	}
+    Cents cent = Cents.cent20;
 
     /// <summary>
     /// コイン１枚が何セントかを返却する
@@ -19,12 +19,12 @@ public class Rate : MonoBehaviour {
     /// <returns></returns>
     public int GetRate()
     {
-        return cent;
+        return (int)cent;
     }
 
 	public Rate SetRate(int cent)
     {
-        this.cent = cent;
+        this.cent = (Cents)cent;
         return this;
     }
 
@@ -35,6 +35,6 @@ public class Rate : MonoBehaviour {
     /// <returns></returns>
     public int Coin2Cent(int coin)
     {
-        return coin * cent;
+        return coin * (int)cent;
     }
 }

@@ -18,9 +18,9 @@ public class Post : MonoBehaviour
     // WEB - 本番
     // DESKTOP - TEST MODE
     //MODE mode = MODE.WEB;
-    MODE mode = MODE.DESKTOP;
+    MODE mode = MODE.WEB;
 
-    static string serverHead = "http://web.ee-gaming.net/ps/pachinko/";
+    static string serverHead = "../pachinko/";
     static string logicHead = "http://localhost:9876/";
 
     static Dictionary<string, string> verbsLogic = new Dictionary<string, string>()
@@ -167,6 +167,12 @@ public class Post : MonoBehaviour
             var reelright = json.GetField("reelright").ToString().ParseInt();
             var seed = json.GetField("seed").ToString().ParseInt();
 
+            if( setting == 0)
+            {
+                GameManager.Instance.SettingZeroMode = true;
+                setting = 1;
+            }
+
             clOHHB_V23.mInitializaion(seed);
             clOHHB_V23.setWork(Defines.DEF_WAVENUM, (ushort)setting);
 
@@ -192,6 +198,12 @@ public class Post : MonoBehaviour
             var reelcenter = associate["reelCenter"].ToString().ParseInt();
             var reelright = associate["reelRight"].ToString().ParseInt();
             var seed = associate["seed"].ToString().ParseInt();
+
+            if (setting == 0)
+            {
+                GameManager.Instance.SettingZeroMode = true;
+                setting = 1;
+            }
 
             clOHHB_V23.mInitializaion(seed);
             clOHHB_V23.setWork(Defines.DEF_WAVENUM, (ushort)setting);
@@ -481,25 +493,34 @@ public class Post : MonoBehaviour
     /// <param name="msg">gameId=2&token=aaa&language=ja&operatorId=1&mode=1</param>
     public void Response(string msg)
     {
-        var fsm = GetComponent<PlayMakerFSM>();
-        fsm.SendEvent("Succeed");
-
         // デバッグ用にアラートを出す
         //Application.ExternalCall("AlertByUnity", msg);
 
-        //var param = new Dictionary<string, string>();
+        var param = new Dictionary<string, string>();
 
-        //var kvs = msg.Split('&')
-        //   .Select(query => query.Split('='))
-        //   .Select(strings => new KeyValuePair<string, string>(strings[0], strings[1]));
+        var kvs = msg.Split('&')
+           .Select(query => query.Split('='))
+           .Select(strings => new KeyValuePair<string, string>(strings[0], strings[1]));
 
-        //foreach(var kv in kvs)
-        //{
-        //    param.Add(kv.Key, kv.Value);
-        //}
+        foreach (var kv in kvs)
+        {
+            param.Add(kv.Key, kv.Value);
+        }
+
+        if(param["mode"]=="0")
+        {
+            // デモモード
+
+            // 1000枚セット
+            var coinCount = 1000;
+            mOmatsuri.GPW_chgCredit(coinCount);
+        }
 
         //// OpenをPOST
         //PostOpen(param);
+
+        var fsm = GetComponent<PlayMakerFSM>();
+        fsm.SendEvent("Succeed");
     }
 
     Dictionary<string, string> HashCalculation(Dictionary<string, string> i, string himitsu)

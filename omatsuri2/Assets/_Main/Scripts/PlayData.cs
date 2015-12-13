@@ -49,6 +49,10 @@ public class PlayData {
     /// </summary>
     /// <param name="o"></param>
     public static void Save(PlayData o) {
+
+        // ウェブで落ちるので、削除
+        return;
+
         try {
             BinaryFormatter b = new BinaryFormatter();
             using (FileStream fs = new FileStream(playDataSaveFileName, FileMode.Create)) {

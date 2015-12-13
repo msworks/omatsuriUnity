@@ -1,12 +1,9 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using HutongGames.PlayMaker;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 
-public class Menu : MonoBehaviour {
+public class Menu : MonoBehaviour
+{
 
     static Menu _instance;
     static public Menu Instance {get{return _instance;}}
