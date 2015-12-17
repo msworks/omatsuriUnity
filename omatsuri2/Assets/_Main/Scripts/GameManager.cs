@@ -364,13 +364,15 @@ public class GameManager : MonoBehaviour
     void UpdateCommonUI()
     {
         // コイン枚数を金額に変換する
+
+        // これがマズいような気もする
         var coin = mOmatsuri.int_s_value[Defines.DEF_INT_SLOT_COIN_NUM];
         var cent = Rate.Instanse.Coin2Cent(coin);
-        var doller = cent / 100f;
+        var doller = (Decimal)cent / 100m;
 
-        casinoData.Exchange = doller;
+        casinoData.Exchange = doller + casinoData.exchangeFract;
 
-        if( coin <= 2)
+        if (coin <= 2)
         {
             NoCreditPopup.SetActive(true);
         }
@@ -708,7 +710,6 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        //Debug.Log("KEY:" + key);
         ZZ.int_value[Defines.DEF_Z_INT_KEYPRESS] |= (1 << key);
     }
 
@@ -749,10 +750,10 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// 機械割設定
     /// </summary>
-    /// <param name="rate"></param>
-    public void SetRate(int rate) {
-        //Mobile.setSetUpValue(rate);
-        mOmatsuri.gp.gpif_setting = rate;
+    /// <param name="setting"></param>
+    public void SetSetting(int setting)
+    {
+        mOmatsuri.gp.gpif_setting = setting;
     }
 
     public static bool isUseServerSeed;

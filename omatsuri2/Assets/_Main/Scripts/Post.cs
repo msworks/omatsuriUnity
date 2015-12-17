@@ -89,6 +89,30 @@ public class Post : MonoBehaviour
     }
 
     [ActionCategory("Ginpara")]
+    public class CreditCehck : FsmStateAction
+    {
+        public FsmEvent Succeed;
+        public FsmEvent Failed;
+
+        public override void OnEnter()
+        {
+            // コイン枚数を金額に変換する
+            var coin = mOmatsuri.int_s_value[Defines.DEF_INT_SLOT_COIN_NUM];
+            var cent = Rate.Instanse.Coin2Cent(coin);
+            var doller = cent / 100f;
+
+            if (coin <= 2)
+            {
+                Fsm.Event(Failed);
+            }
+            else
+            {
+                Fsm.Event(Succeed);
+            }
+        }
+    }
+
+    [ActionCategory("Ginpara")]
     public class Config : FsmStateAction
     {
         public Post post;
@@ -161,6 +185,7 @@ public class Post : MonoBehaviour
         {
             Debug.Log(www.text);
             var json = new JSONObject(www.text);
+            var status = json.GetField("status").ToString();
             var setting = json.GetField("setting").ToString().ParseInt();
             var reelleft = json.GetField("reelleft").ToString().ParseInt();
             var reelcenter = json.GetField("reelcenter").ToString().ParseInt();
@@ -176,7 +201,14 @@ public class Post : MonoBehaviour
             clOHHB_V23.mInitializaion(seed);
             clOHHB_V23.setWork(Defines.DEF_WAVENUM, (ushort)setting);
 
-            fsm.SendEvent("Succeed");
+            if (status.Contains("error"))
+            {
+                fsm.SendEvent("Failed");
+            }
+            else
+            {
+                fsm.SendEvent("Succeed");
+            }
         };
 
         Action<WWW> webAction = (www) =>
@@ -192,6 +224,7 @@ public class Post : MonoBehaviour
                 associate.Add(node.Name, node.InnerText);
             }
 
+            var status = associate["status"].ToString();
             var balance = Decimal.Parse(associate["balance"].ToString());
             var setting = associate["setting"].ToString().ParseInt();
             var reelleft = associate["reelLeft"].ToString().ParseInt();
@@ -205,6 +238,8 @@ public class Post : MonoBehaviour
                 setting = 1;
             }
 
+            mOmatsuri.chgPrayer();
+
             clOHHB_V23.mInitializaion(seed);
             clOHHB_V23.setWork(Defines.DEF_WAVENUM, (ushort)setting);
 
@@ -215,11 +250,27 @@ public class Post : MonoBehaviour
             // coinNum  : コイン枚数
             // coinNum = balanceCent / rateCent
             var rateCent = Rate.Instanse.GetRate();
-            var balanceCent = balance * 100;
+
+            var balanceCent = balance * 100m;
             var coinNum = (int)(balanceCent / rateCent);
+
+            // 端数計算
+            var fract = (balanceCent - coinNum * rateCent) / 100m;
+            CasinoData.Instance.exchangeFract = fract;
+
+            // コインを１度０枚にしてからチャージ
+            var deleteCoinCount = mOmatsuri.int_s_value[Defines.DEF_INT_SLOT_COIN_NUM];
+            mOmatsuri.GPW_chgCredit(-deleteCoinCount);
             mOmatsuri.GPW_chgCredit(coinNum);
 
-            fsm.SendEvent("Succeed");
+            if (status.Contains("error"))
+            {
+                fsm.SendEvent("Failed");
+            }
+            else
+            {
+                fsm.SendEvent("Succeed");
+            }
         };
 
         var param = mode == MODE.WEB ? webParam : desktopParam;
@@ -400,7 +451,6 @@ public class Post : MonoBehaviour
 
             var balance = Decimal.Parse(associate["balance"].ToString());
             var result = associate["result"].ToString();
-            var winnings = Decimal.Parse(associate["winnings"].ToString());
 
             fsm.SendEvent("Succeed");
         };

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using System;
 
 public class CasinoData : MonoBehaviour {
 	//====================================================================================================
@@ -36,7 +37,7 @@ public class CasinoData : MonoBehaviour {
     public EXCHANGE exchange;
     [SerializeField] private UISprite[] exchangeSprites = null;
     [SerializeField] private UISprite exchangeDotSprites = null;
-    private float exchangeNum = 0;
+    private Decimal exchangeNum = 0;
     [SerializeField] private UISprite[] exchangeRateSprites = null;
     [SerializeField] private UISprite exchangeRateDotSprites = null;
     private float exchangeRateNum = 0;
@@ -86,11 +87,13 @@ public class CasinoData : MonoBehaviour {
     
     //----------------------------------------------------------------------------------------------------
     /// UI-Exchangeを操作する.5桁を超える数字は99999に置換し,小数点は第1位のみを表示.
-    public float Exchange { get { return this.exchangeNum; } set { this.exchangeNum = (value > 99999.9f) ? 99999.9f : value; this.UpdateExchange(); } }
+    public Decimal Exchange { get { return this.exchangeNum; } set { this.exchangeNum = (value > 99999.9m) ? 99999.9m : value; this.UpdateExchange(); } }
     
     //----------------------------------------------------------------------------------------------------
     /// UI-Exchangeを操作する.2桁を超える数字は99に置換し,小数点は第1位のみを表示.
     public float ExchangeRate { get { return this.exchangeRateNum; } set { this.exchangeRateNum = (value > 99.9f) ? 99.9f : value; this.UpdateExchangeRate(); } }
+
+    public Decimal exchangeFract = 0m;
 
     private static CasinoData _instance;
     public static CasinoData Instance
@@ -103,9 +106,6 @@ public class CasinoData : MonoBehaviour {
         _instance = this;
     }
 
-    //====================================================================================================
-    //Method
-    //====================================================================================================
     void Start()
     {
         this.UpdateGameCounter();

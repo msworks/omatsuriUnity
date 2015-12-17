@@ -2,8 +2,8 @@
 
 public partial class mOmatsuri {
     public static int GET_INT_TO_STR(int str) { return str;}
-    public static int GET_STR_TO_INT(string str) { return (int)long.Parse(str);} 	// 符号付きで変換されるので一つ上の型からキャストする
-    public static ushort GET_STR_TO_CHAR(string str) { return (ushort)long.Parse(str); } 	// 符号付きで変換されるので一つ上の型からキャストする
+    public static int GET_STR_TO_INT(string str) { return (int)long.Parse(str);}
+    public static ushort GET_STR_TO_CHAR(string str) { return (ushort)long.Parse(str); }
 
 	// 基本がこれ
 	enum EYE_TYPE {
@@ -13,7 +13,6 @@ public partial class mOmatsuri {
 		EYE_TYPE_BONUS,		// ボーナス時の３連どんちゃんねらい
 		EYE_TYPE_SP_NO,		// 達人オートの通常時
 		EYE_TYPE_SP_REP,	// 達人オートのリプレイ外し
-		
 		EYE_TYPE_TIMEOUT	// 自動停止
 	};
 
@@ -290,24 +289,11 @@ static void chgYaku()
 	}
 }
 
-// 設定変更が必要ならば、変更する
-static void chgWaveNum()
-{
-//	if(gp.gpif_setting > -1 )
-//	{
+    // 設定変更が必要ならば、変更する
+    static void chgWaveNum()
+    {
 		Mobile.setSetUpValue(gp.gpif_setting);
-//		gp.gpif_setting = -1;
-//	}
-}
-
-//// 再描画
-//void drawFlash()
-//{
-//	if(gp.gpif_flash_f == true)
-//	{	// 再描画
-//		restartSlot();
-//	}
-//}
+    }
 
 // コイン数が変化した時に加算、減算を行なう
 public static void GPW_chgCredit(int num)
@@ -336,6 +322,7 @@ public static void GPW_chgCredit(int num)
 		}
 	}
 }
+
 // コイン枚数の変化(ボーナス)
 public static void GPW_chgCreditBonus()
 {
@@ -590,7 +577,6 @@ static bool cutBonusSystem(int type)
 	// 演出帳のチェック用
 	void GPW_eventProcess(int type, int flash)
 	{
-		int eventNo = -1;
 		int tmp;
 		
 		switch(type)
@@ -755,12 +741,10 @@ static bool cutBonusSystem(int type)
 	{
 		int i;
 		String str;
-		String str2;
 		//int ofset;
 		int tmp;
 		
 		str = "";
-		str2 = "";
 		
 		Defines.APP_TRACE("★乱数用シードの登録★:" + clRAND8.mRndbuf.Length);
 		// 乱数用シードの登録
