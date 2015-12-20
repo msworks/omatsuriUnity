@@ -1,9 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
+using HutongGames.PlayMaker;
 
 public class SlotMachineState : MonoBehaviour
 {
     PlayMakerFSM fsm;
+
+    [SerializeField]
+    public int Bet { get; set; }
 
     void Start()
     {
@@ -22,11 +26,37 @@ public class SlotMachineState : MonoBehaviour
 
     public void InsertCoin()
     {
-        fsm.SendEvent("InsertCoin");
+        //fsm.SendEvent("InsertCoin");
+        Bet++;
     }
 
     public void PlayEnd()
     {
         fsm.SendEvent("PlayEnd");
+    }
+
+    [ActionCategory("Ginpara")]
+    public class ClearBet : FsmStateAction
+    {
+        public SlotMachineState SlotMachineState;
+
+        public override void OnEnter()
+        {
+            SlotMachineState.Bet = 0;
+            Finish();
+        }
+    }
+
+    [ActionCategory("Ginpara")]
+    public class GetBetCount : FsmStateAction
+    {
+        public SlotMachineState SlotMachineState;
+        public FsmInt BetCount;
+
+        public override void OnEnter()
+        {
+            BetCount.Value = SlotMachineState.Bet;
+            Finish();
+        }
     }
 }

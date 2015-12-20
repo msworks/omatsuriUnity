@@ -1,35 +1,10 @@
-﻿using UnityEngine;
-using System.Collections;
-
-public partial class Defines {
-
-/*
- * DfMarineBattle.java
- * 
- * Created on 2005/06/02
- */
-
-
-/**
- * 
- * @author a05229ak
- */
-
-	// //////////////////////////////////////////////////////////////
-	// TOBE [カテゴリ]int_value
-
-
-	// //////////////////////////////
-	// int_value(モード)
-
+﻿public partial class Defines
+{
 	/** 現在のゲームモード */
 	public const int DEF_INT_CURRENT_MODE = 0;
 
 	/** 変更要求しているゲームモード */
 	public const int DEF_INT_REQUEST_MODE = 1;
-
-	// //////////////////////////////
-	// int_value(リール)
 
 	/** 左リールの角度 */
 	public const int DEF_INT_REEL_ANGLE_R0 = 2;
@@ -43,14 +18,10 @@ public partial class Defines {
 	/** 左リールの停止角度 */
 	public const int DEF_INT_REEL_STOP_R0 = 5;
 
-	/**
-	 * 中リールの停止角度
-	 */
+	/* 中リールの停止角度 */
 	public const int DEF_INT_REEL_STOP_R1 = 6;
 
-	/**
-	 * 右リールの停止角度
-	 */
+	/* 右リールの停止角度 */
 	public const int DEF_INT_REEL_STOP_R2 = 7;
 
 	/**
@@ -61,9 +32,6 @@ public partial class Defines {
 
 	/** 遊戯状態 BB & RB 終了ﾌﾗｸﾞ (!=0で終了した) */
 	public const int DEF_INT_IS_BB_RB_END = 9;
-
-	// //////////////////////////////
-	// int_value(コイン)
 
 	/** 現在の累積コイン枚数 */
 	public const int DEF_INT_SLOT_COIN_NUM = 10;
@@ -91,22 +59,16 @@ public partial class Defines {
 
 	/**
 	 * ﾒｲﾝﾙｰﾌﾟの1ﾀｰﾝのｽﾋﾟｰﾄﾞﾘﾐｯﾄ値[ms] (ADFファイル中の Z-Loop-Time: の値)
-	 * 
 	 * ﾒｲﾝﾙｰﾌﾟ動作が速い場合は、最低，この値[ms]の待機時間を設ける
 	 */
 	public const int DEF_INT_LOOP_SPEED = 18; // いろいろな速度調整のベースの値となっています。
 
 	/**
 	 * ボーナス入賞時（どんｏｒ７）の状態を保持するフラグ
-	 * 
 	 * DEF_BB_UNDEF: 通常ゲーム DEF_BB_DON: ドンチャン揃いで入賞 DEF_BB_7: ７揃いで入賞 DEF_RB_IN: ＲＢに入賞
-	 * 
 	 * ボーナス終了時(DEF_INT_IS_BB_END !	 0)のﾘｰﾙ回転開始時に 通常ゲーム状態に戻す
 	 */
 	public const int DEF_INT_BB_KIND = 19;
-
-	// //////////////////////////////
-	// int_value(ゲーム情報)
 
 	/** BB入賞回数（ゲーム情報） */
 	public const int DEF_INT_BIG_COUNT = 20;
@@ -166,9 +128,6 @@ public partial class Defines {
 
 	/** 前回の停止出目 21(10)=10101(2)なので5bitずつ15bit使います */
 	public const int DEF_INT_PREV_GAME = 38;
-
-//	/** 内部的にカウントするｺｲﾝ 実践モードの終了条件で使います */
-//	public const int DEF_INT_SLOT_COIN_INNER_COUNT = 39;
 
 	public const int DEF_INT_FLASH_DATA = 40;
 
@@ -486,7 +445,6 @@ public partial class Defines {
 	public const int DEF_LAMP_S4 = 24;
 	public const int DEF_LAMP_S5 = 25;
 	public const int DEF_LAMP_S6 = 26;
-	/** 4thリール */
 	public const int DEF_LAMP_4TH = 27;
 
 	// //////////////////////////////////////////////////////////////
@@ -529,20 +487,9 @@ public partial class Defines {
 	/** 小役確率テーブル（高確率） */
 	public const int DEF_PROB_KOYAKU_HIGH = 1;
 
-	// //////////////////////////////////////////////////////////////
-	// KEYビット
-	/** 生臭キー */
-    // TODO 非DEFのKEY_BITが存在しないのでコメントアウト
-    //public const int  DEF_KEY_BIT_LAZY = DfKey.KEY_BIT_5 | KEY_BIT_SELECT;
-
-    // TODO 非DEFのKEY_BITが存在しないのでコメントアウト
-    //public const int DEF_KEY_START = KEY_BIT_1 | KEY_BIT_2 | KEY_BIT_3 | KEY_BIT_4 | KEY_BIT_5 | KEY_BIT_6 | KEY_BIT_SELECT;
-
 	/**
 	 * ボーナスパネルデータ.
-	 * 
 	 * 配列のインデックスとしても使用するので、負値はダメです.
-	 * 
 	 * @see Mobile#panel_colors privateだから見えないですが.
 	 */
 	public const int DEF_GAME_NONE = 0;
@@ -551,10 +498,8 @@ public partial class Defines {
 	public const int DEF_GAME_REG = 3;
 	public const int DEF_GAME_CURRENT = 4;
 	public const int DEF_GAME_NUM = 5;
-
 	public const int DEF_INFO_GAME_HISTORY = 10;
 	public const int DEF_INFO_GAMES = 8;
-
 	public const int DEF_UNIT_GAMES = 100;
 
 	// //////////////////////////////////////////////////////////////
@@ -633,7 +578,4 @@ public partial class Defines {
 	public const int DEF_INK_SUB = 2;
 
 	public const int DEF_TRIAL_GAME = 20;
-
-
-
 }

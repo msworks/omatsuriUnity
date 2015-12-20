@@ -18,7 +18,7 @@ public class Post : MonoBehaviour
     // WEB - 本番
     // DESKTOP - TEST MODE
     //MODE mode = MODE.WEB;
-    MODE mode = MODE.WEB;
+    MODE mode = MODE.DESKTOP;
 
     static string serverHead = "../pachinko/";
     static string logicHead = "http://localhost:9876/";
@@ -172,7 +172,8 @@ public class Post : MonoBehaviour
 
         var desktopParam = new Dictionary<string, string>()
         {
-            { "gameId", "2" },
+            { "setting", "0%2C0%2C0%2C0%2C20%2C30%2C50" },
+            { "gameId", "101" },
             { "userId", "1" },
         };
 
@@ -185,7 +186,6 @@ public class Post : MonoBehaviour
         {
             Debug.Log(www.text);
             var json = new JSONObject(www.text);
-            var status = json.GetField("status").ToString();
             var setting = json.GetField("setting").ToString().ParseInt();
             var reelleft = json.GetField("reelleft").ToString().ParseInt();
             var reelcenter = json.GetField("reelcenter").ToString().ParseInt();
@@ -200,6 +200,8 @@ public class Post : MonoBehaviour
 
             clOHHB_V23.mInitializaion(seed);
             clOHHB_V23.setWork(Defines.DEF_WAVENUM, (ushort)setting);
+
+            var status = "ok";
 
             if (status.Contains("error"))
             {
@@ -258,6 +260,8 @@ public class Post : MonoBehaviour
             var fract = (balanceCent - coinNum * rateCent) / 100m;
             CasinoData.Instance.exchangeFract = fract;
 
+            CasinoData.Instance.Exchange = balance;
+
             // コインを１度０枚にしてからチャージ
             var deleteCoinCount = mOmatsuri.int_s_value[Defines.DEF_INT_SLOT_COIN_NUM];
             mOmatsuri.GPW_chgCredit(-deleteCoinCount);
@@ -290,7 +294,7 @@ public class Post : MonoBehaviour
 
         var desktopParam = new Dictionary<string, string>()
         {
-            { "gameId", "2" },
+            { "gameId", "101" },
             { "userId", "1" },
         };
 
@@ -319,9 +323,19 @@ public class Post : MonoBehaviour
                 associate.Add(node.Name, node.InnerText);
             }
 
+            var status = associate["status"].ToString();
             var balance = Decimal.Parse(associate["balance"].ToString());
 
-            fsm.SendEvent("Succeed");
+            CasinoData.Instance.Exchange = balance;
+
+            if (status.Contains("error"))
+            {
+                fsm.SendEvent("Failed");
+            }
+            else
+            {
+                fsm.SendEvent("Succeed");
+            }
         };
 
         var param = mode == MODE.WEB ? webParam : desktopParam;
@@ -348,7 +362,7 @@ public class Post : MonoBehaviour
 
         var desktopParam = new Dictionary<string, string>()
         {
-            { "gameId", "2" },
+            { "gameId", "101" },
             { "userId", "1" },
             { "betCount", betcount.ToString() },
             { "rate", rate.ToString() },
@@ -365,7 +379,7 @@ public class Post : MonoBehaviour
             Debug.Log(www.text);
             var json = new JSONObject(www.text);
 
-            var yaku = json.GetField("yaku").ToString().ParseInt();
+            //var yaku = json.GetField("yaku").ToString().ParseInt();
 
             fsm.SendEvent("Succeed");
         };
@@ -383,10 +397,20 @@ public class Post : MonoBehaviour
                 associate.Add(node.Name, node.InnerText);
             }
 
+            var status = associate["status"].ToString();
             var yaku = associate["yaku"].ToString().ParseInt();
             var balance = Decimal.Parse(associate["balance"].ToString());
 
-            fsm.SendEvent("Succeed");
+            CasinoData.Instance.Exchange = balance;
+
+            if (status.Contains("error"))
+            {
+                fsm.SendEvent("Failed");
+            }
+            else
+            {
+                fsm.SendEvent("Succeed");
+            }
         };
 
         var param = mode == MODE.WEB ? webParam : desktopParam;
@@ -412,7 +436,7 @@ public class Post : MonoBehaviour
 
         var desktopParam = new Dictionary<string, string>()
         {
-            { "gameId", "2" },
+            { "gameId", "101" },
             { "userId", "1" },
             { "reelStopLeft", "1" },
             { "reelStopCenter", "1" },
@@ -449,10 +473,20 @@ public class Post : MonoBehaviour
                 associate.Add(node.Name, node.InnerText);
             }
 
+            var status = associate["status"].ToString();
             var balance = Decimal.Parse(associate["balance"].ToString());
             var result = associate["result"].ToString();
 
-            fsm.SendEvent("Succeed");
+            CasinoData.Instance.Exchange = balance;
+
+            if (status.Contains("error"))
+            {
+                fsm.SendEvent("Failed");
+            }
+            else
+            {
+                fsm.SendEvent("Succeed");
+            }
         };
 
         var param = mode == MODE.WEB ? webParam : desktopParam;
@@ -564,6 +598,7 @@ public class Post : MonoBehaviour
             // 1000枚セット
             var coinCount = 1000;
             mOmatsuri.GPW_chgCredit(coinCount);
+            CasinoData.Instance.Exchange = 1000 * Rate.Instanse.GetRate();
         }
 
         //// OpenをPOST
@@ -637,7 +672,14 @@ public class Post : MonoBehaviour
 
         if (www.error == null)
         {
-            success(www);
+            try
+            {
+                success(www);
+            }
+            catch (Exception e)
+            {
+                failed(www);
+            }
         }
         else
         {

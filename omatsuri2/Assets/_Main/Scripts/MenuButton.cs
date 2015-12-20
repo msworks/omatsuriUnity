@@ -27,7 +27,7 @@ public class MenuButton : MonoBehaviour {
         // アプリをポーズ状態にする
         GameManager.Instance.PauseState = GameManager.PAUSE_STATE.PAUSE;
 
-        StartCoroutine(light());
+        StartCoroutine(lighting());
 
         foreach(var panel in DisplayPanels)
         {
@@ -44,7 +44,7 @@ public class MenuButton : MonoBehaviour {
         MenuPopup.SetActive(true);
     }
 
-    IEnumerator light()
+    IEnumerator lighting()
     {
         var totalTime = 0.5f;
         var count = 0.0f;

@@ -1,278 +1,30 @@
-﻿//#include "DfMain.h"
+﻿using System;
 
-/*
- * B_Max.java
- * 
- * Created on 2005/10/24
- */
-
-/**
- * B-Max
- * 
- * @author a05229ak
- */
-using System;
-public partial class mOmatsuri {
-
-// satoh
+public partial class mOmatsuri
+{
 	public static SlotInterface gp = null;
-	
-#if __COM_TYPE__
-	//private static int debug_cnf[DBG_YAKV] = 0;
-	//private static int debug_cnf[DBG_YAKUN] = 0;
-	
-	
-	//$debug_cnf[DBG_MANUAL] ^= 0x01;
-	
-	private static bool bigBonusFg = false;
 	private static bool BonusCutFg = false;
-	
 	public static long reelwait=0;
 	private static bool reelStartFg;	// リールスタートキーがすでに押されている場合
 	private static bool reqMenuFg = false;	// リール停止時にメニューを表示する
 	public static bool reqMenuFg2 = false;	// リール停止時にメニューを表示する
-	//public static bool reqMenu
-	public static bool	bgm_resumeFg = false;	// BGMのレジューム再生フラグ
-	public static int		bgm_no = -1;
-	public static bool	bgm_loop = false;
-	
-	public static int		maj_ver;	// メインバージョン
-	public static int		sub_ver;	// サブバージョン
-	
-#else
-	static int debugHallParamReqX = 0;
-	static int debugHallParamResX = 0;
-    [Obsolete]
-	static void debugHallParam(){
-        //ZZ.setClip(0, 0, 240,240);
-        //int reqln = ZZ.stringWidth(debughallreq)+240;
-        //int resln = ZZ.stringWidth(debughallres)+240;
-        //ZZ.drawString(debughallreq,240-debugHallParamReqX,228);
-        //ZZ.drawString(debughallres,240-debugHallParamResX,240);
-        //debugHallParamReqX++;
-        //debugHallParamResX++;
-        //debugHallParamReqX %= reqln;
-        //debugHallParamResX %= resln;
-	}
-#endif
-	
-	
-	static int mes_x = 0;
-
-	
-#if __COM_TYPE__
-
-#else
-	/**
-	 * データパネルの左側
-	 */
-//	private static void drawDataPanelHall() {
-//		ZZ.setClip(0, 0, 240,240);
-//		//台番号
-//		ZZ.drawImage(Defines.DEF_RES_HALL_NAVI_NUM, 7, 2);
-//		printPanelCounts(hallData[Defines.DEF_H_MACHINE_ID], 24,9, 999,0);
-//
-//		//メッセージ
-//		ZZ.setClip(51, 3, 181,22);
-//		ZZ.drawImage(Defines.DEF_RES_HALL_NAVI_MES, 50, 2);
-//		ZZ.setColor(ZZ.getColor(0xff, 0xff, 0xff));
-//		int ln = 181+ZZ.stringWidth(hallMes);
-//		if(mes_x < ln * 3){//3周ぐらいしてみようか
-//			int xxx = mes_x % (232 + ZZ.stringWidth(hallMes));
-//			ZZ.drawString(hallMes, 232 - xxx, 3+6+12);
-//			mes_x ++;
-//		}
-//
-//		ZZ.setClip(0, 0, 240,240);
-//		
-//		//閉店時間
-//		ZZ.drawImage(Defines.DEF_RES_HALL_NAVI_TIME, 189, 212);
-//		int hhh = (int)((hallData[Defines.DEF_H_CLOSE_TIME]/3600)%24+9);//GMTなので時差9時間
-//		int mmm = (int)((hallData[Defines.DEF_H_CLOSE_TIME]/60  )%60);
-//		printPanelCounts(hhh, 200,226, 99,0);
-//		printPanelCounts(mmm, 221,226, 99,0,2);
-//	}
-#endif
-
+	public static bool bgm_resumeFg = false;	// BGMのレジューム再生フラグ
+	public static int bgm_no = -1;
+	public static bool bgm_loop = false;
+	public static int maj_ver;	// メインバージョン
+	public static int sub_ver;	// サブバージョン
     public static int prevHttpTime = 0;
 	public static int kasidasiMedal = 0;
     public static int prevkasidasiMedal = 0;
-	static bool IS_HALL(){
+
+    static bool IS_HALL()
+    {
 		return Mobile.getGameMode() == Defines.DEF_GMODE_HALL;
 	}
 	
-#if __COM_TYPE__
 	public static int[] hallData = new int[Defines.DEF_H_PARAM_NUM];
-#else
-//	static String debughallreq = "";
-//	static String debughallres = "";
-//	static String debugStr = "";
-//	static bool debugHall = false;
-//	
-//	//最後に通信したｹﾞｰﾑ数;
-//	public static int lastHttpGame;
-//	
-//	public static final int[] hallDataSize = {
-//		Defines.DEF_HS_APPLI_REQ 	,//	1;
-//		Defines.DEF_HS_SERVER_RES	,//	1;
-//		
-//		Defines.DEF_HS_HALL_ID		,//	4;
-//		Defines.DEF_HS_LAND_ID		,//	2;
-//		Defines.DEF_HS_MACHINE_ID	,//	2;
-//		Defines.DEF_HS_LAUNCH_TIME	,//	8;
-//		Defines.DEF_HS_CLOSE_TIME	,//	8;
-//		
-//		Defines.DEF_HS_MEDAL_IN		,//	3;
-//		Defines.DEF_HS_MEDAL_OUT	,//	3;
-//		Defines.DEF_HS_PLAYER_COIN	,//	5;
-//
-//		Defines.DEF_HS_GAME_COUNT	,//	5;
-//		Defines.DEF_HS_WAVENUM		,//	1;
-//	    Defines.DEF_HS_GAMEST		,//	2;
-//	    Defines.DEF_HS_BBGMCTR		,//	2;
-//	    Defines.DEF_HS_BIGBCTR		,//	1;
-//	    Defines.DEF_HS_JAC_CTR		,//	1;
-//	    Defines.DEF_HS_JACGAME		,//	1;
-//	    Defines.DEF_HS_PCC_CTR		,//	4;
-//	    Defines.DEF_HS_HITREQ		,//	2;
-//	    Defines.DEF_HS_BNSSYM		,//	1;
-//	    Defines.DEF_HS_BET		,//	1;
-//	    Defines.DEF_HS_REEL_L		,//2;
-//		Defines.DEF_HS_REEL_C		,//2;
-//		Defines.DEF_HS_REEL_R		,//2;
-//		
-//		Defines.DEF_HS_BNS_0		,//	4;
-//		Defines.DEF_HS_BNS_1		,//	2;
-//		Defines.DEF_HS_BNS_2		,//	2;
-//		Defines.DEF_HS_BNS_3		,//	2;
-//		Defines.DEF_HS_BNS_4		,//	2;
-//		Defines.DEF_HS_BNS_5		,//	2;
-//		Defines.DEF_HS_BNS_6		,//	2;
-//		Defines.DEF_HS_BNS_7		,//	2;
-//		Defines.DEF_HS_BNS_8		,//	2;
-//		Defines.DEF_HS_BNS_9		,//	2;
-//		Defines.DEF_HS_BB_COUNT		,//	2;
-//		Defines.DEF_HS_RB_COUNT		,//	2;
-//	};
-//	
-//	public static String hallMes = "";
-//	public static void setHallParam(String arg) throws Exception{
-//		debughallres = arg;
-//		int offset = 0;
-//		int[] tmp = new int[Defines.DEF_H_PARAM_NUM];
-//		try{
-//			for(int i = 0;i<Defines.DEF_H_PARAM_NUM;i++){
-//				tmp[i] = Integer.parseInt(arg.substring(offset,offset+hallDataSize[i]),16);
-//				offset += hallDataSize[i];
-//			}
-//			if(offset<arg.Length()){
-//				hallMes = arg.substring(offset);
-//				mes_x = 0;
-//			}
-//		}catch (Exception e) {
-//			throw e;
-//		}
-//		for(int i = 0;i<Defines.DEF_H_PARAM_NUM;i++){
-//			hallData[i] = tmp[i];
-//		}
-//		lastHttpGame = hallData[Defines.DEF_H_GAME_COUNT];
-//		
-//		debugStr = "GAMEST:"+(int)clOHHB_V23.getWork(Defines.DEF_GAMEST)+"->"+hallData[Defines.DEF_H_GAMEST];
-//		
-//		//メインの情報を更新する
-//		clOHHB_V23.clearWork(Defines.DEF_CLR_AREA_1);
-//		clOHHB_V23.setWork(Defines.DEF_WAVENUM,(char)hallData[Defines.DEF_H_WAVENUM]);
-//		clOHHB_V23.setWork(Defines.DEF_GAMEST,(char)hallData[Defines.DEF_H_GAMEST]);
-//		clOHHB_V23.setWork(Defines.DEF_BBGMCTR,(char)hallData[Defines.DEF_H_BBGMCTR]);
-//		clOHHB_V23.setWork(Defines.DEF_BIGBCTR,(char)hallData[Defines.DEF_H_BIGBCTR]);
-//		clOHHB_V23.setWork(Defines.DEF_JAC_CTR,(char)hallData[Defines.DEF_H_JAC_CTR]);
-//		clOHHB_V23.setWork(Defines.DEF_JACGAME,(char)hallData[Defines.DEF_H_JACGAME]);
-////		clOHHB_V23.setWork(Defines.DEF_PCC_CTR,(char)(0xff & hallData[Defines.DEF_H_PCC_CTR]));
-////		clOHHB_V23.setWork(Defines.DEF_PCC_CTR+1,(char)((0xff00 & hallData[Defines.DEF_H_PCC_CTR])>>8));
-//		clOHHB_V23.setWork(Defines.DEF_HITREQ,(char)hallData[Defines.DEF_H_HITREQ]);
-//		int_s_value[Defines.DEF_INT_BB_KIND] = (char)hallData[Defines.DEF_H_BNSSYM];
-//		int_s_value[Defines.DEF_INT_BET_COUNT] = (char)hallData[Defines.DEF_H_BET];
-//		
-//		int_s_value[Defines.DEF_INT_REEL_ANGLE_R0] = INDEX2ANGLE(hallData[Defines.DEF_H_REEL_L]);
-//		int_s_value[Defines.DEF_INT_REEL_ANGLE_R1] = INDEX2ANGLE(hallData[Defines.DEF_H_REEL_C]);
-//		int_s_value[Defines.DEF_INT_REEL_ANGLE_R2] = INDEX2ANGLE(hallData[Defines.DEF_H_REEL_R]);
-//		int_s_value[Defines.DEF_INT_REEL_STOP_R0] = int_s_value[Defines.DEF_INT_REEL_ANGLE_R0];
-//		int_s_value[Defines.DEF_INT_REEL_STOP_R1] = int_s_value[Defines.DEF_INT_REEL_ANGLE_R1];
-//		int_s_value[Defines.DEF_INT_REEL_STOP_R2] = int_s_value[Defines.DEF_INT_REEL_ANGLE_R2];
-//
-//		int_s_value[Defines.DEF_INT_SLOT_COIN_NUM] = hallData[Defines.DEF_H_PLAYER_COIN];
-//
-//		int_s_value[Defines.DEF_INT_4TH_REEL_ANGLE] = Defines.DEF_RP19;
-//		switch(hallData[Defines.DEF_H_PCC_CTR]){
-//		case Defines.DEF_RP01:
-//		case Defines.DEF_RP04:
-//		case Defines.DEF_RP08:
-//		case Defines.DEF_RP13:
-//		case Defines.DEF_RP16:
-//		case Defines.DEF_RP19:
-//			int_s_value[Defines.DEF_INT_4TH_REEL_ANGLE] = hallData[Defines.DEF_H_PCC_CTR];//4thリールの位置覚えるよ
-//			break;
-//		}
-//
-//		//データパネルを更新する
-//		initDataPaneHistory();
-//		for(int i = Defines.DEF_H_BNS_9; i >= Defines.DEF_H_BNS_1 ;i--){
-//			for(int j = 0;j<(hallData[i] & 0xf)+1;j++){
-//				setCurrentDataPanel((j+1) * 100);
-//			}
-//			if((hallData[i] & 0x10)!=0){//bb
-//				shiftDataPanelHistory((hallData[i] & 0xf) * 100, Defines.DEF_PS_BB_RUN);
-//			}else if((hallData[i] & 0x20)!=0){
-//				shiftDataPanelHistory((hallData[i] & 0xf) * 100, Defines.DEF_PS_RB_RUN);
-//			}
-//		}
-//		for(int i = 0;i<(hallData[Defines.DEF_H_BNS_0] / 100)+1;i++){
-//			setCurrentDataPanel((i+1) * 100);
-//		}
-//	}
-//	
-//	public static String getHallParam(){
-//		hallData[Defines.DEF_H_WAVENUM] = clOHHB_V23.getWork(Defines.DEF_WAVENUM);
-//		hallData[Defines.DEF_H_GAMEST] = clOHHB_V23.getWork(Defines.DEF_GAMEST);
-//		hallData[Defines.DEF_H_BBGMCTR] = clOHHB_V23.getWork(Defines.DEF_BBGMCTR);
-//		hallData[Defines.DEF_H_BIGBCTR] = clOHHB_V23.getWork(Defines.DEF_BIGBCTR);
-//		hallData[Defines.DEF_H_JAC_CTR] = clOHHB_V23.getWork(Defines.DEF_JAC_CTR);
-//		hallData[Defines.DEF_H_JACGAME] = clOHHB_V23.getWork(Defines.DEF_JACGAME);
-////		hallData[Defines.DEF_H_PCC_CTR] = (clOHHB_V23.getWork(Defines.DEF_PCC_CTR)|(clOHHB_V23.getWork(DATA[Defines.DEF_PCC_CTR+1])<<8));
-//		hallData[Defines.DEF_H_HITREQ] = clOHHB_V23.getWork(Defines.DEF_HITREQ);
-//		hallData[Defines.DEF_H_BNSSYM] = int_s_value[Defines.DEF_INT_BB_KIND];
-//		hallData[Defines.DEF_H_BET] = int_s_value[Defines.DEF_INT_BET_COUNT];
-//
-//		hallData[Defines.DEF_H_REEL_L] = int_s_value[Defines.DEF_INT_REEL_ANGLE_R0]/0xC31;
-//		hallData[Defines.DEF_H_REEL_C] = int_s_value[Defines.DEF_INT_REEL_ANGLE_R1]/0xC31;
-//		hallData[Defines.DEF_H_REEL_R] = int_s_value[Defines.DEF_INT_REEL_ANGLE_R2]/0xC31;
-//
-//		DfMain.TRACE(("Defines.DEF_H_REEL_L:" + hallData[Defines.DEF_H_REEL_L]);
-//		hallData[Defines.DEF_H_PCC_CTR] = int_s_value[Defines.DEF_INT_4TH_REEL_ANGLE];//4thリールの位置覚えるよ
-//
-//		String res = "";
-//		for(int i = 0;i<hallData.Length;i++){
-//			res += toHexString(hallData[i],hallDataSize[i]);
-//		}
-//		debughallreq = res;
-//		return res;
-//	}
-//	public static String toHexString(int arg,int size){
-//		String res = Integer.toHexString(arg);
-//		if(res.Length()>size){
-//			res = "";//はみ出たら消そうか
-//		}
-//		while(size-res.Length()>0){
-//			res="0"+res;
-//		}
-//		return res;
-//	}
-#endif
-	// ======================================================
-	// TOBE [変数定義]
-	// ======================================================
-	/** int プール */
-	public static readonly int[] int_s_value = new int[Defines.DEF_INT_SLOT_VALUE_MAX];
+
+    public static readonly int[] int_s_value = new int[Defines.DEF_INT_SLOT_VALUE_MAX];
 
 	/** ｻｳﾝﾄﾞ演奏時間 */
 	private static long _soundTime;
@@ -308,11 +60,8 @@ public partial class mOmatsuri {
 
     //private static final ushort[][] REELTB = {
 #if __COM_TYPE__
-#if __REEL_ID_CHECK__
-	public static final char[][] REELTB = {
-#else
-    public static readonly ushort[][] REELTB = {
-#endif
+    public static readonly ushort[][] REELTB =
+    {
 		new ushort[]{ Defines.DEF_RPLY, Defines.DEF_BAR_, Defines.DEF_BELL, Defines.DEF_WMLN, Defines.DEF_CHRY, Defines.DEF_BSVN, Defines.DEF_RPLY,
 		Defines.DEF_BELL, Defines.DEF_DON_, Defines.DEF_DON_, Defines.DEF_DON_, Defines.DEF_RPLY, Defines.DEF_BELL,
 		Defines.DEF_CHRY, Defines.DEF_BSVN, Defines.DEF_WMLN, Defines.DEF_RPLY, Defines.DEF_BELL, Defines.DEF_WMLN,
@@ -339,21 +88,6 @@ public partial class mOmatsuri {
 			"\u0020\u0040\u0008\u0010\u0020\u0001\u0040\u0008\u0010\u0020\u0040\u0008\u0010\u0020\u0002\u0008\u0040\u0020\u0004\u0008\u0010"
 					.ToCharArray() };
 #endif
-	// private static final char[][] REELTB = {
-	// { Defines.DEF_RPLY, Defines.DEF_BAR_, Defines.DEF_BELL, Defines.DEF_WMLN, Defines.DEF_CHRY, Defines.DEF_BSVN, Defines.DEF_RPLY,
-	// Defines.DEF_BELL, Defines.DEF_DON_, Defines.DEF_DON_, Defines.DEF_DON_, Defines.DEF_RPLY, Defines.DEF_BELL,
-	// Defines.DEF_CHRY, Defines.DEF_BSVN, Defines.DEF_WMLN, Defines.DEF_RPLY, Defines.DEF_BELL, Defines.DEF_WMLN,
-	// Defines.DEF_BELL, Defines.DEF_BSVN },
-	// { Defines.DEF_BELL, Defines.DEF_BAR_, Defines.DEF_CHRY, Defines.DEF_BELL, Defines.DEF_RPLY, Defines.DEF_BSVN, Defines.DEF_WMLN,
-	// Defines.DEF_CHRY, Defines.DEF_BELL, Defines.DEF_RPLY, Defines.DEF_BAR_, Defines.DEF_CHRY, Defines.DEF_BAR_,
-	// Defines.DEF_BELL, Defines.DEF_RPLY, Defines.DEF_CHRY, Defines.DEF_DON_, Defines.DEF_BELL, Defines.DEF_RPLY,
-	// Defines.DEF_WMLN, Defines.DEF_RPLY },
-	// { Defines.DEF_BELL, Defines.DEF_CHRY, Defines.DEF_RPLY, Defines.DEF_WMLN, Defines.DEF_BELL, Defines.DEF_BSVN, Defines.DEF_CHRY,
-	// Defines.DEF_RPLY, Defines.DEF_WMLN, Defines.DEF_BELL, Defines.DEF_CHRY, Defines.DEF_RPLY, Defines.DEF_WMLN,
-	// Defines.DEF_BELL, Defines.DEF_DON_, Defines.DEF_RPLY, Defines.DEF_CHRY, Defines.DEF_BELL, Defines.DEF_BAR_,
-	// Defines.DEF_RPLY, Defines.DEF_WMLN
-	//
-	// }, };
 
 	/**
 	 * AUTO GENERATED char ARRAY BY compact.CompactClass
@@ -381,9 +115,6 @@ public partial class mOmatsuri {
 					Defines.DEF_POS_CELL_COLOR_RB_B),// RB
 			ZZ.getColor(0xFF, 0x00, 0xFF), };// カレント
 
-	// ======================================================
-	// TOBE [メソッド]
-	// ======================================================
 	/**
 	 * 次のランプ用ステータスを取得する
 	 * 
@@ -405,12 +136,10 @@ public partial class mOmatsuri {
 	 * @param idx:index
 	 * @param act:action
 	 */
-#if __COM_TYPE__
-	public static void lampSwitch(int idx, int act) {
-#else
-	private static void lampSwitch(int idx, int act) {
-#endif
-		if (act == Defines.DEF_LAMP_ACTION_ON) {
+	public static void lampSwitch(int idx, int act)
+    {
+		if (act == Defines.DEF_LAMP_ACTION_ON)
+        {
 			// ビットを1にする
 			int_s_value[Defines.DEF_INT_LAMP_1 + (idx / 32)] |= (1 << (idx % 32));
 		} else if (act == Defines.DEF_LAMP_ACTION_OFF) {
@@ -446,32 +175,25 @@ public partial class mOmatsuri {
 
 	/**
 	 * モードをリクエストする。
-	 * 
 	 * @param mod:スロットゲームのモード
 	 * @return リクエストされたスロットゲームのモード
 	 */
-	private static int REQ_MODE(int mod) {
+	private static int REQ_MODE(int mod)
+    {
 		return int_s_value[Defines.DEF_INT_REQUEST_MODE] = mod;
 	}
 
-	// ======================================================
-	// TOBE [アクセッサ]
-	// ======================================================
-
 	/**
 	 * ゲーム情報の初期化。
-	 * 
 	 * @see #int_s_value
 	 * @see df.Df#INT_BIG_COUNT
 	 * @see df.Df#INT_UNTIL_BONUS_GAMES
 	 * @see df.Df#INT_TOTAL_GAMES
 	 * @see df.Df#INT_GAME_INFO_MAX_GOT
 	 * @see df.Df#INT_SLOT_COIN_NUM
-	 * 
 	 */
-	public static void initGameInfo() {
-		
-Defines.TRACE("ゲーム情報の初期化");
+	public static void initGameInfo()
+    {
 		int_s_value[Defines.DEF_INT_BIG_COUNT] = 0;
 		int_s_value[Defines.DEF_INT_REG_COUNT] = 0;
 		int_s_value[Defines.DEF_INT_UNTIL_BONUS_GAMES] = 0;
@@ -484,14 +206,13 @@ Defines.TRACE("ゲーム情報の初期化");
 
 	/**
 	 * 新規ゲーム開始時に情報の履歴を初期化する
-	 * 
 	 * @see bonus_Data[][]
 	 * @see df.Df#GAME_NONE
 	 * @see df.Df#INFO_GAMES
 	 * @see df.Df#INFO_GAME_HISTORY
-	 * 
 	 */
-	private static void initDataPaneHistory() {
+	private static void initDataPaneHistory()
+    {
 		int_s_value[Defines.DEF_INT_BONUS_DATA_BASE] = 0;
 		for (int x = 0; x < Defines.DEF_INFO_GAME_HISTORY; x++) {
 			for (int y = 0; y < Defines.DEF_INFO_GAMES; y++) {
@@ -500,57 +221,8 @@ Defines.TRACE("ゲーム情報の初期化");
 		}
 	}
 
-#if __COM_TYPE__
-
-#else
-//	//
-//	// 貸し出し枚数を知る
-//	// 
-//	// @return 貸し出し枚数
-//	//
-//	public static int getKasidasiValue() {
-//		if(IS_HALL()){
-//			return kasidasiMedal;
-//		}else{
-//			return int_s_value[Defines.DEF_INT_NUM_KASIDASI] * Defines.DEF_NUM_START_COIN;
-//		}
-//	}
-	//
-//	// ゲーム情報取得。
-//	// 
-//	// @param gameInfo[]
-//	// 
-//	// @see #int_s_value
-//	// @see df.Df#INT_BIG_COUNT
-//	// @see df.Df#INT_TOTAL_GAMES
-//	// @see df.Df#INT_GAME_INFO_MAX_GOT
-//	// 
-//	public static void getGameInfo(final int[] gameInfo) {
-//		gameInfo[Defines.DEF_GAME_INFO_BB_AVG] = 0; // ＢＢ ＡＶＥＲＡＧＥ １０進固定小数一桁（0又は正）で渡します
-//		gameInfo[Defines.DEF_GAME_INFO_RB_AVG] = 0; // ＲＢ ＡＶＥＲＡＧＥ １０進固定小数一桁（0又は正）で渡します
-//
-//		if (int_s_value[Defines.DEF_INT_BIG_COUNT] > 0) {
-//			gameInfo[Defines.DEF_GAME_INFO_BB_AVG] = int_s_value[Defines.DEF_INT_TOTAL_GAMES]
-//					/ int_s_value[Defines.DEF_INT_BIG_COUNT];
-//		}
-//
-//		// ＢＢ最高獲得枚数 １０進整数（0又は正）で渡します
-//		gameInfo[Defines.DEF_GAME_INFO_BB_GOT_MAX] = int_s_value[Defines.DEF_INT_GAME_INFO_MAX_GOT];
-//	}
-//
-//	public static void setReelSpeed(int per) {
-//		int_s_value[Defines.DEF_INT_REEL_SPEED_PER] = per;
-//		int_s_value[Defines.DEF_INT_REEL_SPEED] = ZZ.getThreadSpeed()
-//				* Defines.DEF_REEL_COUNT_MIN * 0x10000 / 60000 * per / 100;
-//	}
-#endif
-
-	// ======================================================
-	// TOBE [スロット開始再開終了]
-	// ======================================================
 	/**
 	 * ゲーム開始時に各値を初期化。 0:通常1:シミュレーション
-	 * 
 	 * @see #int_s_value
 	 * @see #initGameInfo()
 	 */
@@ -561,29 +233,11 @@ Defines.TRACE("ゲーム情報の初期化");
 				int_s_value[i] = 0;
 			}
 		}
-Defines.TRACE("newSlot");
+
 		// メインループスピード
 		int_s_value[Defines.DEF_INT_LOOP_SPEED] = ZZ.getThreadSpeed();
-
 		
 		// リールの初期化
-//		// ランダムに並べる
-//#if __COM_TYPE__
-//		int_s_value[Defines.DEF_INT_REEL_ANGLE_R0] = INDEX2ANGLE(8);
-//		int_s_value[Defines.DEF_INT_REEL_ANGLE_R1] = INDEX2ANGLE(15);
-//		int_s_value[Defines.DEF_INT_REEL_ANGLE_R2] = INDEX2ANGLE(13);
-//#else
-//		int_s_value[Defines.DEF_INT_REEL_ANGLE_R0] = INDEX2ANGLE(ZZ.getRandom(Defines.DEF_N_FRAME));
-//		int_s_value[Defines.DEF_INT_REEL_ANGLE_R1] = INDEX2ANGLE(ZZ.getRandom(Defines.DEF_N_FRAME));
-//		int_s_value[Defines.DEF_INT_REEL_ANGLE_R2] = INDEX2ANGLE(ZZ.getRandom(Defines.DEF_N_FRAME));
-//#endif
-//		
-//		// 停止フラグを立てる
-//		int_s_value[Defines.DEF_INT_REEL_STOP_R0] = int_s_value[Defines.DEF_INT_REEL_ANGLE_R0];
-//		int_s_value[Defines.DEF_INT_REEL_STOP_R1] = int_s_value[Defines.DEF_INT_REEL_ANGLE_R1];
-//		int_s_value[Defines.DEF_INT_REEL_STOP_R2] = int_s_value[Defines.DEF_INT_REEL_ANGLE_R2];
-//		int_s_value[Defines.DEF_INT_IS_REEL_STOPPED] = 7; // リールストップ
-
 		int_s_value[Defines.DEF_INT_CREDIT_COIN_NUM] = 0; // クレジットコイン数（０枚）
 		int_s_value[Defines.DEF_INT_WIN_GET_COIN] = 0; // 払い出しコイン枚数
 		int_s_value[Defines.DEF_INT_WIN_COIN_NUM] = 0; // １ゲーム中の獲得コイン枚数
@@ -620,58 +274,12 @@ Defines.TRACE("newSlot");
 
 		// ゲーム情報の初期化
 		initGameInfo();
-// satoh
-		Defines.TRACE("gp:" + gp);
-		
-        // TODO C#移植 GP処理コメントアウト
-//        Defines.TRACE("gp.param_hall:チェック");
-//        if( gp.param_hall == null)
-//        {
-//            Defines.TRACE("gp.param_hall:ないよ！");
-//        }
-//Defines.TRACE("mOmatsuri.newSlot():" +  gp.param_hall.usr_coin);
-//        int_s_value[Defines.DEF_INT_SLOT_COIN_NUM] = gp.param_hall.usr_coin;
 
-Defines.TRACE("initDataPaneHistory");
 		initDataPaneHistory();
-#if __COM_TYPE__
-#else
-//DfMain.TRACE(("全体描画");
-//		// 全体再描画要求
-//		//drawAll();
-//		restartSlot();
-#endif
-Defines.TRACE("Z80移植リールクラスの初期化");
-		// /////////////////////////////////////////
-		// Z80移植リールクラスの初期化
-		// /////////////////////////////////////////
-		// システムの初期化（携帯電話から現在時刻を取得）
-//		clOHHB_V23.mInitializaion((int) (Util.GetMilliSeconds() / 1000));
-// #none/satoh ランダム生成をミリ秒単位で
-		clOHHB_V23.mInitializaion(GameManager.GetRandomSeed());
+
+        clOHHB_V23.mInitializaion(GameManager.GetRandomSeed());
 		// 内部設定を6にする。
         clOHHB_V23.setWork(Defines.DEF_WAVENUM, (ushort)Mobile.getSetUpValue());
-		
-#if	__DEBUG_MENU__
-		if( Debug.debug_cnf[DBG_APP_REFRESH] == 1)
-		{
-			gp.appData_str = null;
-			Debug.debug_cnf[DBG_APP_REFRESH] = 0;
-		}
-#endif
-
-        // TODO C#移植 GP処理コメントアウト
-		//Defines.TRACE("appData:" + gp.appData_str);
-		
-		// ここでゲーム情報の復元をおこなっていみる
-//System.out.println("★★★★ newSlot ★★★★");
-
-        // TODO C#移植 GP処理コメントアウト
-		//gp.getAppDataString(gp.appData_str);
-		
-		//int_s_value[Defines.DEF_INT_REEL_ANGLE_R0] = INDEX2ANGLE(9);
-		//int_s_value[Defines.DEF_INT_REEL_ANGLE_R1] = INDEX2ANGLE(16);
-		//int_s_value[Defines.DEF_INT_REEL_ANGLE_R2] = INDEX2ANGLE(14);
 		
 		// 停止フラグを立てる
 		int_s_value[Defines.DEF_INT_REEL_STOP_R0] = int_s_value[Defines.DEF_INT_REEL_ANGLE_R0];
@@ -679,84 +287,26 @@ Defines.TRACE("Z80移植リールクラスの初期化");
 		int_s_value[Defines.DEF_INT_REEL_STOP_R2] = int_s_value[Defines.DEF_INT_REEL_ANGLE_R2];
 		int_s_value[Defines.DEF_INT_IS_REEL_STOPPED] = 7; // リールストップ
 		
-//System.out.println("★★★★ usr_ply_rot ★★★★ "+gp.param_hall.usr_ply_rot);
-//System.out.println("★★★★ dai_bns_rot ★★★★ "+gp.param_hall.dai_bns_rot);
-		
 		// 3D関係
-		Mascot3D.initModel();
-		// ZZ.setLight(0, 0, 100,2772*100/4048,1896*100/4048);
 		ZZ.setLight(0, 0, 100, 2024 * 100 / 4048, 1012 * 100 / 4048);
-
-#if __COM_TYPE__
-#else
-//		InitYokoku();
-#endif
 		
-
-		
-
-		
-#if __COM_TYPE__
-Defines.TRACE("全体描画");
-		// 全体再描画要求
-		//drawAll();
 		restartSlot();
-#endif
-#if __REEL_ID_CHECK__
-		ZZ.checkReel();
-#endif
 	}
 
 
 	/**
 	 * ゲーム再開。
-	 * 
 	 */
-	public void restartSlot() {
+	public void restartSlot()
+    {
 		drawAll(); // 再描画要求
 	}
 
-	/**
-	 * ゲーム終了。 アステカ以降、清算処理失敗でゲームに戻ってきた時に、持ちメダル数として足せなかったクレジット数が残るようにした。
-	 * 
-	 * 例）CREDIT = 45, SLOT_COIN_NUM = 99996の状態で清算して失敗したら、CREDIT = 42,
-	 * SLOT_COIN_NUM = 99999となってゲーム再開
-	 * 
-	 * @return 現在の獲得コイン枚数
-	 */
-	public static int endSlot() {
-		Mobile.stopSound(Defines.DEF_SOUND_UNDEF); // サウンド停止
-//		return int_s_value[Defines.DEF_INT_SLOT_COIN_INNER_COUNT]
-//				- (int_s_value[Defines.DEF_INT_NUM_KASIDASI] * Defines.DEF_NUM_START_COIN);
-		return int_s_value[Defines.DEF_INT_TOTAL_PAY] - int_s_value[Defines.DEF_INT_TOTAL_BET];
-	}
-
-	public static int getExitReason() {
+	public static int getExitReason()
+    {
 		return int_s_value[Defines.DEF_INT_WHAT_EXIT];
 	}
 
-	public static void setExitReason(int arg) {
-		int_s_value[Defines.DEF_INT_WHAT_EXIT] = arg;
-	}
-#if __COM_TYPE__
-#else
-//	public static int getCoinNum() {
-//		if(IS_HALL()){
-//			return hallData[Defines.DEF_H_PLAYER_COIN]- getKasidasiValue();
-//		}else{
-//			return int_s_value[Defines.DEF_INT_TOTAL_PAY] - int_s_value[Defines.DEF_INT_TOTAL_BET];
-//		}
-//	}
-//
-//	public static bool isHallHttp = false; 
-//	public static void hallHttp(int req){
-//		hallData[Defines.DEF_H_APPLI_REQ] = req;
-//		isHallHttp = true;
-//	}
-#endif
-	// ======================================================
-	// TOBE [メイン制御]
-	// ======================================================
 	private static int pressingSpan = 0;
 
 	/**
@@ -783,23 +333,6 @@ Defines.TRACE("全体描画");
 			* 0x10000
 			/ 60000
 			* Mobile.getReelSpeed() / 100;
-#if __COM_TYPE__
-//		DfMain.TRACE(("keyTrigger process:" + keyTrigger);
-#else
-//		if(isHallHttp){
-//			REQ_MODE(Defines.DEF_RMODE_HTTP);
-//			isHallHttp = false;
-//		}
-#endif
-#if __DEBUG_MENU__
-		// ﾃﾞﾊﾞｯｸﾞ用
-		// デバッグモード用
-		Debug.procDebug(keyTrigger, ZZ.getKeyPressing());
-#endif
-
-#if __CHANGE_FPS__
-		ZZ.dbgFpsProc(keyTrigger, ZZ.getKeyPressing());
-#endif
 		
 #if __COM_TYPE__
 		
@@ -855,12 +388,7 @@ Defines.TRACE("全体描画");
 		
 		
 #if __BONUS_CUT__
-		
 #else
-		if( Mobile.isJacCut() == true)
-		{	// ボーナスカットの場合
-			keyTrigger = Defines.DEF_KEY_BIT_SELECT;
-		}
 #endif
 #else
 //		if (IS_BONUS_JAC() && Mobile.isJacCut()) {
@@ -1089,28 +617,8 @@ Defines.TRACE("全体描画");
 				
 				// 役抽選
 				clOHHB_V23.mReelStart(rand, int_s_value[Defines.DEF_INT_BET_COUNT]);
-				// ///////////////////////////
-				// // ///////////////////////////
-#if __COM_TYPE__
-#else
-//				// 告知
-//				SetYokoku();
-//				// 告知はここで帰る
-//				if (Mobile.getKokuchi() == Defines.DEF_SELECT_3_AFFTER) {
-//					BackYokoku();
-//				}
-//
-//				// 前告知なら
-//				if (Mobile.getKokuchi() == Defines.DEF_SELECT_3_PREV) {
-//					// 前ゲームの小役と異なっていたら帰る。
-//					if (m_nYokoku2[0] != m_nYokoku2[1]) {
-//						BackYokoku();
-//					}
-//					// 出現
-//					ForwordYokoku();
-//				}
-#endif
-				if (!IS_BONUS()) {
+
+                if (!IS_BONUS()) {
 					if ((clOHHB_V23.getWork(Defines.DEF_WAVEBIT) & 0x01) != 0) {
 						int_s_value[Defines.DEF_INT_CHRY_HIT]++;
 					} else if ((clOHHB_V23.getWork(Defines.DEF_WAVEBIT) & 0x04) != 0) {
@@ -1124,7 +632,6 @@ Defines.TRACE("全体描画");
 				}
 
 				if ((clOHHB_V23.getWork(Defines.DEF_GMLVSTS) & (0x08 | 0x10)) != 0) {
-//					int_s_value[Defines.DEF_INT_FLAG_GAME_COUNT]++;
 					int_s_value[Defines.DEF_INT_THIS_FLAG_GAME]++;
 				}
 				
@@ -1186,24 +693,7 @@ Defines.TRACE("全体描画");
 					snd_id = Defines.DEF_SOUND_20;
 				}
 
-
-#if __COM_TYPE__
 				if( Mobile.isJacCut() == false)
-#else
-//				if(Mobile.isVaib()){
-//					if(IS_BONUS_GAME()){
-//						if(flash1 % 32 == 28){
-//							ZZ.setVibrator(true);
-//						}
-//					}else if(!IS_BONUS_JAC()){
-//						if(snd_id != Defines.DEF_SOUND_19){
-//							ZZ.setVibrator(true);
-//						}
-//					}
-//				}
-//				
-//				if (!(Mobile.isJacCut() && IS_BONUS_JAC()))
-#endif
 				{
 					playSE(snd_id);
 				}
@@ -1285,11 +775,6 @@ Defines.TRACE("全体描画");
 				int_s_value[Defines.DEF_INT_REEL_ANGLE_R1] -= int_s_value[Defines.DEF_INT_REEL_SPEED] * 2 / 4;
 				int_s_value[Defines.DEF_INT_REEL_ANGLE_R2] -= int_s_value[Defines.DEF_INT_REEL_SPEED] * 2 / 4;
 
-                // TODO C#移植 ホール処理も不要なのでコメントアウト
-                //if(IS_HALL() && !Defines.DEF_IS_VODA){
-                //    Mobile.saveMenuData(true);//不正防止用にここで保存
-                //}
-
                 GameManager.Instance.OnStartPlay();
 
 				break;
@@ -1301,25 +786,18 @@ Defines.TRACE("全体描画");
 				// RESULTに入った時間を記録
 				_lampTime = Util.GetMilliSeconds() + Defines.DEF_WAIT_LAMP;
 
-				// 払い出しコイン枚数
-				int_s_value[Defines.DEF_INT_WIN_COIN_NUM] = clOHHB_V23.mPayMedal();
-
-				int_s_value[Defines.DEF_INT_TOTAL_PAY] += int_s_value[Defines.DEF_INT_WIN_COIN_NUM];
-/**/			hallData[Defines.DEF_H_MEDAL_OUT] += int_s_value[Defines.DEF_INT_WIN_COIN_NUM];
-				
+                // 払い出しコイン枚数
+                var payOut = clOHHB_V23.mPayMedal();
+                int_s_value[Defines.DEF_INT_WIN_COIN_NUM] = payOut;
+				int_s_value[Defines.DEF_INT_TOTAL_PAY] += payOut;
+    			hallData[Defines.DEF_H_MEDAL_OUT] += payOut;
 
 				if ((clOHHB_V23.getWork(Defines.DEF_HITFLAG) & Defines.DEF_HITFLAG_NR_RB)!=0)
 				{
 					Defines.TRACE("RB入賞時");
-					bigBonusFg = false;
-// satoh BB
-//					gp.onBonusRB();
 				}
 				else if ((clOHHB_V23.getWork(Defines.DEF_HITFLAG) & Defines.DEF_HITFLAG_NR_BB)!=0) {
 					Defines.TRACE("BB入賞時");
-					bigBonusFg = true;
-// satoh BB
-//					gp.onBonusBB();
 				}
 				//DfMain.TRACE(("払い出し分加算");
 				if (!IS_BONUS()) {
@@ -1347,7 +825,7 @@ Defines.TRACE("全体描画");
 				// 払い出し音の発生(獲得枚数がなくても鳴らさなくてはならないので、ここで呼ぶ)
 				playCoinSound();
 				break;
-			// TOBE [=6.RMODE_BB_FANFARE init]
+
 			case Defines.DEF_RMODE_BB_FANFARE: // (モード初期)
 				int_s_value[Defines.DEF_INT_WIN_LAMP_STATUS] = 0;
 				int_s_value[Defines.DEF_INT_4TH_ACTION_FLAG] = 0;
@@ -1362,7 +840,7 @@ Defines.TRACE("全体描画");
 				}
 				set4th(29);
 				break;
-			// TOBE [=6.RMODE_BB_FANFARE init]
+
 			case Defines.DEF_RMODE_RB_FANFARE: // (モード初期)
 				int_s_value[Defines.DEF_INT_WIN_LAMP_STATUS] = 0;
 				int_s_value[Defines.DEF_INT_4TH_ACTION_FLAG] = 0;
@@ -1372,7 +850,7 @@ Defines.TRACE("全体描画");
 				playBGM(Defines.DEF_SOUND_04, false);
 				set4th(29);
 				break;
-			// TOBE [=5.RMODE_FIN_WAIT init]
+
 			case Defines.DEF_RMODE_FIN_WAIT: // (モード初期)
 				int_s_value[Defines.DEF_INT_KEY_REJECT] = 0;
 				// 毎ゲーム終了時にここを通る
@@ -1926,18 +1404,12 @@ Defines.TRACE("全体描画");
                     // 止まっていたら次
                     if ((int_s_value[Defines.DEF_INT_IS_REEL_STOPPED] & BIT(i)) != 0)
                         continue;
-#if __COM_TYPE__
+
                     if (int_s_value[Defines.DEF_INT_REEL_STOP_R0 + i] != ANGLE_UNDEF
                             && (((int_s_value[Defines.DEF_INT_REEL_STOP_R0 + i] - int_s_value[Defines.DEF_INT_REEL_ANGLE_R0 + i])
                                 & ANGLE_2PI_MASK) <= int_s_value[Defines.DEF_INT_REEL_SPEED] ||
                                 (Mobile.isJacCut() == true)))
-#else
-//				if (int_s_value[Defines.DEF_INT_REEL_STOP_R0 + i] != ANGLE_UNDEF
-//						&& (((int_s_value[Defines.DEF_INT_REEL_STOP_R0 + i] - int_s_value[Defines.DEF_INT_REEL_ANGLE_R0 + i]) 
-//							& ANGLE_2PI_MASK) <= int_s_value[Defines.DEF_INT_REEL_SPEED] ||
-//							(Mobile.isJacCut() && IS_BONUS_JAC())))
-#endif
- {
+                    {
                         // 止めにかかる
                         int_s_value[Defines.DEF_INT_REEL_ANGLE_R0 + i] = int_s_value[Defines.DEF_INT_REEL_STOP_R0 + i];
                         // 止まった
@@ -2015,27 +1487,8 @@ Defines.TRACE("全体描画");
                         }
 
                     } else {
-#if __DEBUG_MENU__
-					if( Debug.debug_cnf[DBG_MANUAL] == 1)
-					{
-						//40秒停止を無効化する
-						// 回転開始時間を記録する
-						_spinTime = Util.GetMilliSeconds() + Defines.DEF_WAIT_SPIN;
-						if( CHECK_FLAG(keyTrigger, Defines.DEF_KEY_BIT_UP) )
-						{
-							int_s_value[Defines.DEF_INT_REEL_ANGLE_R0 + i] = 
-								(int_s_value[Defines.DEF_INT_REEL_ANGLE_R0 + i] + int_s_value[Defines.DEF_INT_REEL_SPEED]) & ANGLE_2PI_MASK;
-						}
-					}
-					else
-					{
-						int_s_value[Defines.DEF_INT_REEL_ANGLE_R0 + i] = 
-						(int_s_value[Defines.DEF_INT_REEL_ANGLE_R0 + i] + int_s_value[Defines.DEF_INT_REEL_SPEED]) & ANGLE_2PI_MASK;
-					}
-#else
                         int_s_value[Defines.DEF_INT_REEL_ANGLE_R0 + i] =
                             (int_s_value[Defines.DEF_INT_REEL_ANGLE_R0 + i] + int_s_value[Defines.DEF_INT_REEL_SPEED]) & ANGLE_2PI_MASK;
-#endif
                     }
                 }
 
@@ -2064,14 +1517,11 @@ Defines.TRACE("全体描画");
                     REQ_MODE(Defines.DEF_RMODE_RESULT);
                 }
                 break;
+
             // TOBE [=4.RMODE_RESULT rp]
             case Defines.DEF_RMODE_RESULT: // 結果（毎回処理）
-#if __COM_TYPE__
                 if ((Mobile.isJacCut() == true))
-#else
-//			if (Mobile.isJacCut() && IS_BONUS_JAC())
-#endif
- {
+                {
                     // 内部でカウント
                     int_s_value[Defines.DEF_INT_CREDIT_COIN_NUM] += int_s_value[Defines.DEF_INT_WIN_COIN_NUM];
                     int_s_value[Defines.DEF_INT_SLOT_COIN_NUM] += int_s_value[Defines.DEF_INT_WIN_COIN_NUM];
@@ -2092,30 +1542,13 @@ Defines.TRACE("全体描画");
                     _soundTime = 0;
 
                     // 払い出し分加算
-#if __ERR_MSG__
-				if( (int_s_value[Defines.DEF_INT_WIN_COIN_NUM] < 0) || (int_s_value[Defines.DEF_INT_WIN_COIN_NUM] > 800))
-				{	// 0以下ならば
-					SET_ERR_CODE(ERR_CODE_PAY_UP2);
-					SET_ERR_OPTION(int_s_value[Defines.DEF_INT_WIN_COIN_NUM]);
-				}
-#endif
                     GPW_chgCredit(int_s_value[Defines.DEF_INT_WIN_COIN_NUM]);
                 } else {
                     // 一枚一枚移す
                     // satoh#暫定
                     if (int_s_value[Defines.DEF_INT_WIN_GET_COIN] < int_s_value[Defines.DEF_INT_WIN_COIN_NUM]) {
-                        if ((int_s_value[Defines.DEF_INT_MODE_COUNTER] % (Defines.DEF_WAIT_COUNT_UP / int_s_value[Defines.DEF_INT_LOOP_SPEED] + 1)) == 0) {
-                            //				if (int_s_value[Defines.DEF_INT_WIN_GET_COIN] < int_s_value[Defines.DEF_INT_WIN_COIN_NUM]) {
-                            //					if ((int_s_value[Defines.DEF_INT_MODE_COUNTER] % (Defines.DEF_WAIT_COUNT_UP
-                            //							/ 1 + 1 )) == 0) {
-
-#if __ERR_MSG__
-					if( (int_s_value[Defines.DEF_INT_WIN_COIN_NUM] < 0) || (int_s_value[Defines.DEF_INT_WIN_COIN_NUM] > 20))
-					{	// 0以下ならば
-						SET_ERR_CODE(ERR_CODE_PAY_UP);
-						SET_ERR_OPTION(int_s_value[Defines.DEF_INT_WIN_COIN_NUM]);
-					}
-#endif
+                        if ((int_s_value[Defines.DEF_INT_MODE_COUNTER] % (Defines.DEF_WAIT_COUNT_UP / int_s_value[Defines.DEF_INT_LOOP_SPEED] + 1)) == 0)
+                        {
                             // 払い出し分加算
                             GPW_chgCredit(1);
                             // ５０枚まではクレジットへ貯めるぅ
@@ -2138,15 +1571,8 @@ Defines.TRACE("全体描画");
 
                 // 払い出し音を待つ
                 if (_soundTime < Util.GetMilliSeconds()
-                        || (int_s_value[Defines.DEF_INT_WIN_COIN_NUM] <= int_s_value[Defines.DEF_INT_WIN_GET_COIN] && !IS_REPLAY())) {
-#if __COM_TYPE__
-#else
-//				// 後告知なら、ここで出現
-//				if (Mobile.getKokuchi() == Defines.DEF_SELECT_3_AFFTER) {
-//					m_nYokoku2[1] = -1;
-//					ForwordYokoku();
-//				}
-#endif
+                        || (int_s_value[Defines.DEF_INT_WIN_COIN_NUM] <= int_s_value[Defines.DEF_INT_WIN_GET_COIN] && !IS_REPLAY()))
+                {
                     Mobile.stopSound(Defines.DEF_SOUND_MULTI_SE);
                     _soundTime = Util.GetMilliSeconds();
                     // REG入賞
@@ -2186,16 +1612,6 @@ Defines.TRACE("全体描画");
             // TOBE [=6.RMODE_BB_FANFARE rp]
             case Defines.DEF_RMODE_BB_FANFARE:
             case Defines.DEF_RMODE_RB_FANFARE:
-                // if (int_s_value[Defines.DEF_INT_4TH_ACTION_FLAG] < 1) {
-                // int_s_value[Defines.DEF_INT_4TH_REEL_ANGLE] += 20 + Defines.DEF_POS_4TH_TOTAL_W;
-                // int_s_value[Defines.DEF_INT_4TH_REEL_ANGLE] %= Defines.DEF_POS_4TH_TOTAL_W;
-                // }
-                // if (int_s_value[Defines.DEF_INT_MODE_COUNTER] > 10) {
-                // if (int_s_value[Defines.DEF_INT_4TH_REEL_ANGLE] < 20 + Defines.DEF_RP08) {
-                // int_s_value[Defines.DEF_INT_4TH_ACTION_FLAG] = 1;
-                // int_s_value[Defines.DEF_INT_4TH_REEL_ANGLE] = Defines.DEF_RP08;
-                // }
-                // }
                 action4th();
                 if (_soundTime < Util.GetMilliSeconds()
                         && int_s_value[Defines.DEF_INT_4TH_ACTION_FLAG] == 0) {
@@ -2250,174 +1666,14 @@ Defines.TRACE("全体描画");
         }    
     }
 
-#if __DRAW_SLOT2__
-#else
-//	public void paintSlot() {
-//		DfMain.TRACE(("★★★★paintSlot★★★★");
-//		ZZ.setColor(ZZ.getColor(0, 0, 0));
-//		ZZ.fillRect(Defines.DEF_POS_NAVI_C_X, Defines.DEF_POS_NAVI_C_Y + 26 + Defines.GP_DRAW_OFFSET_Y, Defines.DEF_POS_NAVI_C_W,
-//				Defines.DEF_POS_NAVI_C_H);
-//#if __COM_TYPE__
-//#else
-//		drawK0();
-//#endif
-//		drawK1();
-//		draw4th();
-//		drawK3();
-//		if(int_s_value[Defines.DEF_INT_MODE_COUNTER] < 2
-//				|| int_s_value[Defines.DEF_INT_CURRENT_MODE] ==Defines.DEF_RMODE_SPIN
-//				|| int_s_value[Defines.DEF_INT_CURRENT_MODE] ==Defines.DEF_RMODE_FLASH
-//		){
-//			//DfMain.TRACE(("drawSlot");
-//			drawSlot();
-//		}
-//		drawK7();
-//		// drawKokuchi();
-//#if __DRAW_MENU_ICON__
-//		Mobile.drawIcon(false);
-//#endif
-//		if (Mobile.getKokuchi() != Defines.DEF_SELECT_3_OFF) {
-//			// drawKokuchi();
-//			DrawYokoku();
-//		}else{
-//			drawK4();
-//		}
-//
-////		if (Defines.DEF_IS_DEBUG_AUTO) {
-////		}
-//
-//		int pos = (int_s_value[Defines.DEF_INT_4TH_REEL_ANGLE] % 414)
-//		* (2359296 / 414);
-//		Mascot3D.draw3Dtest(pos);
-//		// }
-//		// スロットの描画
-//		// if (Defines.DEF_IS_DEBUG_POS) {
-//		// // デバック
-//		// clearClip();
-//		// // Z.setColor(Z.getColor(0, 0, 0));
-//		// Z.setColor(Z.getColor(255, 0, 0));
-//		// int y = 0;
-//		// // Z.drawString("左 押:" + debugPos[0] + " 止:" + debugStop[0], 10, y
-//		// // +=
-//		// // 12);
-//		// Z.drawString("HITLINE :"
-//		// + Integer.toHexString(clOHHB_V23.getWork(Defines.DEF_HITLINE)), 10,
-//		// y += 12);
-//		// Z.drawString("WAVENUM :"
-//		// + Integer.toHexString(clOHHB_V23.getWork(Defines.DEF_WAVENUM)), 130,
-//		// y);
-//		// // Z.drawString("中 押:" + debugPos[1] + " 止:" + debugStop[1], 10, y
-//		// // +=
-//		// // 12);
-//		// // Z.drawString("JAC_CTR :" + (int) clOHHB_V23.getWork(Defines.DEF_JAC_CTR),
-//		// // 10, y += 12);
-//		// Z.drawString("FLASH0 :"
-//		// + Integer.toHexString(clOHHB_V23.getWork(Defines.DEF_FLASH)), 10,
-//		// y += 12);
-//		// Z.drawString("GAMEST :0x"
-//		// + Integer.toHexString(clOHHB_V23.getWork(Defines.DEF_GAMEST)), 130,
-//		// y);
-//		//
-//		// // Z.drawString("右 押:" + debugPos[2] + " 止:" + debugStop[2], 10, y
-//		// // +=
-//		// // 12);
-//		// // Z.drawString("BIGBCTR:" + (int) clOHHB_V23.getWork(Defines.DEF_BIGBCTR),
-//		// // 10,
-//		// // y += 12);
-//		// Z.drawString("FLASH1:"
-//		// + Integer.toHexString(clOHHB_V23.getWork(Defines.DEF_FLASH + 1)),
-//		// 10, y += 12);
-//		// Z.drawString("GMLVSTS :0x"
-//		// + Integer.toHexString(clOHHB_V23.getWork(Defines.DEF_GMLVSTS)), 130,
-//		// y);
-//		//
-//		// Z
-//		// .drawString("MEDAL :" + int_s_value[Defines.DEF_INT_BET_COUNT], 10,
-//		// y += 12);
-//		// Z.drawString("HITREQ :0x"
-//		// + Integer.toHexString(clOHHB_V23.getWork(Defines.DEF_HITREQ)), 130,
-//		// y);
-//		//
-//		// Z.drawString("RANDOMX :" + (int) clOHHB_V23.getWork(Defines.DEF_RANDOMX),
-//		// 10, y += 12);
-//		// Z.drawString("WAVEBIT :0x"
-//		// + Integer.toHexString(clOHHB_V23.getWork(Defines.DEF_WAVEBIT)), 130,
-//		// y);
-//		//
-//		// Z.drawString("SLAMPBIT :0x"
-//		// + Integer.toHexString(clOHHB_V23.getWork(Defines.DEF_SLAMPBIT)), 10,
-//		// y += 12);
-//		// Z.drawString("HITFLAG :0x"
-//		// + Integer.toHexString(clOHHB_V23.getWork(Defines.DEF_HITFLAG)), 130,
-//		// y);
-//		//
-//		// Z.drawString("PUSHCTR :0x"
-//		// + Integer.toHexString(clOHHB_V23.getWork(Defines.DEF_PUSHCTR)), 10,
-//		// y += 12);
-//		// Z.drawString("PayMedal :" + int_s_value[Defines.DEF_INT_WIN_COIN_NUM], 130,
-//		// y);
-//		//
-//		// Z.drawString("STOPBIT :0x"
-//		// + Integer.toHexString(clOHHB_V23.getWork(Defines.DEF_STOPBIT)), 10,
-//		// y += 12);
-//		// if (Defines.DEF_IS_DEBUG_FORCE_YAKU) {
-//		// Z.drawString("debugForceYaku:" + debugForceYaku, 130, y);
-//		// }
-//		// }
-//
-//		drawDataPanel(true);
-//#if __COM_TYPE__
-//
-//#else
-////		if(IS_HALL()){
-////			if(Mobile.isDataPanel()){
-////				drawDataPanelHall();
-////			}
-////		}
-//#endif
-//		if (Defines.DEF_IS_PRINT_FREEMEMORY) {
-//			ZZ.setClip(0, 0, 240, 24);
-//			ZZ.setColor(ZZ.getColor(0xff, 0xff, 0xff));
-//			ZZ.fillRect(0, 0, 240, 24);
-//			int xx = 200;
-//			int yy = 0;
-//			long val = Runtime.getRuntime().freeMemory();
-//			do {
-//				// 一桁は必ず描く
-//				// 下（右）から描いて行く
-//				ZZ.drawImage(Defines.DEF_RES_NA0 + (int) (val % 10), xx, yy);
-//				val /= 10;
-//				xx -= Defines.DEF_POS_NAVI_BB_W;
-//			} while (val > 0);
-//		}
-//		
-//		if(int_s_value[Defines.DEF_INT_CURRENT_MODE] == Defines.DEF_RMODE_HTTP){
-//			ZZ.setClip(-ZZ.getOffsetX(), -ZZ.getOffsetY(), ZZ.getWidth(), ZZ
-//					.getHeight());
-//			ZZ.drawImage(Defines.DEF_RES_TUSHIN_BACK,23,113);
-//			ZZ.setColor(ZZ.getColor(0xff, 0xff, 0xff));
-//			ZZ.drawString("通信中...", 36,127+12);
-//			
-//		}
-//#if __COM_TYPE__
-//		// クリッピング領域の解除
-//		ZZ.setClip(-ZZ.getOffsetX(), -ZZ.getOffsetY(), ZZ.getWidth(), ZZ.getHeight());
-//#endif
-//	}
-#endif
 	/**
 	 * クリップが使えるのでisRepaintを使用しない方向で
-	 * 
 	 */
-	private void drawAll() {
-		//DfMain.TRACE(("★★★★drawAll★★★★");
-		// クリッピング領域の解除
+	private void drawAll()
+    {
 		ZZ.setClip(-ZZ.getOffsetX(), -ZZ.getOffsetY(), ZZ.getWidth(), ZZ.getHeight());
-		// 画面を白く塗りつぶす
 		ZZ.setColor(ZZ.getColor(0, 0, 0));
 		ZZ.fillRect(-ZZ.getOffsetX(), -ZZ.getOffsetY(), ZZ.getWidth(), ZZ.getHeight());
-
-#if __COM_TYPE__
 		
 		// 筐体背景部分
 		ZZ.drawImage(Defines.DEF_RES_K1, Defines.DEF_POS_K1_X, Defines.DEF_POS_K1_Y);
@@ -2429,8 +1685,6 @@ Defines.TRACE("全体描画");
 		ZZ.drawImage(Defines.DEF_RES_K7, Defines.DEF_POS_K7_X, Defines.DEF_POS_K7_Y);
 		
 		// ランプ
-#if __CLIP_FALSE__
-		
 		{	// drawK1 4thリールの左右のランプ
 			int[] x = { Defines.DEF_POS_S1_X, Defines.DEF_POS_S2_X, Defines.DEF_POS_S3_X, Defines.DEF_POS_S4_X, Defines.DEF_POS_S5_X, Defines.DEF_POS_S6_X };
 			int[] y = { Defines.DEF_POS_S1_Y, Defines.DEF_POS_S2_Y, Defines.DEF_POS_S3_Y, Defines.DEF_POS_S4_Y, Defines.DEF_POS_S5_Y, Defines.DEF_POS_S6_Y };
@@ -2480,271 +1734,26 @@ Defines.TRACE("全体描画");
 		drawCredit();
 		// 払い出し描画
 		drawPay();
-#else
-		// 4thリールの左右のランプ
-		drawK1();
-		// BETランプ
-		drawK3();
-		// 筐体左のかぎやランプやリプレイランプ
-		drawK4();
-		// 4th
-		draw4th();
-		// リール
-		drawSlot();
-		
-		drawK7();
-		
-		// クリッピング領域の解除
-		ZZ.setClip(-ZZ.getOffsetX(), -ZZ.getOffsetY(), ZZ.getWidth(), ZZ.getHeight());
-#endif
-
-#else
-//		ZZ.drawImage(Defines.DEF_RES_K0, Defines.DEF_POS_K0_X, Defines.DEF_POS_K0_Y);
-//		ZZ.drawImage(Defines.DEF_RES_K1, Defines.DEF_POS_K1_X, Defines.DEF_POS_K1_Y);
-//		ZZ.drawImage(Defines.DEF_RES_K2, Defines.DEF_POS_K2_X, Defines.DEF_POS_K2_Y);
-//		// ZZ.drawImage(Defines.DEF_RES_K3, Defines.DEF_POS_K3_X, Defines.DEF_POS_K3_Y);
-//		// 筐体＆ランプ
-//		drawK0();
-//
-//		drawK1();
-//		drawK3();
-//		drawK4();
-//		ZZ.drawImage(Defines.DEF_RES_K3, Defines.DEF_POS_K3_X, Defines.DEF_POS_K3_Y);
-//		// 4th
-//		draw4th();
-//		// リール
-//		drawSlot();
-//		// 払い出し
-//		drawPay();	// drawK7内でもよばれている
-//		// クレジット
-//		drawCredit();
-//		// ボーナスカウント
-//		drawBonusCount();
-//		
-//		drawK7();
-//		drawDataPanel(true);
-//		if(IS_HALL()){
-//			if(Mobile.isDataPanel()){
-//				drawDataPanelHall();
-//			}
-//		}
-//		// クリッピング領域の解除
-//		ZZ.setClip(-ZZ.getOffsetX(), -ZZ.getOffsetY(), ZZ.getWidth(), ZZ.getHeight());
-#endif
-		
-
-
-//		ZZ.userRepaint();
 	}
 
-	/**
-	 * 光どころ描画
-	 * 
-	 */
-	private static void drawK3() {
-		ZZ.setClip(Defines.DEF_POS_K3_X, Defines.DEF_POS_K3_Y, Defines.DEF_POS_K3_W, Defines.DEF_POS_K3_H);
-#if __COM_TYPE__
-#else
-//		ZZ.drawImage(Defines.DEF_RES_K3, Defines.DEF_POS_K3_X, Defines.DEF_POS_K3_Y);
-#endif
-		int[] x = { Defines.DEF_POS_B1_X, Defines.DEF_POS_B2_X, Defines.DEF_POS_B3_X, Defines.DEF_POS_B4_X, Defines.DEF_POS_B5_X };
-		int[] y = { Defines.DEF_POS_B1_Y, Defines.DEF_POS_B2_Y, Defines.DEF_POS_B3_Y, Defines.DEF_POS_B4_Y, Defines.DEF_POS_B5_Y };
-		for (int i = 0; i < 5; i++) {
-			if (getLampStatus(Defines.DEF_LAMP_BET_1 + i) == Defines.DEF_LAMP_STATUS_ON) {
-				ZZ.drawImage(Defines.DEF_RES_B1_B + i, x[i], y[i]);
-			}
-		}
-#if __COM_TYPE__
-		// クリッピング領域の解除
-		ZZ.setClip(-ZZ.getOffsetX(), -ZZ.getOffsetY(), ZZ.getWidth(), ZZ.getHeight());
-#endif
-
-	}
-	
-#if __COM_TYPE__
-#else
-//	/**
-//	 * 光どころ描画
-//	 * 
-//	 */
-//	private static void drawK0() {
-//		ZZ.setClip(Defines.DEF_POS_K0_X, Defines.DEF_POS_K0_Y, Defines.DEF_POS_K0_W, Defines.DEF_POS_K0_H);
-//		ZZ.drawImage(Defines.DEF_RES_K0, Defines.DEF_POS_K0_X, Defines.DEF_POS_K0_Y);
-//		final int[] x = { Defines.DEF_POS_A1_X, Defines.DEF_POS_A2_X, Defines.DEF_POS_A3_X, Defines.DEF_POS_A4_X,
-//				Defines.DEF_POS_A5_X };
-//		final int[] y = { Defines.DEF_POS_A1_Y, Defines.DEF_POS_A2_Y, Defines.DEF_POS_A3_Y, Defines.DEF_POS_A4_Y,
-//				Defines.DEF_POS_A5_Y };
-//		for (int i = 0; i < 5; i++) {
-//			if (getLampStatus(Defines.DEF_LAMP_TOP_1 + i) == Defines.DEF_LAMP_STATUS_ON) {
-//				ZZ.drawImage(Defines.DEF_RES_A1_B + i, x[i], y[i]);
-//			}
-//		}
-//#if __COM_TYPE__
-//		// クリッピング領域の解除
-//		ZZ.setClip(-ZZ.getOffsetX(), -ZZ.getOffsetY(), ZZ.getWidth(), ZZ.getHeight());
-//#endif
-//	}
-#endif
-	private static void drawK1() {
-		ZZ.setClip(Defines.DEF_POS_K1_X, Defines.DEF_POS_K1_Y, Defines.DEF_POS_K1_W, Defines.DEF_POS_K1_H);
-#if __COM_TYPE__
-#else
-//		ZZ.drawImage(Defines.DEF_RES_K1, Defines.DEF_POS_K1_X, Defines.DEF_POS_K1_Y);
-#endif
-		int[] x = { Defines.DEF_POS_S1_X, Defines.DEF_POS_S2_X, Defines.DEF_POS_S3_X, Defines.DEF_POS_S4_X, Defines.DEF_POS_S5_X, Defines.DEF_POS_S6_X };
-		int[] y = { Defines.DEF_POS_S1_Y, Defines.DEF_POS_S2_Y, Defines.DEF_POS_S3_Y, Defines.DEF_POS_S4_Y, Defines.DEF_POS_S5_Y, Defines.DEF_POS_S6_Y };
-		for (int i = 0; i < 6; i++) {
-			if (getLampStatus(Defines.DEF_LAMP_S1 + i) == Defines.DEF_LAMP_STATUS_ON) {
-				ZZ.drawImage(Defines.DEF_RES_S1_B + i, x[i], y[i]);
-			}
-		}
-#if __COM_TYPE__
-		// クリッピング領域の解除
-		ZZ.setClip(-ZZ.getOffsetX(), -ZZ.getOffsetY(), ZZ.getWidth(), ZZ.getHeight());
-#endif
-	}
-
-	/**
-	 * 光どころ描画
-	 * 
-	 */
-	private static void drawK4() {
-		ZZ.setClip(Defines.DEF_POS_K4_X, Defines.DEF_POS_K4_Y, Defines.DEF_POS_K4_W, Defines.DEF_POS_K4_H);
-#if __COM_TYPE__
-#else
-		ZZ.drawImage(Defines.DEF_RES_K4, Defines.DEF_POS_K4_X, Defines.DEF_POS_K4_Y);
-#endif
-		int[] x = { Defines.DEF_POS_C1_X, Defines.DEF_POS_C2_X, Defines.DEF_POS_C3_X, Defines.DEF_POS_C4_X, Defines.DEF_POS_C5_X };
-		int[] y = { Defines.DEF_POS_C1_Y, Defines.DEF_POS_C2_Y, Defines.DEF_POS_C3_Y, Defines.DEF_POS_C4_Y, Defines.DEF_POS_C5_Y };
-		for (int i = 0; i < 5; i++) {
-			if (getLampStatus(Defines.DEF_LAMP_WIN + i) == Defines.DEF_LAMP_STATUS_ON) {
-				ZZ.drawImage(Defines.DEF_RES_C1_B + i, x[i], y[i]);
-			}
-		}
-#if __COM_TYPE__
-		// クリッピング領域の解除
-		ZZ.setClip(-ZZ.getOffsetX(), -ZZ.getOffsetY(), ZZ.getWidth(), ZZ.getHeight());
-#endif
-	}
-#if __CLIP_FALSE__
-#else
-	private static void drawK7() {
-#if __CLIP_FALSE__
-#else
-		ZZ.setClip(Defines.DEF_POS_K7_X, Defines.DEF_POS_K7_Y, Defines.DEF_POS_K7_W, Defines.DEF_POS_K7_H);
-#endif
-#if __COM_TYPE__
-#else
-		ZZ.drawImage(Defines.DEF_RES_K7, Defines.DEF_POS_K7_X, Defines.DEF_POS_K7_Y);
-#endif
-		if (getLampStatus(Defines.DEF_LAMP_CHANCE) == Defines.DEF_LAMP_STATUS_ON) {
-			ZZ.drawImage(Defines.DEF_RES_D1_B, Defines.DEF_POS_CHANCE_X, Defines.DEF_POS_CHANCE_Y);
-		}
-		drawBonusCount();
-		drawCredit();
-		drawPay();
-#if __COM_TYPE__
-		// クリッピング領域の解除
-		ZZ.setClip(-ZZ.getOffsetX(), -ZZ.getOffsetY(), ZZ.getWidth(), ZZ.getHeight());
-#endif
-	}
-#endif
 	/**
 	 * 4thリールの描画
-	 * 
 	 */
-	private static void draw4th() {
-		// ZZ.setClip(Defines.DEF_POS_4TH_X, Defines.DEF_POS_4TH_Y, Defines.DEF_POS_4TH_W, Defines.DEF_POS_4TH_H);
-		// int x = int_s_value[Defines.DEF_INT_4TH_REEL_ANGLE];
-		// for (int i = 0; i < Defines.DEF_NUM_4TH_REEL; i++) {
-		// if (x < width4th[i]) {
-		// for (int j = 0; j < 3; j++) {
-		// final int id = (i + j) % Defines.DEF_NUM_4TH_REEL;
-		// // 画像ID
-		// int img_id = 0;
-		if (getLampStatus(Defines.DEF_LAMP_4TH) == Defines.DEF_LAMP_STATUS_ON) {
-			// img_id = Defines.DEF_RES_R08_B + (Defines.DEF_RES_R09_B - Defines.DEF_RES_R08_B)
-			// * id;
-
-            // TODO soy 4thリールランプ処理
+	private static void draw4th()
+    {
+		if (getLampStatus(Defines.DEF_LAMP_4TH) == Defines.DEF_LAMP_STATUS_ON)
+        {
             GameManager.Instance.Set4thReelTexture(true);
-
-			Mascot3D.setTexture(0);
 		} else {
-            // TODO soy 4thリールランプ処理
             GameManager.Instance.Set4thReelTexture(false);
-            
-            // img_id = Defines.DEF_RES_R08 + (Defines.DEF_RES_R09 - Defines.DEF_RES_R08) * id;
-			Mascot3D.setTexture(1);
 		}
-		// ZZ.drawImage(img_id, Defines.DEF_POS_4TH_X - x, Defines.DEF_POS_4TH_Y);
-		// x -= width4th[id];
-		// }
-		// return;
-		// } else {
-		// x -= width4th[i];
-		// }
-		// }
 	}
 
 	/**
 	 * スロット回転部の描画。
 	 */
-	private static void drawSlot() {
-		// // リール部分クリッピング
-		// ZZ.setClip(Defines.DEF_POS_REEL_WINDOW_X, Defines.DEF_POS_REEL_WINDOW_Y,
-		// Defines.DEF_POS_REEL_WINDOW_DX * 2 + Defines.DEF_POS_REEL_WINDOW_W,
-		// Defines.DEF_POS_REEL_WINDOW_H);
-		// // １リールずつ処理
-		// int x = Defines.DEF_POS_REEL_WINDOW_X; // リール書き出し位置
-		// int bg_1 = 1;
-		// for (int i = 0; i < 3; i++) { // 左のリールから描画しています
-		// // 背景
-		// ZZ.drawImage(Defines.DEF_RES_BACK, x, Defines.DEF_POS_REEL_WINDOW_Y);
-		// int y = Defines.DEF_N_FRAME * int_s_value[Defines.DEF_INT_REEL_ANGLE_R0 + i];
-		// // あとでｙになります。
-		// int num = ((y >> 16) % Defines.DEF_N_FRAME);
-		// // 上にくる画像の番号。
-		// y = Defines.DEF_POS_REEL_WINDOW_Y - Defines.DEF_POS_REEL_H + Defines.DEF_POS_REEL_WINDOW_H
-		// + (((y & ANGLE_2PI_MASK) * Defines.DEF_POS_REEL_H) >> 16);
-		// // // リールの描画
-		// for (int j = 3; j >= 0; j--) {
-		// int sym = getReelId(REELTB[i][(num + 2 + Defines.DEF_N_FRAME - j)
-		// % Defines.DEF_N_FRAME]);
-		// // 明るい
-		// int id = Defines.DEF_RES_R01_B + (Defines.DEF_RES_R02_B - Defines.DEF_RES_R01_B) * sym;
-		// if (int_s_value[Defines.DEF_INT_CURRENT_MODE] == Defines.DEF_RMODE_FLASH
-		// || (int_s_value[Defines.DEF_INT_WIN_LAMP_STATUS] == 2 &&
-		// int_s_value[Defines.DEF_INT_CURRENT_MODE] == Defines.DEF_RMODE_WAIT)) {
-		// if ((int_s_value[Defines.DEF_INT_FLASH_DATA] & bg_1) == 0) {
-		// // 暗い
-		// id = Defines.DEF_RES_R01 + (Defines.DEF_RES_R02 - Defines.DEF_RES_R01) * sym;
-		// }
-		// } else {
-		// if ((int_s_value[Defines.DEF_INT_IS_REEL_STOPPED] & BIT(i)) == 0) {
-		// // 暗い
-		// id = Defines.DEF_RES_R01_BB + (Defines.DEF_RES_R02_BB - Defines.DEF_RES_R01_BB)
-		// * sym;
-		// }
-		// }
-		// ZZ.drawImage(id, x, y);
-		// // リール絵
-		// y -= Defines.DEF_POS_REEL_H;
-		//
-		// if (j > 0) {
-		// bg_1 <<= 1;
-		// }
-		// }
-		// x += Defines.DEF_POS_REEL_WINDOW_DX; // 右へずらす
-		// }
-		//
-
-#if __COM_TYPE__
-#else
-//		ZZ.setClip(25, 114 + Defines.GP_DRAW_OFFSET_Y, 215 - 25, 96);
-//		ZZ.drawImage(Defines.DEF_RES_K5, Defines.DEF_POS_K5_X, Defines.DEF_POS_K5_Y);
-//		ZZ.drawImage(Defines.DEF_RES_K6, Defines.DEF_POS_K6_X, Defines.DEF_POS_K6_Y);
-#endif
+	private static void drawSlot()
+    {
 		// １リールずつ処理
 		int[] x = { 25, 92, 159 };
 		for (int i = 0; i < 3; i++) { // 左のリールから描画しています
@@ -2782,8 +1791,6 @@ Defines.TRACE("全体描画");
 				ZZ.drawImage(Defines.DEF_RES_BACK, x[i], 114 + Defines.GP_DRAW_OFFSET_Y);
 			}
 
-//			System.out.println("time="+ZZ.getThreadSpeed());
-//			System.out.println(""+int_s_value[2 + 0]+","+int_s_value[2 + 1]+","+int_s_value[2 + i]+"&"+ANGLE_2PI_MASK);
 			// 例:1周21コマのうち15.75コマ回転していたら、per21=15.75<<16
 			int per21 = Defines.DEF_N_FRAME
 					* (int_s_value[Defines.DEF_INT_REEL_ANGLE_R0 + i] & ANGLE_2PI_MASK);
@@ -2804,48 +1811,6 @@ Defines.TRACE("全体描画");
                 // soy TODO リールランプ処理
                 GameManager.Instance.SetReelTexture(rlnum, i, state[j] == 1);
 
-#if __REEL_ID_CHECK__
-				if(j == 2)
-				{	// センター
-					
-					//	図柄コード
-					//#define Defines.DEF_BSVN         	     0x01                // 青７
-					//#define Defines.DEF_DON_         	     0x02                // ﾄﾞﾝ
-					//#define Defines.DEF_BAR_         	     0x04                // BAR
-					//#define Defines.DEF_RPLY         	     0x08                // ｾﾝｽ
-					//#define Defines.DEF_WMLN         	     0x10                // 大山
-					//#define Defines.DEF_BELL         	     0x20                // ﾊﾅﾋﾞ
-					//#define Defines.DEF_CHRY         	     0x40                // ﾁｪﾘｰ
-					//#define Defines.DEF_ANY_         	     0x00                // －
-					
-					ZZ.drawReel[i] = rlnum;
-//					if(i == 0)
-//					{
-//						
-//						if( REELTB[i][rlnum] != (clOHHB_V23.getWork(Defines.DEF_ARAY11) & 0xFFFF))
-//						{
-//							DfMain.TRACE(("左リールの値がおかしいよ！:0x" + ZZ.hexInt(REELTB[i][rlnum]) + ":0x" + ZZ.hexInt((clOHHB_V23.getWork(Defines.DEF_ARAY11) & 0xFFFF)));
-//						}
-//					}
-//					else if(i == 1)
-//					{
-//						if( REELTB[i][rlnum] != (clOHHB_V23.getWork(Defines.DEF_ARAY12) & 0xFFFF))
-//						{
-//							DfMain.TRACE(("中リールの値がおかしいよ！:0x" + ZZ.hexInt(REELTB[i][rlnum]) + ":0x" + ZZ.hexInt((clOHHB_V23.getWork(Defines.DEF_ARAY12) & 0xFFFF)));
-//						}
-//					}
-//					else if(i == 2)
-//					{
-//						if( REELTB[i][rlnum] != (clOHHB_V23.getWork(Defines.DEF_ARAY13) & 0xFFFF))
-//						{
-//							DfMain.TRACE(("右リールの値がおかしいよ！:0x" + ZZ.hexInt(REELTB[i][rlnum]) + ":0x" + ZZ.hexInt((clOHHB_V23.getWork(Defines.DEF_ARAY13) & 0xFFFF)));
-//						}
-//					}
-					//DfMain.TRACE(("★停止図柄:" +   + ":" + (clOHHB_V23.getWork(Defines.DEF_ARAY12) & 0xFFFF) + ":" + (clOHHB_V23.getWork(Defines.DEF_ARAY13) & 0xFFFF));
-				}
-#endif
-
-#if __CLIP_FALSE__
 				id = Defines.DEF_RES_R1_01 + (Defines.DEF_RES_R1_02 - Defines.DEF_RES_R1_01) * sym + state[j];
 				ZZ.drawImage(id, x[i], y[j] + Defines.GP_DRAW_OFFSET_Y);
 				
@@ -2854,19 +1819,6 @@ Defines.TRACE("全体描画");
 				
 				id = Defines.DEF_RES_R3_01 + (Defines.DEF_RES_R3_02 - Defines.DEF_RES_R3_01) * sym + state[j];
 				ZZ.drawImage(id, x[i], y[j] + Defines.GP_DRAW_OFFSET_Y);
-#else
-				id = Defines.DEF_RES_R1_01 + (Defines.DEF_RES_R1_02 - Defines.DEF_RES_R1_01) * sym + state[j];
-				ZZ.setClip(25, 114 + Defines.GP_DRAW_OFFSET_Y, 190, 34);
-				ZZ.drawImage(id, x[i], y[j] + Defines.GP_DRAW_OFFSET_Y);
-				
-				id = Defines.DEF_RES_R2_01 + (Defines.DEF_RES_R2_02 - Defines.DEF_RES_R2_01) * sym + state[j];
-				ZZ.setClip(25, 148 + Defines.GP_DRAW_OFFSET_Y, 190, 28);
-				ZZ.drawImage(id, x[i], y[j] + Defines.GP_DRAW_OFFSET_Y);
-				
-				id = Defines.DEF_RES_R3_01 + (Defines.DEF_RES_R3_02 - Defines.DEF_RES_R3_01) * sym + state[j];
-				ZZ.setClip(25, 176 + Defines.GP_DRAW_OFFSET_Y, 190, 34);
-				ZZ.drawImage(id, x[i], y[j] + Defines.GP_DRAW_OFFSET_Y);
-#endif
 			}
 		}
 
@@ -2885,21 +1837,15 @@ Defines.TRACE("全体描画");
 		}
 		ZZ.scale3D(50);// 戻すよ～
 		
-#if __COM_TYPE__
 		// クリッピング領域の解除
 		ZZ.setClip(-ZZ.getOffsetX(), -ZZ.getOffsetY(), ZZ.getWidth(), ZZ.getHeight());
-#endif
-
-	} // End of drawSlot()
+	}
 
 	/**
 	 * TODO クレジット描画
-	 * 
 	 */
-	private static void drawCredit() {
-		// ZZ.setClip(Defines.DEF_POS_CREDIT_X - Defines.DEF_POS_CREDIT_W * 2, Defines.DEF_POS_CREDIT_Y,
-		// Defines.DEF_POS_CREDIT_W * 3, Defines.DEF_POS_CREDIT_H);
-		// ZZ.drawImage(Defines.DEF_RES_K2, Defines.DEF_POS_K2_X, Defines.DEF_POS_K2_Y);
+	private static void drawCredit()
+    {
 		int xx = Defines.DEF_POS_CREDIT_X;
 		int val = int_s_value[Defines.DEF_INT_CREDIT_COIN_NUM];
 		
@@ -2918,12 +1864,9 @@ Defines.TRACE("全体描画");
 
 	/**
 	 * TODO 払い出し描画
-	 * 
 	 */
-	private static void drawPay() {
-		// ZZ.setClip(Defines.DEF_POS_PAY_X - Defines.DEF_POS_PAY_W * 2, Defines.DEF_POS_PAY_Y,
-		// Defines.DEF_POS_PAY_W * 3, Defines.DEF_POS_PAY_H);
-		// ZZ.drawImage(Defines.DEF_RES_K2, Defines.DEF_POS_K2_X, Defines.DEF_POS_K2_Y);
+	private static void drawPay()
+    {
 		int xx = Defines.DEF_POS_PAY_X;
 		int val = int_s_value[Defines.DEF_INT_WIN_GET_COIN];
 		for (int i = 0; i < Defines.DEF_POS_PAY_D; i++) {
@@ -2937,13 +1880,9 @@ Defines.TRACE("全体描画");
 
 	/**
 	 * TODO ボーナスかうんと描画
-	 * 
 	 */
-	private static void drawBonusCount() {
-		// ZZ.setClip(Defines.DEF_POS_BONUS_X - Defines.DEF_POS_BONUS_W * 2, Defines.DEF_POS_BONUS_Y,
-		// Defines.DEF_POS_BONUS_W * 3, Defines.DEF_POS_BONUS_H);
-		// ZZ.drawImage(Defines.DEF_RES_K2, Defines.DEF_POS_K2_X, Defines.DEF_POS_K2_Y);
-		// ボーナスカウンタ表示領域
+	private static void drawBonusCount()
+    {
 		if (IS_BONUS_JAC()) { // Jac 中
 			int i = clOHHB_V23.getWork(Defines.DEF_BIGBCTR);
 			i = (i == 0) ? 1 : i;
@@ -2987,378 +1926,12 @@ Defines.TRACE("全体描画");
         }
         return "";
     }
-#if __COM_TYPE__
-	
-#else
-//	/**
-//	 * 小役告知描画
-//	 * 
-//	 */
-//	private static void drawKokuchi() {
-//		ZZ.setClip(Defines.DEF_POS_KOKUCHI_X, Defines.DEF_POS_KOKUCHI_Y, Defines.DEF_POS_KOKUCHI_W,
-//				Defines.DEF_POS_KOKUCHI_DY + Defines.DEF_POS_KOKUCHI_H * 2);
-//		ZZ.drawImage(Defines.DEF_RES_K2, Defines.DEF_POS_K2_X, Defines.DEF_POS_K2_Y);
-//		ZZ.drawImage(Defines.DEF_RES_K3, Defines.DEF_POS_K3_X, Defines.DEF_POS_K3_Y);
-//		if (int_s_value[Defines.DEF_INT_CURRENT_MODE] == Defines.DEF_RMODE_SPIN) {
-//			if (Mobile.getKokuchi() == Defines.DEF_SELECT_3_PREV) {
-//				int_s_value[Defines.DEF_INT_KOKUCHI_X]++;
-//			}
-//		} else if (int_s_value[Defines.DEF_INT_CURRENT_MODE] != Defines.DEF_RMODE_BET) {
-//			int_s_value[Defines.DEF_INT_KOKUCHI_X]++;
-//		}
-//
-//		int xx = Defines.DEF_POS_WIDTH - (int_s_value[Defines.DEF_INT_KOKUCHI_X] * 10);
-//
-//		if (xx < Defines.DEF_POS_KOKUCHI_X) {
-//			xx = Defines.DEF_POS_KOKUCHI_X;
-//		}
-//
-//		if (xx != Defines.DEF_POS_WIDTH && int_s_value[Defines.DEF_INT_KOKUCHI_ID] != 0) {
-//			// 成立時でなく内部フラグ間は表示しつづける。
-//			if (Mobile.getKokuchi() != Defines.DEF_SELECT_3_OFF) {
-//				if (int_s_value[Defines.DEF_INT_KOKUCHI_ID] > 1000) {
-//					ZZ.drawImage(int_s_value[Defines.DEF_INT_KOKUCHI_ID] / 1000, xx,
-//							Defines.DEF_POS_KOKUCHI_Y);
-//				}
-//				if (int_s_value[Defines.DEF_INT_KOKUCHI_ID] % 1000 > 0) {
-//					ZZ.drawImage(int_s_value[Defines.DEF_INT_KOKUCHI_ID] % 1000, xx,
-//							Defines.DEF_POS_KOKUCHI_Y + Defines.DEF_POS_KOKUCHI_DY);
-//				}
-//			}
-//		}
-//#if __COM_TYPE__
-//		// クリッピング領域の解除
-//		ZZ.setClip(-ZZ.getOffsetX(), -ZZ.getOffsetY(), ZZ.getWidth(), ZZ.getHeight());
-//#endif
-//	}
-//
-//	private static void setKokuchiId() {
-//		int_s_value[Defines.DEF_INT_KOKUCHI_ID] = 0;
-//		// switch (clOHHB_V23.getWork(Defines.DEF_GMLVSTS)) {
-//		// case Defines.DEF_GMLVSTS_RB_FLAG:// RB内部当たり中
-//		// int_s_value[Defines.DEF_INT_KOKUCHI_ID] = Defines.DEF_RES_KOKU_02 * 1000;
-//		// case Defines.DEF_GMLVSTS_BB_FLAG:// BB内部当たり中
-//		// int_s_value[Defines.DEF_INT_KOKUCHI_ID] = Defines.DEF_RES_KOKU_01 * 1000;
-//		// }
-//		char wavebit = clOHHB_V23.getWork(Defines.DEF_WAVEBIT);
-//		if ((wavebit & Defines.DEF__00000001B) != 0) {
-//			if (IS_BONUS_JAC()) {
-//				int_s_value[Defines.DEF_INT_KOKUCHI_ID] += Defines.DEF_RES_KOKU_08;
-//			} else if (IS_BONUS_GAME()) {
-//				int_s_value[Defines.DEF_INT_KOKUCHI_ID] += Defines.DEF_RES_KOKU_03;
-//			} else {
-//				int_s_value[Defines.DEF_INT_KOKUCHI_ID] += Defines.DEF_RES_KOKU_06;
-//			}
-//		} else if ((wavebit & Defines.DEF__00000010B) != 0) {
-//			int_s_value[Defines.DEF_INT_KOKUCHI_ID] += Defines.DEF_RES_KOKU_04;
-//		} else if ((wavebit & Defines.DEF__00000100B) != 0) {
-//			if (IS_BONUS_GAME()) {
-//				int_s_value[Defines.DEF_INT_KOKUCHI_ID] += Defines.DEF_RES_KOKU_06;
-//			} else {
-//				int_s_value[Defines.DEF_INT_KOKUCHI_ID] += Defines.DEF_RES_KOKU_05;
-//			}
-//		} else if ((wavebit & Defines.DEF__00001000B) != 0) {
-//			if (IS_BONUS_JAC()) {
-//				int_s_value[Defines.DEF_INT_KOKUCHI_ID] += Defines.DEF_RES_KOKU_08;
-//			} else {
-//				int_s_value[Defines.DEF_INT_KOKUCHI_ID] += Defines.DEF_RES_KOKU_07;
-//			}
-//		}
-//
-//		if ((wavebit & Defines.DEF__00010000B) != 0) {
-//			int_s_value[Defines.DEF_INT_KOKUCHI_ID] += Defines.DEF_RES_KOKU_02 * 1000;
-//		} else if ((wavebit & Defines.DEF__00100000B) != 0) {
-//			int_s_value[Defines.DEF_INT_KOKUCHI_ID] += Defines.DEF_RES_KOKU_01 * 1000;
-//		}
-//	}
-//	public void drawDataPanel(bool isGame) {
-//		
-//	}
-//	/**
-//	 * TODO データパネル表示
-//	 * 
-//	 * @param dy
-//	 */
-//	public void drawDataPanel(bool isGame) {
-//		if (Mobile.isDataPanel() || !isGame) {
-//			gp.param_hall.usr_coin = int_s_value[Defines.DEF_INT_SLOT_COIN_NUM]; // getCoinNum();
-//			DfMain.TRACE(("gp.param_hall.usr_coin="+gp.param_hall.usr_coin);
-//			gp.gpHandler(G7Network.GP_HANDLER_03_DATAWINDOW);
-//			drawDataPanelLeft(isGame);
-//			drawDataPanelRight(isGame);
-//#if __DRAW_DATA_PANEL2__
-//			if (!isGame || 
-//					(int_s_value[Defines.DEF_INT_CURRENT_MODE] == Defines.DEF_RMODE_WAIT
-//							&& int_s_value[Defines.DEF_INT_MODE_COUNTER] * ZZ.getThreadSpeed() >= 10000)) {
-//				drawDataPanelCenter(isGame);
-//			}
-//#endif
-//			if (!isGame) {
-//				drawDataPanelBottom(isGame);
-//			}
-//		}
-//	}
-//
-//	/**
-//	 * データパネルの左側
-//	 */
-//	private static void drawDataPanelLeft(bool isGame) {
-//		int dy = 0;
-//		if (isGame) {
-//			dy = 28 - Defines.DEF_POS_NAVI_DY;
-//		}
-//		ZZ.setClip(Defines.DEF_POS_NAVI_L_X, Defines.DEF_POS_NAVI_L_Y + dy, Defines.DEF_POS_NAVI_L_W,
-//				Defines.DEF_POS_NAVI_L_H);
-//		// TOTAL
-//		if(IS_HALL()){
-//			ZZ.drawImage(Defines.DEF_RES_HALL_NAVI_L, Defines.DEF_POS_NAVI_L_X, Defines.DEF_POS_NAVI_L_Y + dy);
-//			printPanelCounts(hallData[Defines.DEF_H_GAME_COUNT], Defines.DEF_POS_NAVI_TOTAL_X,
-//					Defines.DEF_POS_NAVI_TOTAL_Y + dy, 99999,0);
-//			// COUNT
-//			printPanelCounts(hallData[Defines.DEF_H_BNS_0], Defines.DEF_POS_NAVI_COUNT_X,
-//					Defines.DEF_POS_NAVI_COUNT_Y + dy, 99999,0);
-//		}else{
-//			ZZ.drawImage(Defines.DEF_RES_NAVI_L, Defines.DEF_POS_NAVI_L_X, Defines.DEF_POS_NAVI_L_Y + dy);
-//			printPanelCounts(int_s_value[Defines.DEF_INT_TOTAL_GAMES], Defines.DEF_POS_NAVI_TOTAL_X,
-//					Defines.DEF_POS_NAVI_TOTAL_Y + dy, 99999,0);
-//			// COUNT
-//			printPanelCounts(int_s_value[Defines.DEF_INT_UNTIL_BONUS_GAMES], Defines.DEF_POS_NAVI_COUNT_X,
-//					Defines.DEF_POS_NAVI_COUNT_Y + dy, 99999,0);
-//		}
-//	}
-//
-//	private static void drawDataPanelRight(bool isGame) {
-//		int dy = 0;
-//		if (isGame) {
-//			dy = 28 - Defines.DEF_POS_NAVI_DY;
-//		}
-//		ZZ.setClip(Defines.DEF_POS_NAVI_R_X, Defines.DEF_POS_NAVI_R_Y + dy, Defines.DEF_POS_NAVI_R_W,
-//				Defines.DEF_POS_NAVI_R_H);
-////		ZZ.drawImage(Defines.DEF_RES_NAVI_R, Defines.DEF_POS_NAVI_R_X, Defines.DEF_POS_NAVI_R_Y + dy);
-////		int col = (getCoinNum() < 0) ? 1 : 0;
-////		// MEDAL
-////		printPanelCounts(int_s_value[Defines.DEF_INT_SLOT_COIN_NUM], Defines.DEF_POS_NAVI_COIN_X,
-////				Defines.DEF_POS_NAVI_COIN_Y + dy, Defines.DEF_POS_NAVI_COIN_MAX, col);
-////
-////		// BB
-////		printPanelCounts(int_s_value[Defines.DEF_INT_BIG_COUNT], Defines.DEF_POS_NAVI_BB_X,
-////				Defines.DEF_POS_NAVI_BB_Y + dy, Defines.DEF_POS_NAVI_BB_MAX, 0);
-////
-////		ZZ.setColor(ZZ.getColor(0xff, 0xff, 0xff));
-////
-////		ZZ.fillRect(Defines.DEF_POS_NAVI_BB_X + Defines.DEF_POS_NAVI_BB_W, Defines.DEF_POS_NAVI_BB_Y + dy,
-////				Defines.DEF_POS_NAVI_BB_W, Defines.DEF_POS_NAVI_BB_H);
-////
-////		ZZ.drawImage(Defines.DEF_RES_NAB, Defines.DEF_POS_NAVI_BB_X + Defines.DEF_POS_NAVI_BB_W,
-////				Defines.DEF_POS_NAVI_BB_Y + dy);
-////
-////		// RB
-////		printPanelCounts(int_s_value[Defines.DEF_INT_REG_COUNT], Defines.DEF_POS_NAVI_RB_X,
-////				Defines.DEF_POS_NAVI_RB_Y + dy, Defines.DEF_POS_NAVI_RB_MAX, 0);
-//		// MEDAL
-//		if(IS_HALL()){
-//			ZZ.drawImage(Defines.DEF_RES_HALL_NAVI_R, Defines.DEF_POS_NAVI_R_X, Defines.DEF_POS_NAVI_R_Y + dy);
-////			printPanelCounts(int_s_value[Defines.DEF_INT_SLOT_COIN_NUM], Defines.DEF_POS_COIN_X,
-////					Defines.DEF_POS_COIN_Y + dy, 99999,0);
-//		}else{
-//			ZZ.drawImage(Defines.DEF_RES_NAVI_R, Defines.DEF_POS_NAVI_R_X, Defines.DEF_POS_NAVI_R_Y + dy);
-//		}
-//			int col = (getCoinNum() < 0) ? 1 : 0;
-//			if(isGame){
-//				printPanelCounts(int_s_value[Defines.DEF_INT_SLOT_COIN_NUM], Defines.DEF_POS_NAVI_COIN_X,
-//						Defines.DEF_POS_NAVI_COIN_Y + dy, 99999,col);
-//			}else{
-//				printPanelCounts(getCoinNum() + getKasidasiValue(),
-//						Defines.DEF_POS_NAVI_COIN_X, Defines.DEF_POS_NAVI_COIN_Y + dy, 99999, col);
-//			}
-////		}
-//
-//		if(IS_HALL()){
-//			// BB
-//			printPanelCounts(hallData[Defines.DEF_H_BB_COUNT], Defines.DEF_POS_NAVI_BB_X,
-//					Defines.DEF_POS_NAVI_BB_Y + dy, 99,0);
-//		}else{
-//			// BB
-//			printPanelCounts(int_s_value[Defines.DEF_INT_BIG_COUNT], Defines.DEF_POS_NAVI_BB_X,
-//					Defines.DEF_POS_NAVI_BB_Y + dy, 99,0);
-//		}
-//
-//		ZZ.setColor(ZZ.getColor(0xff, 0xff, 0xff));
-//		ZZ.fillRect(Defines.DEF_POS_NAVI_BB_X + Defines.DEF_POS_NAVI_BB_W, Defines.DEF_POS_NAVI_BB_Y + dy, Defines.DEF_POS_NAVI_BB_W,
-//				Defines.DEF_POS_NAVI_BB_H);
-//		ZZ.drawImage(Defines.DEF_RES_NAB, Defines.DEF_POS_NAVI_BB_X + Defines.DEF_POS_NAVI_BB_W, Defines.DEF_POS_NAVI_BB_Y + dy);
-//
-//		if(IS_HALL()){
-//			// RB
-//			printPanelCounts(hallData[Defines.DEF_H_RB_COUNT], Defines.DEF_POS_NAVI_RB_X,
-//					Defines.DEF_POS_NAVI_RB_Y + dy, 99,0);
-//		}else{
-//			// RB
-//			printPanelCounts(int_s_value[Defines.DEF_INT_REG_COUNT], Defines.DEF_POS_NAVI_RB_X,
-//					Defines.DEF_POS_NAVI_RB_Y + dy, 99,0);
-//		}
-//	}
-//	/**
-//	 * TODO データパネル表示その2
-//	 */
-//	private static void drawDataPanelCenter(bool isGame) {
-//		int dy = 0;
-//		if (isGame) {
-//			dy = 28 - Defines.DEF_POS_NAVI_DY;
-//		}
-//		ZZ.setClip(Defines.DEF_POS_NAVI_C_X, Defines.DEF_POS_NAVI_C_Y + dy, Defines.DEF_POS_NAVI_C_W,
-//				Defines.DEF_POS_NAVI_C_H);
-//		if(IS_HALL()){
-//			ZZ.drawImage(Defines.DEF_RES_HALL_NAVI_C, Defines.DEF_POS_NAVI_C_X, Defines.DEF_POS_NAVI_C_Y + dy);
-//		}else{
-//			ZZ.drawImage(Defines.DEF_RES_NAVI_C, Defines.DEF_POS_NAVI_C_X, Defines.DEF_POS_NAVI_C_Y + dy);
-//		}
-//		ZZ.setColor(ZZ.getColor(Defines.DEF_POS_CELL_COLOR_ETC_R,
-//				Defines.DEF_POS_CELL_COLOR_ETC_G, Defines.DEF_POS_CELL_COLOR_ETC_B));
-//		ZZ.fillRect(Defines.DEF_POS_CELL_ETC_X, Defines.DEF_POS_CELL_ETC_Y + dy,
-//				Defines.DEF_POS_CELL_ETC_W, Defines.DEF_POS_CELL_ETC_H);
-//		ZZ.setColor(ZZ.getColor(Defines.DEF_POS_CELL_COLOR_BB_R, Defines.DEF_POS_CELL_COLOR_BB_G,
-//				Defines.DEF_POS_CELL_COLOR_BB_B));
-//		ZZ.fillRect(Defines.DEF_POS_CELL_BB_X, Defines.DEF_POS_CELL_BB_Y + dy, Defines.DEF_POS_CELL_BB_W,
-//				Defines.DEF_POS_CELL_BB_H);
-//		ZZ.setColor(ZZ.getColor(Defines.DEF_POS_CELL_COLOR_RB_R, Defines.DEF_POS_CELL_COLOR_RB_G,
-//				Defines.DEF_POS_CELL_COLOR_RB_B));
-//		ZZ.fillRect(Defines.DEF_POS_CELL_RB_X, Defines.DEF_POS_CELL_RB_Y + dy, Defines.DEF_POS_CELL_RB_W,
-//				Defines.DEF_POS_CELL_RB_H);
-//		/** パネル表示領域を定義 */
-//		int x0 = Defines.DEF_POS_CELL_X;
-//		int y0 = Defines.DEF_POS_CELL_Y + dy;
-//
-//		/***/
-//		int tmp = 0;
-//		int col = 0;
-//
-//		// セルの色を決めて描画
-//		for (int i = 0; i < Defines.DEF_INFO_GAME_HISTORY; i++) { // W(10)
-//			for (int j = 0; j < Defines.DEF_INFO_GAMES; j++) { // H(8)
-//				tmp = bonus_Data[(int_s_value[Defines.DEF_INT_BONUS_DATA_BASE] + i)
-//						% bonus_Data.Length][j];
-//				// TOBE tmpが保証されていればこのチェックは不要だす..
-//				if (tmp < 0 || tmp >= Defines.DEF_GAME_NUM) {
-//					col = panel_colors[Defines.DEF_GAME_NONE];
-//				} else {
-//					col = panel_colors[tmp];
-//				}
-//
-//				ZZ.setColor(col);
-//				// １セル描画
-//				ZZ.fillRect(x0 + i * (Defines.DEF_POS_CELL_W + 1),// comment
-//						y0 + ((Defines.DEF_INFO_GAMES - 1) - j) * (Defines.DEF_POS_CELL_H + 1),
-//						// comment
-//						Defines.DEF_POS_CELL_W, // comment
-//						Defines.DEF_POS_CELL_H);
-//			}
-//		}
-//	}
-//	private static void drawDataPanelBottom(bool isGame) {
-//		int dy = 0;
-//		if (isGame) {
-//			dy = 28 - Defines.DEF_POS_NAVI_DY;
-//		}
-//		ZZ.setClip(Defines.DEF_POS_NAVI_B_X, Defines.DEF_POS_NAVI_B_Y + dy, Defines.DEF_POS_NAVI_B_W,
-//				Defines.DEF_POS_NAVI_B_H);
-//		if(IS_HALL()){
-//			ZZ.drawImage(Defines.DEF_RES_HALL_NAVI_BOT, Defines.DEF_POS_NAVI_BOT_X, Defines.DEF_POS_NAVI_BOT_Y + dy);
-//		}else{
-//			ZZ.drawImage(Defines.DEF_RES_NAVI_BOT, Defines.DEF_POS_NAVI_BOT_X, Defines.DEF_POS_NAVI_BOT_Y + dy);
-//		}
-//		// MAX MEDAL(BB最高獲得)
-//		printPanelCounts(int_s_value[Defines.DEF_INT_GAME_INFO_MAX_GOT],
-//				Defines.DEF_POS_NAVI_MAX_X, Defines.DEF_POS_NAVI_MAX_Y + dy, Defines.DEF_POS_NAVI_MAX_MAX,
-//				0);
-//		if(IS_HALL()){
-//			// BB_AVE
-//			if (hallData[Defines.DEF_H_BB_COUNT] > 0) {
-//				printPanelCounts(hallData[Defines.DEF_H_GAME_COUNT]
-//						/ hallData[Defines.DEF_H_BB_COUNT], Defines.DEF_POS_NAVI_BBAVG_X,
-//						Defines.DEF_POS_NAVI_BBAVG_Y + dy, 999999999,0);
-//			}
-//			// RB_AVE
-//			if (hallData[Defines.DEF_H_RB_COUNT] > 0) {
-//				printPanelCounts(hallData[Defines.DEF_H_GAME_COUNT]
-//						/ hallData[Defines.DEF_H_RB_COUNT], Defines.DEF_POS_NAVI_RBAVG_X,
-//						Defines.DEF_POS_NAVI_RBAVG_Y + dy, 999999999,0);
-//			}
-//		}else{
-//			// BB_AVE
-//			if (int_s_value[Defines.DEF_INT_BIG_COUNT] > 0) {
-//				printPanelCounts(int_s_value[Defines.DEF_INT_TOTAL_GAMES]
-//						/ int_s_value[Defines.DEF_INT_BIG_COUNT], Defines.DEF_POS_NAVI_BBAVG_X,
-//						Defines.DEF_POS_NAVI_BBAVG_Y + dy, Defines.DEF_POS_NAVI_BBAVG_MAX, 0);
-//			}
-//			// RB_AVE
-//			if (int_s_value[Defines.DEF_INT_REG_COUNT] > 0) {
-//				printPanelCounts(int_s_value[Defines.DEF_INT_TOTAL_GAMES]
-//						/ int_s_value[Defines.DEF_INT_REG_COUNT], Defines.DEF_POS_NAVI_RBAVG_X,
-//						Defines.DEF_POS_NAVI_RBAVG_Y + dy, Defines.DEF_POS_NAVI_RBAVG_MAX, 0);
-//			}
-//		}
-//#if __COM_TYPE__
-//		// クリッピング領域の解除
-//		ZZ.setClip(-ZZ.getOffsetX(), -ZZ.getOffsetY(), ZZ.getWidth(), ZZ.getHeight());
-//#endif
-//	}
-#endif
-	/**
-	 * ゼロ埋めせずに数字を描く。（データパネル専用）
-	 * 
-	 * @param val
-	 *            値
-	 * @param xx
-	 *            X座標（１桁目の左上）
-	 * @param yy
-	 *            Y座標（左上）
-	 * @param max
-	 *            表示値の最大値
-	 * 
-	 * @see #printNumber(int, int, int)
-	 */
-	private static void printPanelCounts(int val, int xx, int yy, int max,int col) {
-		printPanelCounts(val, xx, yy, max, col, -1);
-	}
-	private static void printPanelCounts(int val, int xx, int yy, int max,int col,int keta) {
-		// 桁チェック
-		if (val < 0) {
-			val = 0;
-		}
-		if (val > max) {
-			val = max;
-		}
 
-		do {
-			// 一桁は必ず描く
-			// 下（右）から描いて行く
-			switch (col) {
-			case 3:
-				ZZ.setColor(ZZ.getColor(0x00, 0x00, 0xff));
-				break;
-			case 2:
-				ZZ.setColor(ZZ.getColor(0x00, 0xff, 0x00));
-				break;
-			case 1:
-				ZZ.setColor(ZZ.getColor(0xff, 0x00, 0x00));
-				break;
-			case 0:
-			default:
-				ZZ.setColor(ZZ.getColor(0xff, 0xff, 0xff));
-				break;
-			}
-			ZZ.fillRect(xx, yy, Defines.DEF_POS_NAVI_BB_W, Defines.DEF_POS_NAVI_BB_H);
-			ZZ.drawImage(Defines.DEF_RES_NA0 + (val % 10), xx, yy);
-			val /= 10;
-			xx -= Defines.DEF_POS_NAVI_BB_W;
-			keta--;
-		} while (val > 0 || keta > 0);
-	}
-
-	private static void set4th(int id) {
+	private static void set4th(int id)
+    {
 		// 待ちから動作状態へ
-		if (int_s_value[Defines.DEF_INT_4TH_ACTION_FLAG] == 0 && id > 0) {
+		if (int_s_value[Defines.DEF_INT_4TH_ACTION_FLAG] == 0 && id > 0)
+        {
 			int_s_value[Defines.DEF_INT_RLPTNDT] = id - 1;
 			int_s_value[Defines.DEF_INT_RLPTNDT_COUNTER] = 0;
 			int_s_value[Defines.DEF_INT_RLPTNDT_FLAG] = 0;// 0:回転開始可1:回転中2:回転終了
@@ -3464,29 +2037,19 @@ Defines.TRACE("全体描画");
 			}else{
 				playSE(Defines.DEF_SOUND_11);
 			}
-//			switch (spe) {
-//			case 20:
-//				playBGM(Defines.DEF_SOUND_10, true);
-//				break;
-//			case 10:
-//				playSE(Defines.DEF_SOUND_11);
-//				break;
-//			}
 		}
 		int_s_value[Defines.DEF_INT_RLPTNDT_FLAG]++;
 		int_s_value[Defines.DEF_INT_TOP_LAMP] = (dir == -1) ? 4 : 5;
-//		DfMain.TRACE(("******"+int_s_value[Defines.DEF_INT_RLPTNDT_FLAG]);
 	}
 
 	/**
 	 * 動く上部ランプ
-	 * 
 	 * 演出ＩＤ
-	 * 
 	 * @param isRepaint
 	 * @see #drawUpperLamp(int)
 	 */
-	private static void ctrlTopLamp() {
+	private static void ctrlTopLamp()
+    {
 		if (IS_BONUS_JAC()
 				|| int_s_value[Defines.DEF_INT_CURRENT_MODE] == Defines.DEF_RMODE_RB_FANFARE) {
 			int_s_value[Defines.DEF_INT_TOP_LAMP] = 1;
@@ -3497,12 +2060,9 @@ Defines.TRACE("全体描画");
 			int_s_value[Defines.DEF_INT_TOP_LAMP] = 3;
 		}
 
-// satoh#暫定
 		// 0: 点滅スピード(ms)
 		if ((int_s_value[Defines.DEF_INT_MODE_COUNTER] % (FLLXX[int_s_value[Defines.DEF_INT_TOP_LAMP]][0]
 				/ int_s_value[Defines.DEF_INT_LOOP_SPEED] + 1)) == 0) {
-//		if ((int_s_value[Defines.DEF_INT_MODE_COUNTER] % (FLLXX[int_s_value[Defines.DEF_INT_TOP_LAMP]][0]
-//				/ 1 + 1 )) == 0) {
 			// ボーナス上部ランプの点滅スピード調整
 			int_s_value[Defines.DEF_INT_SEQUENCE_EFFECT]++;
 		}
@@ -3512,7 +2072,6 @@ Defines.TRACE("全体描画");
 			int_s_value[Defines.DEF_INT_SEQUENCE_EFFECT] = 1;
 		}
 
-		//DfMain.TRACE(("Defines.DEF_INT_TOP_LAMP:" + int_s_value[Defines.DEF_INT_TOP_LAMP] + ":" + int_s_value[Defines.DEF_INT_SEQUENCE_EFFECT]);
 		int data = FLLXX[int_s_value[Defines.DEF_INT_TOP_LAMP]][int_s_value[Defines.DEF_INT_SEQUENCE_EFFECT]];
 		for (int i = 0; i < 8; i++) {
 			int action = ((data & (1 << i)) != 0) ? Defines.DEF_LAMP_ACTION_ON: Defines.DEF_LAMP_ACTION_OFF;
@@ -3525,14 +2084,8 @@ Defines.TRACE("全体描画");
 		}
 	}
 
-	// ======================================================
-	// TOBE [スイッチメソッド]
-	// ======================================================
-	/**
-	 * ボタンのスイッチ
-	 * 
-	 */
-	private static void ctrlButtonLamp() {
+	private static void ctrlButtonLamp()
+    {
 		for (int i = 0; i < 3; i++) {
 			if (int_s_value[Defines.DEF_INT_REEL_STOP_R0 + i] != ANGLE_UNDEF
 					|| (int_s_value[Defines.DEF_INT_KEY_REJECT] > 0)) {
@@ -3547,9 +2100,9 @@ Defines.TRACE("全体描画");
 
 	/**
 	 * BETランプのスイッチ
-	 * 
 	 */
-	private static void ctrlBetLamp() {
+	private static void ctrlBetLamp()
+    {
 		switch (int_s_value[Defines.DEF_INT_CURRENT_MODE]) {
 		case Defines.DEF_RMODE_BET:
 		case Defines.DEF_RMODE_SPIN:
@@ -3705,7 +2258,8 @@ Defines.TRACE("全体描画");
     /// </summary>
     /// <param name="stopNum">第？回胴停止(左=0, 中=1, 右=2)</param>
     /// <returns>既に止まっていたら true</returns>
-    public static bool IsReelStopped(int stopNum) {
+    public static bool IsReelStopped(int stopNum)
+    {
         if ((int_s_value[Defines.DEF_INT_IS_REEL_STOPPED] & BIT(stopNum)) != 0) {
             return true;
         } else {
@@ -3713,18 +2267,15 @@ Defines.TRACE("全体描画");
         }
     }
 
-	// ======================================================
-	// TOBE [メイン制御内部メソッド]
-	// ======================================================
 	/**
 	 * リールを止めるべき所に止める。
-	 * 
-	 * @param stopNum
-	 *            第？回胴停止(左=0, 中=1, 右=2)
+	 * @param stopNum 第？回胴停止(左=0, 中=1, 右=2)
 	 * @return 既に止まっていたら true
 	 */
-	private static bool setReelStopAngle(int stopNum) {
-        if (IsReelStopped(stopNum)) {
+	private static bool setReelStopAngle(int stopNum)
+    {
+        if (IsReelStopped(stopNum))
+        {
 			return true; // 止まってる
 		}
 
@@ -3747,18 +2298,15 @@ Defines.TRACE("全体描画");
 		{
 			return true;
 		}
-//		if (Mobile.isJacCut() && IS_BONUS_JAC()) {
-//			DfMain.TRACE(("JACkカットになっている？");
-//			return true;
-//		}
 		
 		return false;
-	} // End of setReelStopAngle() Method
+	}
 
 	/**
 	 * 各種払い出し音セット
 	 */
-	private static void playCoinSound() {
+	private static void playCoinSound()
+    {
 		int snd_id = Defines.DEF_SOUND_UNDEF;
 		_soundTime = Util.GetMilliSeconds() + 0;
 		if (int_s_value[Defines.DEF_INT_WIN_COIN_NUM] <= 0) {
@@ -3784,23 +2332,12 @@ Defines.TRACE("全体描画");
 
 	/**
 	 * グラフ更新(シフト)
-	 * 
 	 * ボーナス終了後の次ゲームのリール回転開始のタイミングで呼ぶ.
-	 * 
-	 * @param current =
-	 *            現在の回転数
-	 * @param game_kind =
-	 *            BIG/REG/NORMAL
-	 * 
-	 * @see bonus_Data[][]
-	 * @see df.Df#UNIT_GAMES
-	 * @see df.Df#INFO_GAMES
-	 * @see df.Df#GAME_BIG
-	 * @see df.Df#GAME_REG
-	 * @see df.Df#GAME_NONE
-	 * 
+	 * @param current = 現在の回転数
+	 * @param game_kind = BIG/REG/NORMAL
 	 */
-	private static void shiftDataPanelHistory(int current, int game_kind) {
+	private static void shiftDataPanelHistory(int current, int game_kind)
+    {
 		// Y軸 高さ.
 		int idx = current / Defines.DEF_UNIT_GAMES;
 		if (idx >= Defines.DEF_INFO_GAMES) { // == bonus_Data[x].Length
@@ -3826,20 +2363,11 @@ Defines.TRACE("全体描画");
 
 	/**
 	 * 進行中のゲーム情報を蓄積していく
-	 * 
 	 * 毎ゲーム呼ぶ.
-	 * 
-	 * @param current =
-	 *            現在のボーナス間回転数
-	 * 
-	 * @see bonus_Data[][]
-	 * @see df.Df#UNIT_GAMES
-	 * @see df.Df#INFO_GAMES
-	 * @see df.Df#GAME_NONE
-	 * @see df.Df#GAME_NORMAL
-	 * 
+	 * @param current = 現在のボーナス間回転数
 	 */
-	private static void setCurrentDataPanel(int current) {
+	private static void setCurrentDataPanel(int current)
+    {
 		// Y軸 高さ.
 		int idx = (current - 1) / Defines.DEF_UNIT_GAMES;
 		if (idx >= Defines.DEF_INFO_GAMES) { // == bonus_Data[x].Length
@@ -3854,7 +2382,6 @@ Defines.TRACE("全体描画");
 
 	/**
 	 * ＢＢ作動中ですか？
-	 * 
 	 * @return true=ＢＢ作動中
 	 */
 	public static bool IS_BONUS_GAME() {
@@ -3863,7 +2390,6 @@ Defines.TRACE("全体描画");
 
 	/**
 	 * BONUS中ですか？
-	 * 
 	 * @return
 	 */
     public static bool IS_BONUS() {
@@ -3872,16 +2398,12 @@ Defines.TRACE("全体描画");
 
 	/**
 	 * ＲＢ作動中ですか？
-	 * 
 	 * @return true=ＲＢ作動中
 	 */
     public static bool IS_BONUS_JAC() {
 		return (clOHHB_V23.getWork(Defines.DEF_GAMEST) & 0x01) != 0;
 	}
 
-	/**
-	 * 
-	 */
 	public static bool IS_REPLAY() {
 		return clOHHB_V23.getWork(Defines.DEF_GAMEST) == 0x4
 				|| (!IS_BONUS() && clOHHB_V23.getWork(Defines.DEF_HITFLAG) == 0x8);
@@ -3906,58 +2428,9 @@ Defines.TRACE("全体描画");
 		}
 		return 0;
 	}
-#if __COM_TYPE__
-	
-#else
-//	private static bool checkLimit() {
-//		// bool flag = false;
-//		int_s_value[Defines.DEF_INT_WHAT_EXIT] = Defines.DEF_EXIT_NON;
-//		// if (!IS_BONUS()) {
-//		// if (Mobile.getGameMode() == Defines.DEF_GMODE_SIMURATION) {
-//		// if (int_s_value[Defines.DEF_INT_BIG_COUNT] > Defines.DEF_NUM_SIMULATION_BB_RB_LIMIT)
-//		// flag = true;
-//		// if (int_s_value[Defines.DEF_INT_REG_COUNT] > Defines.DEF_NUM_SIMULATION_BB_RB_LIMIT)
-//		// flag = true;
-//		// } else if (Mobile.getGameMode() == Defines.DEF_GMODE_GAME) {
-//		// if (int_s_value[Defines.DEF_INT_BIG_COUNT] > Defines.DEF_NUM_JISSEN_LIMIT)
-//		// flag = true;
-//		// if (int_s_value[Defines.DEF_INT_REG_COUNT] > Defines.DEF_NUM_JISSEN_LIMIT)
-//		// flag = true;
-//		// }
-//		// }
-//		// if (Mobile.getGameMode() == Defines.DEF_GMODE_SIMURATION) {
-//		// if (int_s_value[Defines.DEF_INT_TOTAL_GAMES] > Defines.DEF_NUM_SIMULATION_LIMIT)
-//		// flag = true;
-//		// if (int_s_value[Defines.DEF_INT_SLOT_COIN_INNER_COUNT] >
-//		// Defines.DEF_NUM_SIMULATION_LIMIT)
-//		// flag = true;
-//		// } else if (Mobile.getGameMode() == Defines.DEF_GMODE_GAME) {
-//		// if (int_s_value[Defines.DEF_INT_TOTAL_GAMES] > Defines.DEF_NUM_JISSEN_LIMIT)
-//		// flag = true;
-//		// if (int_s_value[Defines.DEF_INT_SLOT_COIN_INNER_COUNT] > Defines.DEF_NUM_JISSEN_LIMIT)
-//		// flag = true;
-//		// }
-//		if(ZZ.getAuthResult() == 0 || IS_HALL()){
-//			int[] param = getSendParams();
-//			for (int i = 0; i < param.Length; i++) {
-//				if (param[i] >= 99999 || param[i] <= -99999) {
-//					int_s_value[Defines.DEF_INT_WHAT_EXIT] = Defines.DEF_EXIT_OVER_INT;
-//					return true;
-//				}
-//			}
-//		}else{
-//			if(int_s_value[Defines.DEF_INT_TOTAL_GAMES] >= Defines.DEF_TRIAL_GAME){
-//				int_s_value[Defines.DEF_INT_WHAT_EXIT] = Defines.DEF_EXIT_OVER_INT;
-//				return true;
-//			}
-//		}
-//		// if (flag)
-//		// int_s_value[Defines.DEF_INT_WHAT_EXIT] = Defines.DEF_EXIT_OVER_INT;
-//		// return flag;
-//		return false;
-//	}
-#endif
-	private static int[] isTempai() {
+
+    private static int[] isTempai()
+    {
 		int[] tempai = { Defines.DEF_BB_UNDEF, 0 };
 		int yukou = 5;// 有効ライン
 		if (int_s_value[Defines.DEF_INT_BET_COUNT] == 1) {
@@ -3994,30 +2467,19 @@ Defines.TRACE("全体描画");
     /// SE を再生(Director.directionデータから選ばず、直接鳴動を指定するときに使う)
 	/// </summary>
 	/// <param name="id"></param>
-	public static void playSE(int id) {
-		if (Defines.DEF_USE_MULTI_SOUND) {
-			// 重畳の場合
-			Mobile.playSound(id, false, Defines.DEF_SOUND_MULTI_SE);
-		} else {
-            //// 非重畳の場合はボーナスゲームのＢＧＭを優先して鳴らす（＝ボーナスゲームでないときだけ鳴らせる）
-            //if (!IS_BONUS_GAME()) {
-            //    // 非重畳の場合は第三引数に意味はない！！
-            //    Mobile.playSound(id, false, Defines.DEF_SOUND_MULTI_SE);
-            //}
-		}
+	public static void playSE(int id)
+    {
+		Mobile.playSound(id, false, Defines.DEF_SOUND_MULTI_SE);
 	}
 
 	/**
 	 * BGM を再生(Director.directionデータから選ばず、直接鳴動を指定するときに使う)
-	 * 
-	 * @param id
-	 *            サウンドＩＤ
-	 * @param loop
-	 *            ループ再生
+	 * @param id サウンドＩＤ
+	 * @param loop ループ再生
 	 */
-	public static void playBGM(int id, bool loop) {
+	public static void playBGM(int id, bool loop)
+    {
 		// 非重畳の場合は第３引数は無視されるのよ
-#if __COM_TYPE__
 		if( loop == true)
 		{
 			bgm_no = id;
@@ -4028,18 +2490,9 @@ Defines.TRACE("全体描画");
 			bgm_no = -1;
 			bgm_loop = false;
 		}
-#endif
-        GameManager.PlayBGM(id, loop);
-		//Mobile.playSound(id, loop, Defines.DEF_SOUND_MULTI_BGM);
-	}
 
-	// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
-	// もともとDirector.classだったがプログラムサイズが大きすぎてこちらに移動
-	// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
-	// /**
-	// * 現在のフラッシュデータ
-	// */
-	// private static char[] flash = { 0 };
+        GameManager.PlayBGM(id, loop);
+	}
 
 	/** 現在位置 */
 	private static int current = 0;

@@ -1,24 +1,8 @@
-﻿
-/// <summary>
-/// ほぼスタブ
-/// </summary>
-using System;
+﻿using System;
+
 public partial class SlotInterface
 {    
-	bool end_f = false;
-
-	String[] pngResource; // イメージファイル名のバッファ
-
-    
-    // TODO C#移植 GP処理コメントアウト
-    //Image[] png01; // アプリ起動画面リソース
-    //Image[] png02; // アプリG7画面リソース
-    //Image   pnginfo; // 広告画像
-
 	// HOST情報
-	public static String gpID;
-	public static String gpHOST;
-	public static String gpIF_VER;
 	public static String gpVER;
 	public static String gpRES;
     
@@ -59,11 +43,6 @@ public partial class SlotInterface
 	public bool auto_coin = false; // 自動でcoinを購入
 	public bool data_flag = true; // データパネル表示フラグ
 
-    // TODO C#移植 GP処理コメントアウト
-    //public static Graphics g;
-    //public static Font     font;
-    //public static Canvas   cv;
-
 	public int fontHeight;
 
 	public bool reset = false;
@@ -89,14 +68,7 @@ public partial class SlotInterface
 	public int     msgg;
 	public int     msgb;
 	public int     msgy;
-    // TODO C#移植 GP処理コメントアウト
-    //public Image   msgimg;
 	
-#if	_DOCOMO		//{
-	
-#else				//}{
-		public Font    msgfont = Font.getFont( Font.FACE_SYSTEM, Font.STYLE_PLAIN, Font.SIZE_SMALL );
-#endif				// }
 	// セーブデータの情報
 	enum SAVE {
 		SAVE_SOUND_VOL,

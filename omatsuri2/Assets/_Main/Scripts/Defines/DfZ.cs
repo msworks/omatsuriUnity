@@ -102,13 +102,6 @@
 	/** DoJa: JAM 引数の順序 2:launch */
 	public const int DEF_JAM_PARAM_SERVER = 2; 
 
-
-
-
-
-
-
-
 	/** 0-押されたキー */
 	public const int DEF_Z_INT_KEYPRESS = 0; 
 
@@ -132,14 +125,6 @@
 
 	/** 7-変数の数 */
 	public const int DEF_Z_INT_MAX = 7; 
-
-
-
-
-
-
-
-
 
 	/** コマンドナンバー : UNDEF=-1 */
 	public const int DEF_Z_INT_COM_UNDEF = -1; 

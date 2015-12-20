@@ -13,7 +13,8 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// シングルトン
     /// </summary>
-    public static GameManager Instance {
+    public static GameManager Instance
+    {
         get { return _instance; }
     }
 
@@ -22,10 +23,12 @@ public class GameManager : MonoBehaviour
     public SlotMachine slotMachine;
 
     [Serializable]
-    public class SlotMachine {
+    public class SlotMachine
+    {
         public ReelBuilder[] reel;
         public GameObject reel4th;
     }
+
     public Animator lever;
 
     public SoundDefine soundDefine;
@@ -65,9 +68,6 @@ public class GameManager : MonoBehaviour
 
     private float prev4thOffset;
 
-    private float nextUpdateTime;
-    private float updateInterval = 0.02f;
-
     public enum PAUSE_STATE {
         PAUSE,
         PLAY,
@@ -89,7 +89,8 @@ public class GameManager : MonoBehaviour
 
     Mobile core = new Mobile();
 
-    void Awake() {
+    void Awake()
+    {
         _instance = this;
         Application.targetFrameRate = 60; // iOSデフォルトが30fpsなので、60fpsになるよう設定
         Screen.sleepTimeout = SleepTimeout.NeverSleep; // スリープ状態にならないように設定
@@ -101,7 +102,8 @@ public class GameManager : MonoBehaviour
     /// リール図柄設定
     /// リール配置と画像の定義からテクスチャを生成して各リールに適用する。
     /// </summary>
-    void SetupReelTexture() {
+    void SetupReelTexture()
+    {
         int tw = 64;
         int th = 32;
         int faceCount = 21; // リールの面数
@@ -121,7 +123,8 @@ public class GameManager : MonoBehaviour
     /// <param name="row">行</param>
     /// <param name="col">列(リール)</param>
     /// <param name="isLit">ランプ点灯中？</param>
-    public void SetReelTexture(int row, int col, bool isLit) {
+    public void SetReelTexture(int row, int col, bool isLit)
+    {
         int id = mOmatsuri.getReelId(mOmatsuri.REELTB[col][row]);
         Sprite face;
         if (mOmatsuri.IsReelStopped(col)) {
@@ -142,7 +145,8 @@ public class GameManager : MonoBehaviour
     /// ランプ処理に使用。
     /// </summary>
     /// <param name="isLit">ランプ点灯中？</param>
-    public void Set4thReelTexture(bool isLit) {
+    public void Set4thReelTexture(bool isLit)
+    {
         Texture2D face;
         if (isLit) {
             face = pictureDefine.reel4thLit;
@@ -156,27 +160,22 @@ public class GameManager : MonoBehaviour
     /// 4thリール図柄設定
     /// 4thリール画像の定義からテクスチャを生成して4thリールに適用する。
     /// </summary>
-    void Setup4thReelTexture() {
-        //reel4thTextureUnlit = pictureDefine.reel4th[0].unlit;
-        //reel4thTextureLit = pictureDefine.reel4th[0].lit;
+    void Setup4thReelTexture()
+    {
         slotMachine.reel4th.GetComponent<Renderer>().material.mainTexture = pictureDefine.reel4thUnLit;
     }
 
-	void Start () {
-
+	void Start ()
+    {
         slotMachineState = GameObject.Find("SlotMachineState")
                                      .GetComponent<SlotMachineState>();
 
         // リールをセットアップ
-        //SetupReelTexture();
         Setup4thReelTexture();
         ZZ.setThreadSpeed(20);
         StartCoroutine(MainLoop());
         InitializeCasinoData();
         LoadPlayData();
-
-        // WebView表示
-        //WebViewManager.Instance.Open();
 	}
 
     /// <summary>
@@ -184,7 +183,8 @@ public class GameManager : MonoBehaviour
     /// 当日の遊戯履歴データへも同時に書き込みを行う
     /// </summary>
     /// <param name="num">ゲーム数</param>
-    public void AddHistory(int num) {
+    public void AddHistory(int num)
+    {
         int counterNum = (num + 99) / 100;// 100単位で切り上げ
         casinoData.AddHistory(counterNum);
         playData.history.Add(num);
@@ -194,7 +194,8 @@ public class GameManager : MonoBehaviour
     /// 共通UI初期化
     /// UIの内容をクリア
     /// </summary>
-    void InitializeCasinoData() {
+    void InitializeCasinoData()
+    {
         casinoData.GameCount = 0;
         casinoData.BB = 0;
         casinoData.RB = 0;
@@ -208,7 +209,8 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void Update() {
+    void Update()
+    {
         if (UIManager.Instance.autoPlayToggle.isOn || 
             UIManager.Instance.semiAutoPlayToggle.isOn ) {
             AutoPlay();
@@ -226,7 +228,8 @@ public class GameManager : MonoBehaviour
     /// リール選択エリアの更新
     /// 回転中のみ入力を受け付ける。対応するボタンのランプの状態で判断。
     /// </summary>
-    void UpdateReelTouchArea() {
+    void UpdateReelTouchArea()
+    {
         for (int i = 0; i < 3; i++) {
             reelTouchAreas[i].SetActive(mOmatsuri.getLampStatus(Defines.DEF_LAMP_BUTTON_L + i) == Defines.DEF_LAMP_STATUS_ON);
         }
@@ -247,7 +250,7 @@ public class GameManager : MonoBehaviour
             try {
                 core.exec();
 
-                if (IsAllReelStopped())
+                if (IsAllReelStopped() && Is4thReelStopped())
                 {
                     slotMachineState.PlayEnd();
                 }
@@ -256,14 +259,15 @@ public class GameManager : MonoBehaviour
                 UIManager.Instance.errorText.text = e.ToString();
             }
 
-            yield return new WaitForSeconds(0.02f); // TODO soy 要調整。とりあえず40msに合わせた
+            yield return new WaitForSeconds(0.02f);
         }
     }
 
     /// <summary>
     /// 遊戯データロード処理
     /// </summary>
-    void LoadPlayData() {
+    void LoadPlayData()
+    {
         playData = PlayData.Load();
         PlayData.RefreshData(playData);
         RefreshCommonUIData();
@@ -273,7 +277,8 @@ public class GameManager : MonoBehaviour
     /// 共通UI更新
     /// 遊戯データをUIに反映
     /// </summary>
-    void RefreshCommonUIData() {
+    void RefreshCommonUIData()
+    {
         casinoData.GameCount = playData.gameCount;
         casinoData.BB = playData.dailyData[2].BB;
         casinoData.RB = playData.dailyData[2].RB;
@@ -288,7 +293,8 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// 遊戯データセーブ処理
     /// </summary>
-    void SavePlayData() {
+    void SavePlayData()
+    {
         playData.gameCount = casinoData.GameCount;
         playData.dailyData[2].BB = casinoData.BB;
         playData.dailyData[2].RB = casinoData.RB;
@@ -301,7 +307,8 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// リール状態更新
     /// </summary>
-    void UpdateReel() {
+    void UpdateReel()
+    {
         SetReelAngle(slotMachine.reel[0].transform, mOmatsuri.int_s_value[Defines.DEF_INT_REEL_ANGLE_R0]);
         SetReelAngle(slotMachine.reel[1].transform, mOmatsuri.int_s_value[Defines.DEF_INT_REEL_ANGLE_R1]);
         SetReelAngle(slotMachine.reel[2].transform, mOmatsuri.int_s_value[Defines.DEF_INT_REEL_ANGLE_R2]);
@@ -310,7 +317,8 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// コイン枚数表示更新
     /// </summary>
-    void UpdateCoinDisplay() {
+    void UpdateCoinDisplay()
+    {
         creditCoinText.text = mOmatsuri.int_s_value[Defines.DEF_INT_CREDIT_COIN_NUM].ToString("00");
         bonusCoinText.text = mOmatsuri.GetBonusCount();
         getCoinText.text = mOmatsuri.int_s_value[Defines.DEF_INT_WIN_GET_COIN].ToString("#");
@@ -319,7 +327,8 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// 4thリール状態更新
     /// </summary>
-    void Update4thReel() {
+    void Update4thReel()
+    {
         float smooth = 0.5f;
         float angleCorrect = 0.245f; // 角度補正
         // 角度(0～414)をOffsetの値(0～1)に変換
@@ -335,19 +344,20 @@ public class GameManager : MonoBehaviour
                 new Vector2(slotMachine.reel4th.GetComponent<Renderer>().material.mainTextureOffset.x + 1f, 0f);
         }
 
-        //Debug.Log("offset:" + offset + " p:" + prev4thOffset + " RAW:" + mOmatsuri.int_s_value[Defines.DEF_INT_4TH_REEL_ANGLE]);
         slotMachine.reel4th.GetComponent<Renderer>().material.mainTextureOffset = Vector2.Lerp(
             slotMachine.reel4th.GetComponent<Renderer>().material.mainTextureOffset,
             new Vector2(offset + angleCorrect, 0f),
             smooth
             );
+
         prev4thOffset = offset;
     }
 
     /// <summary>
     /// ランプ点灯状態更新
     /// </summary>
-    void UpdateLamp() {
+    void UpdateLamp()
+    {
         for (int i = 0; i < lamps.Length; i++) {
             if (lamps[i] != null) {
                 lamps[i].SetActive(mOmatsuri.getLampStatus(i) == Defines.DEF_LAMP_STATUS_ON);
@@ -355,33 +365,19 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    [SerializeField]
-    GameObject NoCreditPopup;
-
     /// <summary>
     /// 共通UI更新
     /// </summary>
     void UpdateCommonUI()
     {
-        // コイン枚数を金額に変換する
-
-        // これがマズいような気もする
-        var coin = mOmatsuri.int_s_value[Defines.DEF_INT_SLOT_COIN_NUM];
-        var cent = Rate.Instanse.Coin2Cent(coin);
-        var doller = (Decimal)cent / 100m;
-
-        casinoData.Exchange = doller + casinoData.exchangeFract;
-
-        if (coin <= 2)
-        {
-            NoCreditPopup.SetActive(true);
-        }
+        // 更新しない
     }
 
     /// <summary>
     /// コイン投入時処理
     /// </summary>
-    public void OnCoinInsert() {
+    public void OnCoinInsert()
+    {
         Debug.Log("OnCoinInsert");
         LitCoinInsertSlotLamp();
         Invoke("UnLitCoinInsertSlotLamp", 0.03f);
@@ -392,21 +388,24 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// コイン投入口ランプ点灯処理
     /// </summary>
-    void LitCoinInsertSlotLamp() {
+    void LitCoinInsertSlotLamp()
+    {
         coinInsertSlotLamp.SetActive(true);
     }
 
     /// <summary>
     /// コイン投入口ランプ消灯処理
     /// </summary>
-    void UnLitCoinInsertSlotLamp() {
+    void UnLitCoinInsertSlotLamp()
+    {
         coinInsertSlotLamp.SetActive(false);
     }
 
     /// <summary>
     /// 遊技状態
     /// </summary>
-    public enum PlayStatus { 
+    public enum PlayStatus
+    { 
         Normal,
         RegularBonusInternal,
         BigBonusInternal,
@@ -419,7 +418,8 @@ public class GameManager : MonoBehaviour
     /// 4thリール停止確認
     /// </summary>
     /// <returns></returns>
-    bool Is4thReelStopped() {
+    bool Is4thReelStopped()
+    {
         return mOmatsuri.int_s_value[Defines.DEF_INT_4TH_ACTION_FLAG] == 0;
     }
 
@@ -427,7 +427,8 @@ public class GameManager : MonoBehaviour
     /// オートプレイパターン設定
     /// オートプレイ定義と現在の状態を参照してリール停止パターンを決定する
     /// </summary>
-    void SetAutoPlayPattern() {
+    void SetAutoPlayPattern()
+    {
         int patternSeed = UnityEngine.Random.Range(0, 100);
         AutoPlayPatternDefine.AutoPlayPatternValue[] patterns;
         switch (clOHHB_V23.getWork(Defines.DEF_GMLVSTS)) {
@@ -535,12 +536,6 @@ public class GameManager : MonoBehaviour
         
         UIManager.Instance.rateText.text = "機械割設定:現在値=" + (Mobile.int_m_value[Defines.DEF_INT_SETUP_VALUE] + 1) + " 指示値=" + (mOmatsuri.gp.gpif_setting + 1);
         UIManager.Instance.debugText.text = text;
-
-        /*
-        Debug.Log(
-            "リール1=" + mOmatsuri.ANGLE2INDEX(mOmatsuri.int_s_value[Defines.DEF_INT_REEL_ANGLE_R0]) + 
-            " ANGLE=" + mOmatsuri.int_s_value[Defines.DEF_INT_REEL_ANGLE_R0]);
-         */
     }
 
     /// <summary>
@@ -549,7 +544,6 @@ public class GameManager : MonoBehaviour
     /// <param name="reel">対象リール</param>
     /// <param name="angle">角度(0～65535)</param>
     void SetReelAngle(Transform reel, float angle) {
-        // TODO soy 目押しする関係上、リールの回転位置は高精度で同期させつつ滑らかに回したい
         float smooth = .5f;
         reel.rotation = Quaternion.Lerp(reel.rotation, Quaternion.AngleAxis(angle * -360f / 65535f, Vector3.right), smooth);
     }
@@ -558,42 +552,41 @@ public class GameManager : MonoBehaviour
     /// 全てのリールが止まっているか判定
     /// </summary>
     /// <returns></returns>
-    bool IsAllReelStopped() {
-        return 
-            mOmatsuri.IsReelStopped(0) && 
-            mOmatsuri.IsReelStopped(1) && 
-            mOmatsuri.IsReelStopped(2);
+    bool IsAllReelStopped()
+    {
+        var flg = mOmatsuri.IsReelStopped(0) &&
+                  mOmatsuri.IsReelStopped(1) &&
+                  mOmatsuri.IsReelStopped(2);
+        return flg;
     }
 
-    public void SetAutoPlayFull() {
+    public void SetAutoPlayFull()
+    {
         currentAutoPlaySetting = autoPlayFull;
         if (UIManager.Instance.autoPlayToggle.isOn)
         {
             UIManager.Instance.semiAutoPlayToggle.isOn = false;
             UIManager.Instance.semiAutoPlayToggle.interactable = false;
-            //UIManager.Instance.semiAutoPlayToggle.gameObject.SetActive(false);
         }
         else
         {
             UIManager.Instance.semiAutoPlayToggle.isOn = false;
             UIManager.Instance.semiAutoPlayToggle.interactable = true;
-            //UIManager.Instance.semiAutoPlayToggle.gameObject.SetActive(false);
         }
     }
 
-    public void SetAutoPlaySelf() {
+    public void SetAutoPlaySelf()
+    {
         currentAutoPlaySetting = autoPlaySelf;
         if (UIManager.Instance.semiAutoPlayToggle.isOn)
         {
             UIManager.Instance.autoPlayToggle.isOn = false;
             UIManager.Instance.autoPlayToggle.interactable = false;
-            //UIManager.Instance.autoPlayToggle.gameObject.SetActive(false);
         }
         else
         {
             UIManager.Instance.autoPlayToggle.isOn = false;
             UIManager.Instance.autoPlayToggle.interactable = true;
-            //UIManager.Instance.autoPlayToggle.gameObject.SetActive(true);
         }
     }
 
@@ -601,7 +594,8 @@ public class GameManager : MonoBehaviour
     /// オートプレイ停止（セルフオート時のみ）
     /// </summary>
     /// <param name="log">ログ出力内容</param>
-    public void StopAutoPlay(string log) {
+    public void StopAutoPlay(string log)
+    {
         // 強制続行中はオートプレイを停止しない
         if (UIManager.Instance.forceAutoPlayToggle.isOn) return;
 
@@ -621,8 +615,10 @@ public class GameManager : MonoBehaviour
 
         // レバーをアニメーションさせる
         lever.SetTrigger("On");
+
         // オートプレイ用停止パターン要求
         StartCoroutine(RequestAutoPlayPattern());
+
         // 遊技状態保存
         SavePlayData();
     }
@@ -631,7 +627,8 @@ public class GameManager : MonoBehaviour
     /// オートプレイ用停止パターン要求
     /// </summary>
     /// <returns></returns>
-    IEnumerator RequestAutoPlayPattern() {
+    IEnumerator RequestAutoPlayPattern()
+    {
         // オートプレイ設定が確定するまで繰り返す
         while (currentAutoPlayPattern == null) {
             SetAutoPlayPattern();
@@ -643,10 +640,13 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// オートプレイ処理
     /// </summary>
-    public void AutoPlay() {
+    public void AutoPlay()
+    {
         // 全部止まってるならコイン投入＆リール回して抜ける
-        if (IsAllReelStopped()) {
-            currentAutoPlayPattern = null; // オートプレイ設定をクリア            
+        if (IsAllReelStopped())
+        {
+            // オートプレイ設定をクリア            
+            currentAutoPlayPattern = null;
             KeyInput(5);
             return;
         }
@@ -657,23 +657,30 @@ public class GameManager : MonoBehaviour
         // 自動停止順に基づき停止対象リールを選択
         int targetReel = -1;
         int[] stopOrder;
-        if (currentAutoPlayPattern.isStopReverse) {
+        if (currentAutoPlayPattern.isStopReverse)
+        {
             stopOrder = new int[] { 2, 1, 0 };
         } else {
             stopOrder = new int[] { 0, 1, 2 };
         }
-        for (int idx = 0; idx < 3; idx++) {
-            if (!mOmatsuri.IsReelStopped(stopOrder[idx])) {
+
+        for (int idx = 0; idx < 3; idx++)
+        {
+            if (!mOmatsuri.IsReelStopped(stopOrder[idx]))
+            {
                 targetReel = stopOrder[idx];
                 break;
             }
         }
 
         // 目押し処理
-        if (currentAutoPlayPattern.targetRow[targetReel] == -1) {
+        if (currentAutoPlayPattern.targetRow[targetReel] == -1)
+        {
             // -1なら連打
             KeyInput(targetReel + 1);
-        } else {
+        }
+        else
+        {
             // 目当ての場所を狙って止める
             // 偶にリール番号が跳ぶ(1フレームあたりの回転数が早すぎ？)なので条件を甘く
             float allowSlip = 0; // 許容する面のズレ
@@ -690,7 +697,10 @@ public class GameManager : MonoBehaviour
             }
         }
         
-    }    
+    }
+
+    [SerializeField]
+    PlayMakerFSM SlotMachineStateFsm;
 
     /// <summary>
     /// キー入力
@@ -702,22 +712,30 @@ public class GameManager : MonoBehaviour
     /// 3=右リール停止
     /// 5=ワンキープレイ用キー(コイン投入、プレイ開始、リール停止を共用)
     /// </param>
-    public void KeyInput(int key) {
-
+    public void KeyInput(int key)
+    {
         // ポーズ中であれば入力をキャンセルする
         if (pauseState == PAUSE_STATE.PAUSE)
         {
             return;
         }
 
-        ZZ.int_value[Defines.DEF_Z_INT_KEYPRESS] |= (1 << key);
+        // サーバーと通信中のとき、
+        // かつ、コイン投入待ち
+        if (SlotMachineStateFsm.ActiveStateName != "WAITPLAY")
+        {
+            return;
+        }
+
+        ZZ.ZzIntField[Defines.DEF_Z_INT_KEYPRESS] |= (1 << key);
     }
 
     /// <summary>
     /// SE再生処理
     /// </summary>
     /// <param name="soundID">音ID(-1は無視する)</param>
-    public static void PlaySE(int soundID) {
+    public static void PlaySE(int soundID)
+    {
         if (soundID == -1) return;
         Instance.audioSE.PlayOneShot(Instance.soundDefine.clip[soundID]);
     }
@@ -726,7 +744,8 @@ public class GameManager : MonoBehaviour
     /// BGM再生処理
     /// </summary>
     /// <param name="soundID">音ID(-1は無視する)</param>
-    public static void PlayBGM(int soundID, bool isLoop) {
+    public static void PlayBGM(int soundID, bool isLoop)
+    {
         if (soundID == -1) return;
         Instance.audioBGM.clip = Instance.soundDefine.clip[soundID];
         Instance.audioBGM.loop = isLoop;
@@ -736,14 +755,16 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// SE停止処理
     /// </summary>
-    public static void StopSE() {
+    public static void StopSE()
+    {
         Instance.audioSE.Stop();
     }
 
     /// <summary>
     /// BGM停止処理
     /// </summary>
-    public static void StopBGM() {
+    public static void StopBGM()
+    {
         Instance.audioBGM.Stop();
     }
 
@@ -757,7 +778,8 @@ public class GameManager : MonoBehaviour
     }
 
     public static bool isUseServerSeed;
-    public static int GetRandomSeed() {
+    public static int GetRandomSeed()
+    {
         if (isUseServerSeed) {
             return 30568;
         } else {
@@ -765,24 +787,29 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void ClearPlayData() {
+    public void ClearPlayData()
+    {
         PlayData.ClearData(playData);
         PlayData.Save(playData);
         RefreshCommonUIData();
     }
-    public void PushBlankPlayData() {
+
+    public void PushBlankPlayData()
+    {
         PlayData.PushBlankPlayData(playData, 1);
         PlayData.Save(playData);
         RefreshCommonUIData();
     }
 
-    public void SetDummyPlayData() {
+    public void SetDummyPlayData()
+    {
         PlayData.SetDummyData(playData);
         PlayData.Save(playData);
         RefreshCommonUIData();
     }
 
-    public void OnBonusEnd(int bonus_incount) {
+    public void OnBonusEnd(int bonus_incount)
+    {
         AddHistory(gameCountOnBonus);
         LightLamp.Instance.OFF();
         History.Instance.Shift();
@@ -790,10 +817,10 @@ public class GameManager : MonoBehaviour
         casinoData.GameCount = 0;
     }
 
-    public void OnCountUp() {
+    public void OnCountUp()
+    {
         playData.totalGameCount++;
         History.Instance.Add();
-        //casinoData.GameCount++;
         UpdateCommonUIAvg();
     }
 
@@ -803,20 +830,24 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private int gameCountOnBonus;
 
-    public void OnBonusRB() {
+    public void OnBonusRB()
+    {
         gameCountOnBonus = playData.gameCount; // ボーナス開始時のゲーム数を記録
         LightLamp.Instance.ON();
         casinoData.RB++;
         UpdateCommonUIAvg();
     }
-    public void OnBonusBB() {
+
+    public void OnBonusBB()
+    {
         gameCountOnBonus = playData.gameCount; // ボーナス開始時のゲーム数を記録
         LightLamp.Instance.ON();
         casinoData.BB++;
         UpdateCommonUIAvg();
     }
 
-    public void UpdateCommonUIAvg() {
+    public void UpdateCommonUIAvg()
+    {
         int bonusCount = casinoData.BB + casinoData.RB;
         casinoData.AVG = bonusCount == 0 ? 0 : playData.totalGameCount / bonusCount;
     }
