@@ -187,9 +187,9 @@ public class Post : MonoBehaviour
             Debug.Log(www.text);
             var json = new JSONObject(www.text);
             var setting = json.GetField("setting").ToString().ParseInt();
-            var reelleft = json.GetField("reelleft").ToString().ParseInt();
-            var reelcenter = json.GetField("reelcenter").ToString().ParseInt();
-            var reelright = json.GetField("reelright").ToString().ParseInt();
+            //var reelleft = json.GetField("reelleft").ToString().ParseInt();
+            //var reelcenter = json.GetField("reelcenter").ToString().ParseInt();
+            //var reelright = json.GetField("reelright").ToString().ParseInt();
             var seed = json.GetField("seed").ToString().ParseInt();
 
             if( setting == 0)
@@ -233,6 +233,8 @@ public class Post : MonoBehaviour
             var reelcenter = associate["reelCenter"].ToString().ParseInt();
             var reelright = associate["reelRight"].ToString().ParseInt();
             var seed = associate["seed"].ToString().ParseInt();
+
+            Debug.Log("L:"+reelleft+"C:"+reelcenter+"R:"+reelright+"}");
 
             if (setting == 0)
             {
@@ -306,7 +308,7 @@ public class Post : MonoBehaviour
         Action<WWW> desktopAction = (www) =>
         {
             Debug.Log(www.text);
-            var json = new JSONObject(www.text);
+            //var json = new JSONObject(www.text);
             fsm.SendEvent("Succeed");
         };
 
@@ -377,7 +379,7 @@ public class Post : MonoBehaviour
         Action<WWW> desktopAction = (www) =>
         {
             Debug.Log(www.text);
-            var json = new JSONObject(www.text);
+            //var json = new JSONObject(www.text);
 
             //var yaku = json.GetField("yaku").ToString().ParseInt();
 
@@ -400,6 +402,8 @@ public class Post : MonoBehaviour
             var status = associate["status"].ToString();
             var yaku = associate["yaku"].ToString().ParseInt();
             var balance = Decimal.Parse(associate["balance"].ToString());
+
+            Debug.Log("Yaku:" + yaku);
 
             CasinoData.Instance.Exchange = balance;
 
@@ -452,9 +456,9 @@ public class Post : MonoBehaviour
         Action<WWW> desktopAction = (www) =>
         {
             Debug.Log(www.text);
-            var json = new JSONObject(www.text);
+            //var json = new JSONObject(www.text);
 
-            var result = json.GetField("result").ToString();
+            //var result = json.GetField("result").ToString();
             //var winnings = Decimal.Parse(json.GetField("winnings").ToString());
 
             fsm.SendEvent("Succeed");
@@ -475,7 +479,7 @@ public class Post : MonoBehaviour
 
             var status = associate["status"].ToString();
             var balance = Decimal.Parse(associate["balance"].ToString());
-            var result = associate["result"].ToString();
+            //var result = associate["result"].ToString();
 
             CasinoData.Instance.Exchange = balance;
 
@@ -504,44 +508,14 @@ public class Post : MonoBehaviour
 
         if (mode == MODE.DESKTOP)
         {
-            // TEST CODE
-            var WalletApi = "http://web.ee-gaming.net/apis/wallet1_1/";
-            var authenticate = WalletApi + "login.html";
+            if (mode == MODE.DESKTOP)
+            {
+                // コインを補充
+                //GameManager.Instance.InsertCoin(1000);
+            }
 
-            PostWWW(authenticate,
-                HashCalculation(new Dictionary<string, string>()
-                {
-                    { "gameId", "2" },
-                    { "login", "ttakekawa@manasoft.co.jp" },
-                    { "password", "L18mmTR3" },
-                    { "providerId", "33" },
-                    { "siteId", "1" }
-                }, "test123"),
-                www => { 
-                    var text = www.text;
-
-                    // {"token":"HQWQQ5D9IUQC70KKXK5ZFFHFPPG36TQ9"}
-                    var json = new JSONObject(text);
-                    var token = json.GetField("token").str;
-
-                    //gameId=2&token=aaa&language=ja&operatorId=1&mode=1
-
-                    var msg = string.Format("gameId=2&token={0}&language=ja&operatorId=1&mode=1", token);
-
-                    var kvs = msg.Split('&')
-                               .Select(query => query.Split('='))
-                               .Select(strings => new KeyValuePair<string, string>(strings[0], strings[1]));
-
-                    var param = new Dictionary<string, string>();
-                    foreach (var kv in kvs)
-                    {
-                        param.Add(kv.Key, kv.Value);
-                    }
-
-                    PostOpen(param);
-                },
-                www => { fsm.SendEvent("Failed"); }
-            );
+            var msg = "gameId=101&token=aaa&language=ja&operatorId=1&mode=0";
+            Response(msg);
         }
         else if (mode == MODE.WEB)
         {
@@ -552,23 +526,6 @@ public class Post : MonoBehaviour
         {
             fsm.SendEvent("Failed");
         }
-    }
-
-    public void PostOpen(Dictionary<string, string> param)
-    {
-        if (mode == MODE.DESKTOP)
-        {
-            // コインを補充
-            GameManager.Instance.InsertCoin(1000);
-        }
-
-        var fsm = GetComponent<PlayMakerFSM>();
-        var url = head + "open.html";
-
-        PostWWW(url, param,
-            www => { fsm.SendEvent("Succeed"); },
-            www => { fsm.SendEvent("Failed"); }
-        );
     }
 
     /// <summary>
@@ -598,48 +555,11 @@ public class Post : MonoBehaviour
             // 1000枚セット
             var coinCount = 1000;
             mOmatsuri.GPW_chgCredit(coinCount);
-            CasinoData.Instance.Exchange = 1000 * Rate.Instanse.GetRate();
+            CasinoData.Instance.Exchange = coinCount * Rate.Instanse.GetRate();
         }
-
-        //// OpenをPOST
-        //PostOpen(param);
 
         var fsm = GetComponent<PlayMakerFSM>();
         fsm.SendEvent("Succeed");
-    }
-
-    Dictionary<string, string> HashCalculation(Dictionary<string, string> i, string himitsu)
-    {
-        Func<string> f = () =>
-        {
-            var list = new List<string>();
-            foreach (var l in i)
-            {
-                list.Add(l.Key + "=" + l.Value);
-            }
-            return String.Join("&", list.ToArray());
-        };
-
-        var s = f() + himitsu;
-
-        //Debug.Log("PRE HASH:" + s);
-
-        var data = System.Text.Encoding.UTF8.GetBytes(s);
-        var md5 = new System.Security.Cryptography.MD5CryptoServiceProvider();
-        var bs = md5.ComputeHash(data);
-        md5.Clear();
-        var result = new System.Text.StringBuilder();
-        foreach (byte b in bs)
-        {
-            result.Append(b.ToString("x2"));
-        }
-
-        //結果を表示
-        //Debug.Log("POST HASH:"+result.ToString());
-
-        i.Add("hash", result.ToString());
-
-        return i;
     }
 
     void PostWWW(
@@ -676,7 +596,7 @@ public class Post : MonoBehaviour
             {
                 success(www);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 failed(www);
             }

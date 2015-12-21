@@ -53,15 +53,15 @@ public class PlayData {
         // ウェブで落ちるので、削除
         return;
 
-        try {
-            BinaryFormatter b = new BinaryFormatter();
-            using (FileStream fs = new FileStream(playDataSaveFileName, FileMode.Create)) {
-                //Debug.Log("遊戯データセーブ");
-                b.Serialize(fs, o);
-            }
-        } catch (Exception e) {
-            Debug.Log(e.ToString());
-        }
+        //try {
+        //    BinaryFormatter b = new BinaryFormatter();
+        //    using (FileStream fs = new FileStream(playDataSaveFileName, FileMode.Create)) {
+        //        //Debug.Log("遊戯データセーブ");
+        //        b.Serialize(fs, o);
+        //    }
+        //} catch (Exception e) {
+        //    Debug.Log(e.ToString());
+        //}
     }
 
     /// <summary>

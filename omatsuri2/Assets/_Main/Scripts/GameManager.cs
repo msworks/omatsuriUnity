@@ -244,10 +244,12 @@ public class GameManager : MonoBehaviour
     /// メインループ
     /// </summary>
     /// <returns></returns>
-    IEnumerator MainLoop() {
-
-        while (true) {
-            try {
+    IEnumerator MainLoop()
+    {
+        while (true)
+        {
+            try
+            {
                 core.exec();
 
                 if (IsAllReelStopped() && Is4thReelStopped())
@@ -255,7 +257,9 @@ public class GameManager : MonoBehaviour
                     slotMachineState.PlayEnd();
                 }
 
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 UIManager.Instance.errorText.text = e.ToString();
             }
 
@@ -429,7 +433,6 @@ public class GameManager : MonoBehaviour
     /// </summary>
     void SetAutoPlayPattern()
     {
-        int patternSeed = UnityEngine.Random.Range(0, 100);
         AutoPlayPatternDefine.AutoPlayPatternValue[] patterns;
         switch (clOHHB_V23.getWork(Defines.DEF_GMLVSTS)) {
             case 1: // RB中
