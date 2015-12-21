@@ -1,7 +1,5 @@
-﻿public partial class Defines {
-
-/** AUTO GENERATED RESOURCE HIERARCHY BY ANT */
-
+﻿public partial class Defines
+{
 	/** 3Dサウンド使うかどうか */
 	public const bool DEF_USE_3D_SOUND = false;
 	/** 重畳再生するかどうか */

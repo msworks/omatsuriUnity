@@ -1,16 +1,10 @@
-﻿using UnityEngine;
-using System.Collections;
-
-public partial class Defines {
-
-
+﻿public partial class Defines
+{
 /**
  * キー配列 ドコモにそろえる [ 不可：再設定 ]
  * 
  * 数字キー以外は KEY_BIT を使う事。 数字キーは注意して使用の事
  */
-
-
     ////////////////////////////////////////////////////////////////
     // キー（ドコモと同じです）
     // bit マクロが使えないのがちょっと難
@@ -183,6 +177,4 @@ public partial class Defines {
 	public const int DEF_FLIP_ROTATE_RIGHT = 5;
 	/** 90度回転 */
 	public const int DEF_FLIP_90 = DEF_FLIP_ROTATE_RIGHT;
-
-
 }

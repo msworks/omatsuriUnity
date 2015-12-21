@@ -1,16 +1,8 @@
-﻿using UnityEngine;
-using System.Collections;
-
-public partial class Defines {
-
-
-/**
- * リールの状態定数
- * 
- * @author A03605WO with AK
- */
-
-
+﻿/// <summary>
+/// リールの状態定数
+/// </summary>
+public partial class Defines
+{
 	// ////////////////////////////////////////////////////////////////////
 	// スロット汎用：今のところ固定だが新基準では？
 

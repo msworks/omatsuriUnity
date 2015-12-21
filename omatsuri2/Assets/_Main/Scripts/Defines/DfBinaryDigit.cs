@@ -1,15 +1,8 @@
-﻿using UnityEngine;
-using System.Collections;
-
-public partial class Defines {
-
-/**
- * ２進数定義
- *
- * @author A03605WO
- */
-
-
+﻿/// <summary>
+/// ２進数定義
+/// </summary>
+public partial class Defines
+{
     /** 0x0 */
     public const int DEF__0000B = 0;
 
@@ -825,6 +818,4 @@ public partial class Defines {
 
     /** 0xFF */
     public const int DEF__11111111B = 255;
-
-
 }

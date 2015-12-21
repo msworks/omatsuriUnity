@@ -1,23 +1,5 @@
-﻿public partial class Defines {
-/*
- * 作成日: 2003/08/19
- */
-
-
-/**
- * Z デバッグ用 Df 定義
- * 
- * @author A03393KS
- */
-
-	/** Mobuilder デバッグフラグ */
-    // TODO ***DfDebugで同一定義あり。***
-	//public static readonly bool DEF_IS_DEBUG = !false;
-
-	/** SoundPlayer デバック */
-    // TODO ***DfDebugで同一定義あり。***
-    //public static readonly bool DEF_IS_DEBUG_SOUND = false;
-
+﻿public partial class Defines
+{
 	/** コインアップデバック */
 	public static readonly bool DEF_IS_DEBUG_COIN_UP = false;
 

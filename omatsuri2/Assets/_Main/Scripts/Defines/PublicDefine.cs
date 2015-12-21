@@ -4,8 +4,8 @@
 
 using System;
 using System.Threading;
-public class PublicDefine {
-
+public class PublicDefine
+{
 	public const int DEBUG_PRI = 57;
 #if __GP_TRACE__
 	public static void PRINT(object a)      {} //System.out.println(a)

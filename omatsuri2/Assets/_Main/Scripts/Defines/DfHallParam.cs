@@ -1,5 +1,5 @@
-﻿public partial class Defines {
-
+﻿public partial class Defines
+{
 	/**
 	 * 通信情報
 	 */

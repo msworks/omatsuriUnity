@@ -1,16 +1,5 @@
-﻿public partial class Defines {
-    /*
- * 作成日: 2003/09/03
- */
-
-
-/**
- * Z 用 Df 定義
- *
- * @author Kumita Atsushi
- */
-
-
+﻿public partial class Defines
+{
 	/** JADファイル内に記載されたプロパティー */
 	public const string DEF_Z_JAR_URL = "MIDlet-Jar-URL" ; // midp
 

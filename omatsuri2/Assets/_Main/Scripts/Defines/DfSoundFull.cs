@@ -1,19 +1,5 @@
-﻿using UnityEngine;
-using System.Collections;
-
-public partial class Defines {
-/*
- * 作成日: 2003/10/15
- */
-
-
-/**
- * 全曲選択用
- * @author A05229AK
- * @since 2006/02/10
- */
-
-
+﻿public partial class Defines
+{
 	/** 未定義 */
 	public static readonly int DEF_SOUND_UNDEF = -1;
 
@@ -43,13 +29,11 @@ public partial class Defines {
 	public static readonly int DEF_SOUND_25 = DEF_RES_25;//1BET音
 	public static readonly int DEF_SOUND_26 = DEF_RES_26;//2Bet音
 
-
 	/**
 	 * サウンド再生時間[ms]
 	 * DEF_SoundFull.javaへ貼り付け
 	 */
 	public static readonly int DEF_SOUND_MARGIN = 100 ;// サウンド停止時余白時間
-
 	public static readonly int DEF_SOUND_MS_02 = DEF_SOUND_MARGIN + 3095;
 	public static readonly int DEF_SOUND_MS_03 = DEF_SOUND_MARGIN + 3095;
 	public static readonly int DEF_SOUND_MS_04 = DEF_SOUND_MARGIN + 1550;
@@ -73,14 +57,9 @@ public partial class Defines {
 	public static readonly int DEF_SOUND_MS_24 = DEF_SOUND_MARGIN + 785;
 	public static readonly int DEF_SOUND_MS_25 = DEF_SOUND_MARGIN + 390;
 	public static readonly int DEF_SOUND_MS_26 = DEF_SOUND_MARGIN + 490;
-
 	public static readonly int DEF_SOUND_MS_101 = DEF_SOUND_MARGIN + 120;//１枚払出
 	public static readonly int DEF_SOUND_MS_102 = DEF_SOUND_MARGIN + 240;//２枚払出
 	public static readonly int DEF_SOUND_MS_104 = DEF_SOUND_MARGIN + 480;//４枚払出
 	public static readonly int DEF_SOUND_MS_110 = DEF_SOUND_MARGIN + 1200;//１０枚払出
 	public static readonly int DEF_SOUND_MS_112 = DEF_SOUND_MARGIN + 1440;//１２枚払出
-	
-
-
-
 }

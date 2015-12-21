@@ -223,6 +223,7 @@ public partial class Defines {
         EVENT_PROC_CHK_LANP,	// 確定ランプチェック
         EVENT_PROC_WEB			// イベント情報の送信
     };
+
     public enum EVENT {
         EVENT_WEB,	// 通信許可フラグ
         EVENT_NO1,	// 3連ドン（1確)
@@ -233,46 +234,7 @@ public partial class Defines {
         EVENT_NO6,	// 鉢巻リールアクション「赤ドン」3回停止
         EVENT_NO7,	// 鉢巻リールアクション「青ドン」3回停止
         EVENT_NO8,	// 「か～ぎや～」ランプ点灯
-
         EVENT_NO_MAX	// 
-
     };
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    //#include "df\DfKey.h"
-
-    //#include "df\DfZDebug.h"
-
-    //#include "df\DfRes.h"
-
-    //#include "df\DfPos_240x240.h"
-
-    //#if	_DOCOMO	// {
-    //    #include "df\DfRes_240x240im.h"
-    //    #include "df\DfCarrier_im.h"
-    //#else			// } {
-    //    #include "df\DfRes_240x240vo.h"
-    //    #include "df\DfCarrier_vo.h"
-    //#endif			// }
-
-    //#include "df\DfZ.h"
-
-    //#include "df\DfOmatsuri_v4.h"
-    //#include "df\DfKey.h"
-    //#include "df\DfDebug.h"
-    //#include "df\DfSound.h"
-    //#include "df\DfMobile.h"
-    //#include "df\DfMenu.h"
-    //#include "df\DfUnicode.h"
-    //#include "df\DfBinaryDigit.h"
-    //#include "df\DfDirector.h"
-    //#include "df\DfOHHB_V23_DEF.h"
-    //#include "df\DfSendParam.h"
-    //#include "df\DfHallParam.h"
-
-    //#include "df\DfSlotState.h"
-    //#include "df\DfSoundFull.h"
-
 }
 

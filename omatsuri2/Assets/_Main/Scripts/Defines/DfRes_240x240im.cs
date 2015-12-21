@@ -1,10 +1,5 @@
-﻿using UnityEngine;
-using System.Collections;
-
-public partial class Defines {
-
-/** AUTO GENERATED RESOURCE DEFINITION BY TOOLS MERGE */
-
+﻿public partial class Defines
+{
 	/** 終了タイプ識別子 */
 	 public const int DEF__RES_TYPE_END_ = 0;
 	/** 画像タイプ識別子 */
