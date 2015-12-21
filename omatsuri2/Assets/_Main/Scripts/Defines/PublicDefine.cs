@@ -20,9 +20,6 @@ public class PublicDefine {
     public static void PRINT_PRI(object p, object a) { }
 #endif
 
-    public static void SLEEP(int a) {
-        try { Thread.Sleep(a); } catch (Exception e) { }
-    }
 	public const int NOVALUE = 0;
 	public const int REA_SCENE_MAX = 8;
 

@@ -2281,7 +2281,7 @@ public partial class mOmatsuri
 
 		// 止まる場所
 		int result_index;
-		// ////////////////
+
 		// 目押サポート付ボーナスイン
 		result_index = ANGLE2INDEX(int_s_value[Defines.DEF_INT_REEL_ANGLE_R0 + stopNum]);
 		

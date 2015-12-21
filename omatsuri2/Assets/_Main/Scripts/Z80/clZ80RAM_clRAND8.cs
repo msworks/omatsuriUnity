@@ -1,17 +1,13 @@
-﻿using UnityEngine;
-using System.Collections;
-
-///////////////////////////////////////////////
-// 擬似乱数クラス
-///////////////////////////////////////////////
-public class clRAND8 {
-
+﻿/// <summary>
+/// 疑似乱数クラス
+/// </summary>
+public class clRAND8
+{
     static ushort mBak;
     public static ushort mRndwl;
     public static ushort mRndwh;
     public static ushort[] mRndbuf = new ushort[256];
     static ushort mRandomA;
-
 
 	public static void mInitializaion(int count)
 	{
@@ -43,11 +39,10 @@ public class clRAND8 {
 		mRndwl = 0;
 		mRndwh = 31;
 
-        // TODO soy この行があると乱数が固定になる
-//count = 30568;
-
 		for(i=0;i<256;i++) mRndbuf[i] = initdat[i];
-		for(i=0;i<count;i++) {
+
+        for (i=0;i<count;i++)
+        {
 			mGetRnd8();
 		}
 	}
@@ -64,16 +59,17 @@ public class clRAND8 {
 
 		return (mRndbuf[mRndwh] & 0x00FF);
 	}
-};
-///////////////////////////////////////////////
-// Z80用レジスタークラス
-///////////////////////////////////////////////
-public class clREG {
-      // TODO C#移植 とりあえずintとしたもののビットシフト演算で使われる可能性を考えるとushortにした方が良さそう
+}
+
+/// <summary>
+/// Z80用レジスタークラス
+/// </summary>
+public class clREG
+{
       public ushort AF;
       public ushort BC;
       public ushort DE;
       public ushort HL;
       public ushort IX;
       public ushort IY;
-};
+}

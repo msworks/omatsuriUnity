@@ -134,4 +134,15 @@ public partial class SlotInterface
 	{
 		return opt_value[ index ];
 	}
+
+    /// <summary>
+    /// リソースデータ読み込み
+    /// </summary>
+    /// <param name="strPath">ファイル名</param>
+    /// <returns></returns>
+    public static sbyte[] getResourceData(string strPath)
+    {
+        var loadBytes = SaveData.LoadChipData();
+        return loadBytes;
+    }
 }

@@ -118,41 +118,37 @@
 
     /**
      * 設定値を設定する<BR>
-     * 
      * @return 設定値0~5
      */
-    public static void setSetUpValue(int val) {
-
+    public static void setSetUpValue(int val)
+    {
         int_m_value[Defines.DEF_INT_SETUP_VALUE] = val;
-        // 内部設定の変更(Z80関係はこっちかな？)
         clOHHB_V23.setWork(Defines.DEF_WAVENUM, (ushort)val);
     }
 
     /**
      * 設定値を取得する<BR>
      * ﾀｲﾄﾙから決定キー押下時に設定されるのでMobileで管理します。<BR>
-     * 
      * @return 設定値0~5
      */
-    public static int getSetUpValue() {
+    public static int getSetUpValue()
+    {
         return int_m_value[Defines.DEF_INT_SETUP_VALUE];
     }
 
     /**
      * ゲームモードを取得する。<BR>
      * ﾀｲﾄﾙ画面で設定する。
-     * 
-     * @see DEF_GMODE_GAME
-     * @see DEF_GMODE_SIMURATION
-     * @see DEF_GMODE_BATTLE
      * @return
      */
-    public static int getGameMode() {
+    public static int getGameMode()
+    {
         return int_m_value[Defines.DEF_INT_GMODE];
     }
 
     /**
-     * 初期化ブロックです、 ロードは既に終わっているはずなのでタイトルモードから開始するようにアプリモードを初期化。
+     * 初期化ブロックです、 ロードは既に終わっているはずなので
+     * タイトルモードから開始するようにアプリモードを初期化。
      */
     static Mobile()
     {
@@ -186,11 +182,9 @@
         int_m_value[Defines.DEF_INT_IS_VIBRATION] = Defines.DEF_SELECT_2_ON;// データパネルON
     }
 
-    public static readonly int SAVE_BUFFER = Defines.DEF_SAVE_SIZE - 2; // アクセス関数の都合上-2しないとこける
+    // アクセス関数の都合上-2しないとこける
+    public static readonly int SAVE_BUFFER = Defines.DEF_SAVE_SIZE - 2;
 
-    // ///////////////////////////////////////////////////////////////////////
-    // メニューデータの管理
-    // ///////////////////////////////////////////////////////////////////////
     /**
      * メニューデータの書き込み
      */
@@ -271,9 +265,7 @@
 
     /**
      * アプリモードアクセッサ
-     * 
-     * @param a
-     *            カレントモード
+     * @param a カレントモード
      * @return ノーマルモード
      */
     private static int getNormalMode(int a)
@@ -283,107 +275,26 @@
 
     /**
      * メニューアプリモードアクセッサ
-     * 
-     * @param a
-     *            カレントモード
+     * @param a カレントモード
      * @return メニューモード
      */
-    private static int getMenuMode(int a) {
+    private static int getMenuMode(int a)
+    {
         return Defines.DEF_MODE_MENU_BIT | getNormalMode(a);
     }
 
     /**
      * アプリのイベントモード切替指示
-     * 
-     * @param m
-     *            変更要求するアプリモード
+     * @param m 変更要求するアプリモード
      */
-    private static void setMode(int m) {
+    private static void setMode(int m)
+    {
         int_m_value[Defines.DEF_INT_MODE_REQUEST] = m;
     }
 
     /**
-     * 起動モードによってメニューが違うのでココで定義 モード初期化で変更 MENU_IDは問題なければMENUの画像IDにしようかな？
-     */
-    private static readonly int[][] menuDefine =
-        {
-			new int[]{ Defines.DEF_MENU_ID_CONFIG,// ゲーム設定
-					Defines.DEF_MENU_ID_HELP,// ヘルプ
-					Defines.DEF_MENU_ID_EXIT,// 終了
-			},
-			// 実践ﾓｰﾄﾞﾒﾆｭｰ
-			new int[]{ Defines.DEF_MENU_ID_CONFIG,// ゲーム設定
-					Defines.DEF_MENU_ID_INFO,// ゲームデータ
-					Defines.DEF_MENU_ID_HELP,// ヘルプ
-					Defines.DEF_MENU_ID_TITLE,// タイトルへ戻る
-					Defines.DEF_MENU_ID_EXIT,// 終了
-			},
-			// 分析ﾓｰﾄﾞ
-			new int[]{ Defines.DEF_MENU_ID_CONFIG,// ゲーム設定
-					Defines.DEF_MENU_ID_INFO,// ゲームデータ
-					Defines.DEF_MENU_ID_HELP,// ヘルプ
-					Defines.DEF_MENU_ID_TITLE,// タイトルへ戻る
-					Defines.DEF_MENU_ID_EXIT,// 終了
-			},
-			// ﾎｰﾙﾓｰﾄﾞ
-			new int[]{ Defines.DEF_MENU_ID_CONFIG,// ゲーム設定
-					Defines.DEF_MENU_ID_INFO,// ゲームデータ
-					Defines.DEF_MENU_ID_HELP,// ヘルプ
-					Defines.DEF_MENU_ID_EXIT,// 終了
-			},
-			};
-
-    /**
-     * 起動モードによってメニューが違うのでココで定義 モード初期化で変更 MENU_IDは問題なければMENUの画像IDにしようかな？
-     */
-    private static readonly int[][] configDefine = {
-			// ﾀｲﾄﾙからﾒﾆｭｰ
-			new int[]{ Defines.DEF_MENU_ID_VOLUME,// 音量設定
-					Defines.DEF_MENU_ID_SPEED,// リール速度
-					Defines.DEF_MENU_ID_JACCUT,// JACｶｯﾄ
-					Defines.DEF_MENU_ID_DATAPANEL,// データパネル
-					Defines.DEF_MENU_ID_VAIB,//バイブ
-					Defines.DEF_MENU_ID_ORDER,// 押し順
-					Defines.DEF_MENU_ID_INIT,// 設定初期化
-			},
-			// 実践ﾓｰﾄﾞﾒﾆｭｰ
-			new int[]{ Defines.DEF_MENU_ID_VOLUME,// 音量設定
-					Defines.DEF_MENU_ID_SPEED,// リール速度
-					Defines.DEF_MENU_ID_JACCUT,// JACｶｯﾄ
-					Defines.DEF_MENU_ID_DATAPANEL,// データパネル
-					Defines.DEF_MENU_ID_VAIB,//バイブ
-					Defines.DEF_MENU_ID_ORDER,// 押し順
-					Defines.DEF_MENU_ID_INIT,// 設定初期化
-			},
-			// 分析ﾓｰﾄﾞ
-			new int[]{ Defines.DEF_MENU_ID_VOLUME,// 音量設定
-					Defines.DEF_MENU_ID_SPEED,// リール速度
-					Defines.DEF_MENU_ID_MEOSHI,// ボーナス目押し
-					Defines.DEF_MENU_ID_JACCUT,// JACｶｯﾄ
-					Defines.DEF_MENU_ID_DATAPANEL,// データパネル
-					Defines.DEF_MENU_ID_KOKUCHI,// 小役告知
-					Defines.DEF_MENU_ID_VAIB,//バイブ
-					Defines.DEF_MENU_ID_ORDER,// 押し順
-					Defines.DEF_MENU_ID_INIT,// 設定初期化
-			},
-			// ﾎｰﾙﾓｰﾄﾞ
-			new int[]{ Defines.DEF_MENU_ID_VOLUME,// 音量設定
-					Defines.DEF_MENU_ID_SPEED,// リール速度
-					Defines.DEF_MENU_ID_DATAPANEL,// データパネル
-					Defines.DEF_MENU_ID_VAIB,//バイブ
-					Defines.DEF_MENU_ID_ORDER,// 押し順
-					Defines.DEF_MENU_ID_INIT,// 設定初期化
-			},
-			};
-
-    /**
      * 強制停止. mobuilder と mobuilderA の差異を吸収する
-     * 
-     * @param mode
-     *            サウンドモード
-     * @see Df#SOUND_MULTI_SE
-     * @see Df#SOUND_MULTI_BGM
-     * @see Df#SOUND_UNDEF
+     * @param mode サウンドモード
      */
     public static void stopSound(int mode)
     {
@@ -409,10 +320,11 @@
      * @param isRepeat 繰り返し演奏するかどうか
      * @param mode サウンドモード
      */
-    public static void playSound(int id, bool isRepeat, int mode) {
-        if (Defines.DEF_USE_MULTI_SOUND) {
+    public static void playSound(int id, bool isRepeat, int mode)
+    {
+        if (Defines.DEF_USE_MULTI_SOUND)
+        {
             ZZ.playSound(id, isRepeat, mode);
-        } else {
         }
     }
 

@@ -1,39 +1,32 @@
-﻿//*******************************************************
-//	【C++言語ソース　→　JAVAソース出力】
-//		このファイルはZ80C2J.exeで出力されています。
-//*******************************************************
-
-
-//#include "DfMain.h"
-
-using System;
-public class clZ80RAM {
-
+﻿public class clZ80RAM
+{
 	//Z80ワークRAMの実態
     public static readonly ushort[] mWorkRam = new ushort[Defines.DEF_WORKEND + 1];
-
 	public static clREG front;		//表レジスタ
 	public static clREG back;		//裏レジスタ
+    public static clRAND8 random;   //乱数クラス
+    public static ushort[] mDataTable;
 
-    public static clRAND8 random;	//乱数クラス
-
-	//初期化
-	static clZ80RAM(){
-
+    //初期化
+    static clZ80RAM()
+    {
 	    front = new clREG();
 	    back = new clREG();
-		//表ﾚｼﾞｽﾀのみ0クリア。
-		//（本当はやらなくてもいいはずだが念のため）
+
+		//表ﾚｼﾞｽﾀのみ0クリア（本当はやらなくてもいいはずだが念のため）
 		front.AF = back.AF = 0;
 		front.BC = back.BC = 0;
 		front.DE = back.DE = 0;
 		front.HL = back.HL = 0;
 		front.IX = back.IX = 0;
 		front.IY = back.IY = 0;
+
 		//ワークRAMのクリア
-		for(int i=0; i < Defines.DEF_WORKEND; i++ )
-			mWorkRam[i] = 0;
-	}
+		for(int i=0; i < Defines.DEF_WORKEND; i++)
+        {
+            mWorkRam[i] = 0;
+        }
+    }
 
 	//ワークRAM 取得(仮想1バイト)
     public static ushort getWork(int index) { return mWorkRam[index]; }
@@ -51,10 +44,7 @@ public class clZ80RAM {
 		while(n < (Defines.DEF_WORKEND) ) mWorkRam[n++] = 0;	
 	}
 
-
-	/*
-		Z80 レジスターアクセス関数
-	*/
+	/* Z80 レジスターアクセス関数 */
     public static ushort getAF() { return front.AF; }
     public static ushort getBC() { return front.BC; }
     public static ushort getDE() { return front.DE; }
@@ -103,9 +93,6 @@ public class clZ80RAM {
 
 	//ワークRAM内設定（2バイト）
 	public static void mLD_Nm_A(int index){mWorkRam[index] = getA();}
-//	public static void mLD_Nm_DE(int index){mWorkRam[index] = getD();mWorkRam[index+1] = getE();}
-//	public static void mLD_Nm_HL(int index){mWorkRam[index] = getH();mWorkRam[index+1] = getL();}
-
 	public static void mLD_Nm_DE(int index){mWorkRam[index] = getE();mWorkRam[index+1] = getD();}
 	public static void mLD_Nm_HL(int index){mWorkRam[index] = getL();mWorkRam[index+1] = getH();}
 
@@ -130,6 +117,7 @@ public class clZ80RAM {
 		front.DE &= 0x00FF;
         front.DE |= (ushort)((((ushort)data) & 0x00FF) << 8);
 	}
+
 	public static void setE(int data)
 	{
 		front.DE &= 0xFF00;
@@ -141,6 +129,7 @@ public class clZ80RAM {
 		front.HL &= 0x00FF;
         front.HL |= (ushort)((((ushort)data) & 0x00FF) << 8);
 	}
+
 	public static void setL(int data)
 	{
 		front.HL &= 0xFF00;
@@ -148,19 +137,17 @@ public class clZ80RAM {
 	}
 
 	/*	Z80のEX AF,AF' 命令と同じ動作。
-		AFの内容をAF'と交換
-	*/
-	public static void mEX_AF(){
+		AFの内容をAF'と交換 */
+	public static void mEX_AF()
+    {
         ushort tmp;		
-		//アホな入れ替え処理
 		tmp = front.AF;
 		front.AF = back.AF;
 		back.AF = tmp;
 	}
 	
 	/*	Z80のEX DE,HL 命令と同じ動作。
-		DEの内容をHLと交換
-	*/
+		DEの内容をHLと交換 */
 	public static void mEX_DE_HL(){
         ushort tmp;		
 		//アホな入れ替え処理
@@ -172,10 +159,9 @@ public class clZ80RAM {
 	//＠＠＠ppincでおかしくなる為
 	//	Z80のEXX命令と同じ動作。
 	//	BC/DE/HLの内容をBC'/DE'/HL'と交換
-	//
-	public static void mEXX(){
+	public static void mEXX()
+    {
         ushort[] tmp = new ushort[3];
-		//アホな入れ替え処理
 		tmp[0] = front.BC;
 		tmp[1] = front.DE;
 		tmp[2] = front.HL;
@@ -187,13 +173,14 @@ public class clZ80RAM {
 		back.HL = tmp[2];
 	}
 
-//	public static int getLD_Am(int index){
-    public static ushort mLD_A_Nm(int index) {
+    public static ushort mLD_A_Nm(int index)
+    {
 		setA(mWorkRam[index]);
 		return mWorkRam[index];
 	}
 
-    public static ushort mLD_BC_Nm(int index) {
+    public static ushort mLD_BC_Nm(int index)
+    {
 		setBC((mWorkRam[index] | (mWorkRam[index + 1]<<8)));
 		return mWorkRam[index];
 	}
@@ -218,8 +205,8 @@ public class clZ80RAM {
 		return mDataTable[index];
 	}
 
-    //	public static ushort getLD_HLm(int index){
-    public static ushort mLD_HL_Nt(int index) {
+    public static ushort mLD_HL_Nt(int index)
+    {
 		setHL((mWorkRam[index] | (mWorkRam[index + 1]<<8)));
 		return mDataTable[index];
 	}
@@ -256,6 +243,7 @@ public class clZ80RAM {
 		mINC_DE(1);
 		mDEC_BC(1);
 	}
+
 	public static void mLDIR()
 	{	
 		while(true)
@@ -264,19 +252,4 @@ public class clZ80RAM {
 			if(getBC() == 0)break;
 		}
 	}
-
-	///////////////////////////////////////////////
-	// 静的データ領域
-	///////////////////////////////////////////////
-
-	public static ushort[] mDataTable;
-
-};
-
-
-
-//#include "clZ80RAM_clRAND8.cpp"
-
-
-
-
+}
