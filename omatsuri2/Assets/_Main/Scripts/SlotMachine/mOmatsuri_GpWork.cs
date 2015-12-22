@@ -134,12 +134,10 @@ public partial class mOmatsuri
 	    if( limit == true )
 	    {
             // 自動停止の場合は順押しにする
-		    //ret = gp.gpif_oshijun_list[0][index];
 		    num = 0;
 	    }
         ret = gp.gpif_oshijun_list[num][index];
 	
-	    //DFMain.APP_TRACE("押し順: gpif_oshijun_list["+num+"]["+index+"]=" + ret);
 	    return ret;
     }
 

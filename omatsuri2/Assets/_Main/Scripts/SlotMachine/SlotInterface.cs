@@ -1,8 +1,11 @@
-﻿using UnityEngine;
-
-public partial class SlotInterface
+﻿public class SlotInterface
 {
-	int slump_count = 0;
+    // セーブデータの情報
+    int[] opt_value = new int[PublicDefine.OPT_MAX];                // 設定値
+    public string userDirection = "";
+    public bool l_m_bEyeSupport;
+
+    int slump_count = 0;
 	public int bonus_type;    // 獲得種別(BB=1,RB=2)
 	public int bonus_incount; // 回転数(ボーナス当選時のhall.dai_bns_rotを入れる）
 	public int bonus_getcoin; // 獲得枚数(777時の15枚含む)
@@ -21,15 +24,16 @@ public partial class SlotInterface
 	public bool gpif_nonstop_f;	// ノンストップオート
 	public short gpif_bonus_n;		//通常0～設定時BB＝1、RB＝2
 	public short gpif_kakuhen_n = 1; // 確率アップ(通常1～設定時33)
-    
-	public short[][] gpif_oshijun_list = // メニューの押し順リスト
+
+    // メニューの押し順リスト
+    public short[][] gpif_oshijun_list = 
 	{ 
 		new short[]{0,1,2},	//0:左、中、右（順押し）
 		new short[]{0,2,1},	//1:左、右、中
 		new short[]{1,0,2},	//2:中、左、右
 		new short[]{1,2,0},	//3:中、右、左
 		new short[]{2,0,1},	//4:右、左、中
-		new short[]{2,1,0}		//5:右、中、左（逆押し）
+		new short[]{2,1,0}	//5:右、中、左（逆押し）
 	};
 		
 	// コイン補充タイミング用
@@ -37,23 +41,6 @@ public partial class SlotInterface
 
 	// 参照系
 	public bool betFlag = false;
-
-    /// <summary>
-    /// バージョン更新処理
-    /// </summary>
-	public void versionUp()
-	{
-        switch (Application.platform)
-        {
-            case RuntimePlatform.Android:
-                break;
-            case RuntimePlatform.IPhonePlayer:
-                break;
-            default:
-                Defines.TRACE("versionUp:想定外のプラットフォーム:"+Application.platform.ToString());
-                break;
-        }
-	}
 		
 	// コールバック
 	// クレジットが0で投入が必要な時に呼ばれる
