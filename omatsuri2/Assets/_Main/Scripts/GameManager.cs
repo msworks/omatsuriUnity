@@ -30,32 +30,25 @@ public class GameManager : MonoBehaviour
     }
 
     public Animator lever;
-
     public SoundDefine soundDefine;
     public PictureDefine pictureDefine;
     public AutoPlayPatternDefine autoPlayFull;
     public AutoPlayPatternDefine autoPlaySelf;
     public AutoPlayPatternDefine currentAutoPlaySetting;
     private AutoPlayPatternDefine.AutoPlayPatternValue currentAutoPlayPattern;
-
     public Texture2D[] reelTexture = new Texture2D[3];
     public GameObject reel4th;
-
     public GameObject[] lamps;
     public Text creditCoinText;
     public Text bonusCoinText;
     public Text getCoinText;
-
     public CasinoData casinoData;
-
     public GameObject[] reelFaceLamps = new GameObject[9];
     public GameObject coinInsertSlotLamp;
 
     [Header("入力制御")]
     public GameObject[] reelTouchAreas = new GameObject[3];
-
     public bool SettingZeroMode = false;
-
     public Setting0Machine setting0Machine = new Setting0Machine();
 
     /// <summary>
@@ -68,28 +61,27 @@ public class GameManager : MonoBehaviour
 
     private float prev4thOffset;
 
-    public enum PAUSE_STATE {
-        PAUSE,
-        PLAY,
+    public enum PauseStatus
+    {
+        Pause,
+        Play,
     }
 
     /// <summary>
     /// ポーズ状態
     /// </summary>
-    private PAUSE_STATE pauseState = PAUSE_STATE.PLAY;
+    private PauseStatus _pauseState = PauseStatus.Play;
 
-    public PAUSE_STATE PauseState
+    public PauseStatus pauseState
     {
-        set { pauseState = value; }
-        get { return pauseState; }
+        set { _pauseState = value; }
+        get { return _pauseState; }
     }
 
     /// <summary>
     /// 遊戯データ
     /// </summary>
     private PlayData playData;
-
-    Mobile core = new Mobile();
 
     void Awake()
     {
@@ -98,6 +90,48 @@ public class GameManager : MonoBehaviour
         Screen.sleepTimeout = SleepTimeout.NeverSleep; // スリープ状態にならないように設定
         audioSE = gameObject.AddComponent<AudioSource>();
         audioBGM = gameObject.AddComponent<AudioSource>();
+    }
+
+    void Start()
+    {
+        slotMachineState = GameObject.Find("SlotMachineState").GetComponent<SlotMachineState>();
+
+        // リールをセットアップ
+        Setup4thReelTexture();
+        ZZ.setThreadSpeed(20);
+        InitializeCasinoData();
+        LoadPlayData();
+
+        StartCoroutine(MainLoop());
+    }
+
+    /// <summary>
+    /// メインループ
+    /// メインループを外だしにすっか
+    /// </summary>
+    /// <returns></returns>
+    IEnumerator MainLoop()
+    {
+        var core = new Mobile();
+
+        while (true)
+        {
+            try
+            {
+                core.exec();
+            }
+            catch(Exception e)
+            {
+                Debug.Log(e);
+            }
+
+            if (IsAllReelStopped() && Is4thReelStopped())
+            {
+                slotMachineState.PlayEnd();
+            }
+
+            yield return new WaitForSeconds(0.02f);
+        }
     }
 
     /// <summary>
@@ -109,9 +143,12 @@ public class GameManager : MonoBehaviour
         int tw = 64;
         int th = 32;
         int faceCount = 21; // リールの面数
-        for (int reelIdx = 0; reelIdx < slotMachine.reel.Length; reelIdx++) {
+
+        for (int reelIdx = 0; reelIdx < slotMachine.reel.Length; reelIdx++)
+        {
             reelTexture[reelIdx] = new Texture2D(tw, th * faceCount, TextureFormat.ARGB32, false);
-            for (int rowIdx = 0; rowIdx < faceCount; rowIdx++) {
+            for (int rowIdx = 0; rowIdx < faceCount; rowIdx++)
+            {
                 SetReelTexture(rowIdx, reelIdx, false);
             }
             slotMachine.reel[reelIdx].transform.GetChild(0).GetComponent<Renderer>().material.mainTexture = reelTexture[reelIdx];
@@ -129,13 +166,19 @@ public class GameManager : MonoBehaviour
     {
         int id = mOmatsuri.getReelId(mOmatsuri.REELTB[col][row]);
         Sprite face;
-        if (mOmatsuri.IsReelStopped(col)) {
-            if (isLit) {
+        if (mOmatsuri.IsReelStopped(col))
+        {
+            if (isLit)
+            {
                 face = pictureDefine.reelFaces[id].lit;
-            } else {
+            }
+            else
+            {
                 face = pictureDefine.reelFaces[id].unlit;
             }
-        } else {
+        }
+        else
+        {
             face = pictureDefine.reelFaces[id].blur;
         }
 
@@ -150,9 +193,12 @@ public class GameManager : MonoBehaviour
     public void Set4thReelTexture(bool isLit)
     {
         Texture2D face;
-        if (isLit) {
+        if (isLit)
+        {
             face = pictureDefine.reel4thLit;
-        } else {
+        }
+        else
+        {
             face = pictureDefine.reel4thUnLit;
         }
         slotMachine.reel4th.GetComponent<Renderer>().material.mainTexture = face;
@@ -166,19 +212,6 @@ public class GameManager : MonoBehaviour
     {
         slotMachine.reel4th.GetComponent<Renderer>().material.mainTexture = pictureDefine.reel4thUnLit;
     }
-
-	void Start ()
-    {
-        slotMachineState = GameObject.Find("SlotMachineState")
-                                     .GetComponent<SlotMachineState>();
-
-        // リールをセットアップ
-        Setup4thReelTexture();
-        ZZ.setThreadSpeed(20);
-        StartCoroutine(MainLoop());
-        InitializeCasinoData();
-        LoadPlayData();
-	}
 
     /// <summary>
     /// 履歴追加
@@ -223,7 +256,6 @@ public class GameManager : MonoBehaviour
         UpdateDebugUI();
         UpdateLamp();
         UpdateReelTouchArea();
-        UpdateCommonUI();
     }
 
     /// <summary>
@@ -240,33 +272,6 @@ public class GameManager : MonoBehaviour
     public void InsertCoin(int num)
     {
         mOmatsuri.GPW_chgCredit(1000);
-    }
-
-    /// <summary>
-    /// メインループ
-    /// </summary>
-    /// <returns></returns>
-    IEnumerator MainLoop()
-    {
-        while (true)
-        {
-            try
-            {
-                core.exec();
-
-                if (IsAllReelStopped() && Is4thReelStopped())
-                {
-                    slotMachineState.PlayEnd();
-                }
-
-            }
-            catch (Exception e)
-            {
-                UIManager.Instance.errorText.text = e.ToString();
-            }
-
-            yield return new WaitForSeconds(0.02f);
-        }
     }
 
     /// <summary>
@@ -337,15 +342,19 @@ public class GameManager : MonoBehaviour
     {
         float smooth = 0.5f;
         float angleCorrect = 0.245f; // 角度補正
+
         // 角度(0～414)をOffsetの値(0～1)に変換
         float offset = 1 - (mOmatsuri.int_s_value[Defines.DEF_INT_4TH_REEL_ANGLE] / 414f);
 
         // UVがループするタイミングでスムーズに回転するよう調整
-        if (offset < 0.1f && 0.9f < prev4thOffset) {
+        if (offset < 0.1f && 0.9f < prev4thOffset)
+        {
             slotMachine.reel4th.GetComponent<Renderer>().material.mainTextureOffset =
                 new Vector2(slotMachine.reel4th.GetComponent<Renderer>().material.mainTextureOffset.x - 1f, 0f);
         }
-        if (prev4thOffset < 0.1f && 0.9f < offset) {
+
+        if (prev4thOffset < 0.1f && 0.9f < offset)
+        {
             slotMachine.reel4th.GetComponent<Renderer>().material.mainTextureOffset =
                 new Vector2(slotMachine.reel4th.GetComponent<Renderer>().material.mainTextureOffset.x + 1f, 0f);
         }
@@ -354,7 +363,7 @@ public class GameManager : MonoBehaviour
             slotMachine.reel4th.GetComponent<Renderer>().material.mainTextureOffset,
             new Vector2(offset + angleCorrect, 0f),
             smooth
-            );
+        );
 
         prev4thOffset = offset;
     }
@@ -364,19 +373,13 @@ public class GameManager : MonoBehaviour
     /// </summary>
     void UpdateLamp()
     {
-        for (int i = 0; i < lamps.Length; i++) {
-            if (lamps[i] != null) {
+        for (int i = 0; i < lamps.Length; i++)
+        {
+            if (lamps[i] != null)
+            {
                 lamps[i].SetActive(mOmatsuri.getLampStatus(i) == Defines.DEF_LAMP_STATUS_ON);
             }
         }
-    }
-
-    /// <summary>
-    /// 共通UI更新
-    /// </summary>
-    void UpdateCommonUI()
-    {
-        // 更新しない
     }
 
     /// <summary>
@@ -405,19 +408,6 @@ public class GameManager : MonoBehaviour
     void UnLitCoinInsertSlotLamp()
     {
         coinInsertSlotLamp.SetActive(false);
-    }
-
-    /// <summary>
-    /// 遊技状態
-    /// </summary>
-    public enum PlayStatus
-    { 
-        Normal,
-        RegularBonusInternal,
-        BigBonusInternal,
-        RegularBonus,
-        BigBonus,
-        Unknown
     }
 
     /// <summary>
@@ -614,8 +604,8 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// プレイ開始時処理
     /// </summary>
-    public void OnStartPlay() {
-
+    public void OnStartPlay()
+    {
         slotMachineState.Lever();
 
         // レバーをアニメーションさせる
@@ -665,7 +655,9 @@ public class GameManager : MonoBehaviour
         if (currentAutoPlayPattern.isStopReverse)
         {
             stopOrder = new int[] { 2, 1, 0 };
-        } else {
+        }
+        else
+        {
             stopOrder = new int[] { 0, 1, 2 };
         }
 
@@ -689,19 +681,20 @@ public class GameManager : MonoBehaviour
             // 目当ての場所を狙って止める
             // 偶にリール番号が跳ぶ(1フレームあたりの回転数が早すぎ？)なので条件を甘く
             float allowSlip = 0; // 許容する面のズレ
-            for (int cnt = 0; cnt < 1 + allowSlip; cnt++) {
+            for (int cnt = 0; cnt < 1 + allowSlip; cnt++)
+            {
                 int faceIdx = mOmatsuri.ANGLE2INDEX(mOmatsuri.int_s_value[Defines.DEF_INT_REEL_ANGLE_R0 + targetReel]);
                 int idxCorrectValue = 7; // 仕様の面番号と実際の面番号がズレてるので補正する
                 int targetIdx = currentAutoPlayPattern.targetRow[targetReel] + idxCorrectValue;
                 targetIdx += cnt;
                 if (targetIdx >= 21) targetIdx -= 21;
-                if (faceIdx == targetIdx) {
+                if (faceIdx == targetIdx)
+                {
                     KeyInput(targetReel + 1);
                     break;
                 }
             }
         }
-        
     }
 
     [SerializeField]
@@ -720,7 +713,7 @@ public class GameManager : MonoBehaviour
     public void KeyInput(int key)
     {
         // ポーズ中であれば入力をキャンセルする
-        if (pauseState == PAUSE_STATE.PAUSE)
+        if (pauseState == PauseStatus.Pause)
         {
             return;
         }

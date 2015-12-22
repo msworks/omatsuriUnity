@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
-using System.Collections;
 
-public class CloseButton : MonoBehaviour {
-
+public class CloseButton : MonoBehaviour
+{
     public GameObject WebButton;
 
     [SerializeField]
@@ -11,6 +10,6 @@ public class CloseButton : MonoBehaviour {
     public void OnClick()
     {
         // ポーズを解除する
-        GameManager.Instance.PauseState = GameManager.PAUSE_STATE.PLAY;
+        GameManager.Instance.pauseState = GameManager.PauseStatus.Play;
     }
 }

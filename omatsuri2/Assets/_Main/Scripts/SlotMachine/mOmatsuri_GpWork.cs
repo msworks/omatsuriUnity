@@ -141,7 +141,9 @@ public partial class mOmatsuri
 	    return ret;
     }
 
-    // 役の変更
+    /// <summary>
+    /// 強制役変更
+    /// </summary>
     static void chgYaku()
     {
         Defines.ForceYakuFlag flag = Defines.ForceYakuFlag.NONE;

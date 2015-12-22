@@ -94,9 +94,9 @@
 
     public static void setMenuAvarable(bool flag)
     {
-        int_m_value[Defines.DEF_INT_IS_MENU_AVAILABLE] 
-            = (flag) ? Defines.DEF_MENU_AVAILABLE
-                     : Defines.DEF_MENU_UNAVAILABLE;
+        var value = (flag) ? Defines.DEF_MENU_AVAILABLE
+                           : Defines.DEF_MENU_UNAVAILABLE;
+        int_m_value[Defines.DEF_INT_IS_MENU_AVAILABLE] = value;
     }
 
     public static bool isJacCut()
@@ -148,11 +148,11 @@
     {
         int_m_value[Defines.DEF_INT_MODE_REQUEST] = Defines.DEF_MODE_UNDEF;
         int_m_value[Defines.DEF_INT_MODE_CURRENT] = Defines.DEF_MODE_UNDEF;
+
         // GPでは下詰めで描画する為
         int_m_value[Defines.DEF_INT_BASE_OFFSET_X] = (ZZ.getWidth() - Defines.DEF_POS_WIDTH);
         int_m_value[Defines.DEF_INT_BASE_OFFSET_Y] = (ZZ.getHeight() - Defines.DEF_POS_HEIGHT);
         ZZ.setOrigin(int_m_value[Defines.DEF_INT_BASE_OFFSET_X], int_m_value[Defines.DEF_INT_BASE_OFFSET_Y]);
-
         int_m_value[Defines.DEF_INT_TITLE_BG_START] = ZZ.getBitRandom(32);
 
         // 設定初期値
@@ -295,15 +295,20 @@
      */
     public static void stopSound(int mode)
     {
-        if (Defines.DEF_USE_MULTI_SOUND) {
-            if (mode == Defines.DEF_SOUND_UNDEF) {
+        if (Defines.DEF_USE_MULTI_SOUND)
+        {
+            if (mode == Defines.DEF_SOUND_UNDEF)
+            {
                 ZZ.stopSound(Defines.DEF_SOUND_MULTI_BGM);
                 ZZ.stopSound(Defines.DEF_SOUND_MULTI_SE);
                 mOmatsuri.bgm_no = -1;
                 mOmatsuri.bgm_loop = false;
-            } else {
+            }
+            else
+            {
                 ZZ.stopSound(mode);
-                if (Defines.DEF_SOUND_MULTI_BGM == mode) {
+                if (Defines.DEF_SOUND_MULTI_BGM == mode)
+                {
                     mOmatsuri.bgm_no = -1;
                     mOmatsuri.bgm_loop = false;
                 }

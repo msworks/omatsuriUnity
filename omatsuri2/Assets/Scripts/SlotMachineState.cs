@@ -7,7 +7,7 @@ public class SlotMachineState : MonoBehaviour
     PlayMakerFSM fsm;
 
     [SerializeField]
-    public int Bet { get; set; }
+    int Bet { get; set; }
 
     void Start()
     {
@@ -26,8 +26,11 @@ public class SlotMachineState : MonoBehaviour
 
     public void InsertCoin()
     {
-        //fsm.SendEvent("InsertCoin");
         Bet++;
+        if (Bet == 3)
+        {
+            fsm.SendEvent("BetEnd");
+        }
     }
 
     public void PlayEnd()

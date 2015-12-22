@@ -25,8 +25,10 @@
 	public const int DEF_INT_REEL_STOP_R2 = 7;
 
 	/**
-	 * リールが物理的に停止したときのフラグ 使用するのは3bit (0/1|0/1|0/1)で 左から順にリール2，リール1，リール0
-	 * の停止フラグに対応する． 各bitに1がたっている場合は，そのリールは停止していることを意味する．
+	 * リールが物理的に停止したときのフラグ
+     * 使用するのは3bit (0/1|0/1|0/1)で 左から順にリール2，リール1，リール0
+	 * の停止フラグに対応する． 
+     * 各bitに1がたっている場合は，そのリールは停止していることを意味する．
 	 */
 	public const int DEF_INT_IS_REEL_STOPPED = 8;
 
@@ -91,13 +93,9 @@
 	/** ボーナスデータを参照する際の基準点 */
 	public const int DEF_INT_BONUS_DATA_BASE = 26;
 
-	/**
-	 * ランプの 上位16bitを直前のアクション 下位16bitをアクション
-	 */
-	public const int DEF_INT_LAMP_1 = 27;
-
+    // ランプの 上位16bitを直前のアクション 下位16bitをアクション
+    public const int DEF_INT_LAMP_1 = 27;
 	public const int DEF_INT_LAMP_2 = 28;
-
 	public const int DEF_INT_LAMP_3 = 29;
 
 	/** BETする枚数 */
@@ -112,10 +110,8 @@
 	/** 聴牌チェック */
 	public const int DEF_INT_IS_TEMPAI = 33;
 
-	/**
-	 * 連続演出更新用カウンタ ｹﾞｰﾑのﾓｰﾄﾞが変わっても初期化されたくない
-	 */
-	public const int DEF_INT_SEQUENCE_EFFECT = 34;
+    // 連続演出更新用カウンタ ｹﾞｰﾑのﾓｰﾄﾞが変わっても初期化されたくない
+    public const int DEF_INT_SEQUENCE_EFFECT = 34;
 
 	/** リールの回転速度 */
 	public const int DEF_INT_REEL_SPEED = 35;
@@ -128,7 +124,6 @@
 
 	/** 前回の停止出目 21(10)=10101(2)なので5bitずつ15bit使います */
 	public const int DEF_INT_PREV_GAME = 38;
-
 	public const int DEF_INT_FLASH_DATA = 40;
 
 	/** 終了条件 */
@@ -165,84 +160,49 @@
 	
 	/** 告知するよ */
 	public const int DEF_INT_KOKUCHI_X = 52;
-	
 	public const int DEF_INT_WIN_LAMP_STATUS = 53;
-
 	public const int DEF_INT_KOKUCHI_ID = 54;
-	
 	public const int DEF_INT_BB_TOTAL_GOT = 55;
-	
 	public const int DEF_INT_WMLN_HIT = 56;
-	
 	public const int DEF_INT_WMLN_GOT = 57;
-	
 	public const int DEF_INT_CHRY_HIT = 58;
-	
 	public const int DEF_INT_CHRY_GOT = 59;
-	
 	public const int DEF_INT_FLAG_GAME_COUNT = 60;
-
 	public const int DEF_INT_TOTAL_BET_COUNT = 61;
-
 	public const int DEF_INT_TOTAL_GAIN_COUNT = 62;
-
 	public const int DEF_INT_HAZUSI_COUNT = 63;
-
 	public const int DEF_INT_JAC_HIT = 64;
 	public const int DEF_INT_TOTAL_BET = 65;
 	public const int DEF_INT_TOTAL_PAY = 66;
-
 	
 	/** BB獲得枚数 711枚以上 */
 	public const int DEF_INT_BB_GET_OVER711 = 67; // TOBE 個別PARAM
 
 	/**
 	 *  BB終了後の１ゲームか？
-	 *  
 	 *  ボーナス終了ゲームの次ゲームの回転開始(DEF_RMODE_SPIN)で 1
 	 *  ↑そのゲームの獲得(DEF_RMODE_RESULT)で 0
-	 *  
-	 *  @see int_s_value[DEF_INT_IS_BB_RB_END]
-	 *  @see int_s_value[DEF_INT_BB_KIND]
-	 *  @see DEF_BB_B7
-	 *  @see DEF_BB_R7
-	 *  
 	 */
 	public const int DEF_INT_BB_AFTER_1GAME = 68; // TOBE 個別PARAM
 
 	/**
 	 * BB終了後の１ゲームでＢＢに入賞したか？（＝揃えたか？）
-	 * 
 	 * ↑のミッション成立時に1
 	 * newSlot()で0
 	 */
 	public const int DEF_INT_BB_END_1GAME_REGET_BB = 69; // TOBE 個別PARAM
-
-	
 	public const int DEF_INT_THIS_FLAG_GAME = 70;
-
-	public const int DEF_INT_BONUS_JAC_GOT = 71;		// GP追加 1回枚のJACゲーム時の払い出し枚数
-	
+	public const int DEF_INT_BONUS_JAC_GOT = 71;
+    // GP追加 1回枚のJACゲーム時の払い出し枚数
 	public const int DEF_INT_SLOT_VALUE_MAX = 72;
-
-	
-	
 	public const int DEF_EXIT_NON = 0;
-
 	public const int DEF_EXIT_OVER_KASIDASHI = 1;
-
 	public const int DEF_EXIT_OVER_INT = 2;
-	
 	public const int DEF_EXIT_HALL_NOCOIN = 3;
-	
 	public const int DEF_EXIT_HALL_CLOSE = 4;
-
 	public const int DEF_EXIT_HALL_HTTP_ERROR = 5;
-	
 	public const int DEF_EXIT_HALL_SERVER_ERROR = 6;
-
 	public const int DEF_EXIT_HALL_END = 7;
-	
 	public const int DEF_EXIT_HALL_COIN = 8;
 
 	// スロットゲームモード
@@ -289,10 +249,8 @@
 	
 	public const int DEF_RMODE_WIN = 8;
 
-	/**
-	 * コイン無しでゲーム終了
-	 */
-	public const int DEF_RMODE_NO_COIN = 9;
+    // コイン無しでゲーム終了
+    public const int DEF_RMODE_NO_COIN = 9;
 
 	public const int DEF_RMODE_HTTP = 10;
 	
@@ -332,10 +290,6 @@
 	/** ボーナスゲームＭＡＸカウント */
 	public const int DEF_NUM_MAX_BONUS_GAMES = 99;
 
-	//
-	// /** ボーナスゲーム獲得ＭＡＸ */
-	// public const int DEF_NUM_MAX_BONUS_COINS = 999;
-	//
 	/** 総回転数のＭＡＸ */
 	public const int DEF_LIMIT_99999 = 99999;
 
@@ -345,55 +299,27 @@
 	
 	/** ボーナス獲得枚数 */
 	public const int DEF_BB_GET_711 = 711;	// TOBE 個別PARAM
-	
-	//	
-	// /** ｺｲﾝMAX */
-	// public const int DEF_LIMIT_99999999 = 99999999;
-
-	// //////////////////////////////////////////////////////////////
-	// リール分割数をかえる（P504とSO504だけ２５分割それ以外は２１分割にする ２００３－０８－０１）
 
 	/** リール回転速度(２５分割)オリジナル */
-	// public const int DEF_REEL_MAX_SPEED = 0xA00;
 	public const int DEF_REEL_MAX_SPEED = 0xDA7;
 
 	/** リールが1分間に回る回数 */
 	public const int DEF_REEL_COUNT_MIN = 80;
 
 	/** リール回転速度(２１分割) */
-	// public const int DEF_REEL_MAX_SPEED = 0;xC30
 	/** リールすべり最大数 */
-	public const int DEF_NUM_SLIDE = 4; //
+	public const int DEF_NUM_SLIDE = 4;
 
-	/**
-	 * アプリでのラインシフト数
-	 */
+	// アプリでのラインシフト数
 	public const int DEF_NUM_REEL_SHIFT = 7;
-
 	public const int DEF_NUM_4TH_REEL = 6;
 
-	// //////////////////////////////////////////////////////////////
-	// ランプ
 	/** ランプBIT */
 	public const int DEF_LAMP_BIT = 16;
-
-	/** マスク */
-    // TODO 不明な定数 LAMP_BIT
-    //public const int DEF_LAMP_MASK = (1 << DfOmatsuri_v4.LAMP_BIT) - 1;
-
 	public const int DEF_LAMP_ACTION_OFF = 0;
-
 	public const int DEF_LAMP_ACTION_ON = 1;
-
 	public const int DEF_LAMP_STATUS_OFF = 0;
-
-	// public const int DEF_LAMP_STATUS_MID = 1;
-
 	public const int DEF_LAMP_STATUS_ON = 1;
-
-	// #define DEF_SIDE_LAMP_OFF 	 -1
-	//
-	// public const int DEF_SIDE_LAMP_ON = 0;
 
 	/**
 	 * 筐体左(K2) 0-5
@@ -447,33 +373,6 @@
 	public const int DEF_LAMP_S6 = 26;
 	public const int DEF_LAMP_4TH = 27;
 
-	// //////////////////////////////////////////////////////////////
-	// 役ビット
-
-	/** ﾁｪﾘｰ(一般) */
-	public const int DEF_HITFLAG_NR_CHERRY =	 (1 << 0);
-
-	/** 15枚(BB中) */
-	public const int DEF_HITFLAG_BB_15 = 	 (1 << 0);
-
-	/** ﾊﾅﾋﾞ */
-	public const int DEF_HITFLAG_NR_HANABI =	 (1 << 1);
-
-	/** 大山 */
-	public const int DEF_HITFLAG_NR_OOYAMA =	 (1 << 2);
-
-	/** ﾁｪﾘｰ(BB中) */
-	public const int DEF_HITFLAG_BB_CHERRY =	 (1 << 2);
-
-	/** RP */
-	public const int DEF_HITFLAG_NR_REPLAY =	 (1 << 3);
-
-	/** RB(BB中) */
-	public const int DEF_HITFLAG_BB_RB =	 (1 << 3);
-
-	/** JAC(RB中) */
-	public const int DEF_HITFLAG_RB_JAC =	 (1 << 3);
-
 	/** RB */
 	public const int DEF_HITFLAG_NR_RB =	 (1 << 4);
 
@@ -502,17 +401,11 @@
 	public const int DEF_INFO_GAMES = 8;
 	public const int DEF_UNIT_GAMES = 100;
 
-	// //////////////////////////////////////////////////////////////
-	// 小役カウンタ
-
 	/** 小役カウンタ制御値 */
 	public const int DEF_COYAKU_COUNTER_GRADIENT = 96;
 
 	/** 小役カウンタ固定値 */
 	public const int DEF_COYAKU_COUNTER_MAX = 256;
-
-	// //////////////////////////////////////////////////////////////
-	// ボーナス入賞種別 (int_s_value[INT_BB_DON_7])
 
 	/** 通常ゲーム */
 	public const int DEF_BB_UNDEF = 0;
@@ -532,13 +425,9 @@
 	/** Jac-in最大数 */
 	public const int DEF_INIT_JAC_IN_GAMES = 3;
 
-	/**
-	 * JACゲーム最大数 (JAC-CUT処理では100%あたりなのでこの値を気にすることはない)
-	 */
-	public const int DEF_INIT_JAC_GAMES = 8;
+    // JACゲーム最大数 (JAC-CUT処理では100%あたりなのでこの値を気にすることはない)
+    public const int DEF_INIT_JAC_GAMES = 8;
 
-	// //////////////////////////////////////////////////////////////
-	// 時間調整
 	/** 点滅ランプスピード調整（ms） */
 	public const int DEF_WAIT_ON_OFF_LAMP = 150;
 
@@ -554,10 +443,6 @@
 	/** スピン */
 	public const int DEF_WAIT_SPIN = 40000;
 
-	/** ＪＡＣカット中のキー受付ない時間調整（ms） */
-    // TODO : WAIT_KEY_REJECTが存在しないのでコメントアウト
-	//public const int DEF_WAIT_KEY_REJECT_JAC = WAIT_KEY_REJECT * 2;
-
 	/** 上部ランプ点滅スピード調整（ms） */
 	public const int DEF_WAIT_UPPER_LAMP = 50 + 40;
 
@@ -567,15 +452,9 @@
 	/** コイン増加スピード */
 	public const int DEF_WAIT_COUNT_UP = 75;
 
-	/** コイン増加スピード */
-	public const int DEF_WAIT_BET_UP = 75;
-
-	/** 透過矩形処理方式 */
-	public const int DEF_INK_HALF = 0;
 	/** 透過矩形処理方式 */
 	public const int DEF_INK_ADD = 1;
+
 	/** 透過矩形処理方式 */
 	public const int DEF_INK_SUB = 2;
-
-	public const int DEF_TRIAL_GAME = 20;
 }

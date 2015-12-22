@@ -1,10 +1,9 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
-public class MenuButton : MonoBehaviour {
-
+public class MenuButton : MonoBehaviour
+{
     public UISprite lightButton;
 
     [SerializeField]
@@ -25,7 +24,7 @@ public class MenuButton : MonoBehaviour {
     public void OnClick()
     {
         // アプリをポーズ状態にする
-        GameManager.Instance.PauseState = GameManager.PAUSE_STATE.PAUSE;
+        GameManager.Instance.pauseState = GameManager.PauseStatus.Pause;
 
         StartCoroutine(lighting());
 

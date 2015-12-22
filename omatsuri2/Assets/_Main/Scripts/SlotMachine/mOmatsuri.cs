@@ -210,13 +210,11 @@ public partial class mOmatsuri
 		int_s_value[Defines.DEF_INT_LAMP_1] = 0;
 		int_s_value[Defines.DEF_INT_LAMP_2] = 0;
 		int_s_value[Defines.DEF_INT_LAMP_3] = 0;
-
 		int_s_value[Defines.DEF_INT_KOKUCHI_ID] = 0;
 
 		// Topランプアクション初期値
 		int_s_value[Defines.DEF_INT_SEQUENCE_EFFECT] = 2;
 		int_s_value[Defines.DEF_INT_RLL_COUNTER] = 0;
-
 		int_s_value[Defines.DEF_INT_4TH_ACTION_FLAG] = 0;
 		int_s_value[Defines.DEF_INT_WIN_LAMP_STATUS] = 0;
 		int_s_value[Defines.DEF_INT_4TH_REEL_ANGLE] = Defines.DEF_RP19;
@@ -227,9 +225,7 @@ public partial class mOmatsuri
 
 		// ゲーム情報の初期化
 		initGameInfo();
-
 		initDataPaneHistory();
-
         clOHHB_V23.mInitializaion(GameManager.GetRandomSeed());
 
 		// 内部設定を6にする。
@@ -264,8 +260,6 @@ public partial class mOmatsuri
 
 	private static int pressingSpan = 0;
 
-	public int req_code;
-
 	public bool process(int keyTrigger)
     {
 		int_s_value[Defines.DEF_INT_REEL_SPEED] =
@@ -275,35 +269,21 @@ public partial class mOmatsuri
 			/ 60000
 			* Mobile.getReelSpeed() / 100;
 		
-		if( Mobile.isMeoshi() ||
-			(gp.gpif_auto_f == true) ||
-			(gp.gpif_nonstop_f == true) ||
-			(gp.gpif_tatsujin_f == true) )
+		if(Mobile.isMeoshi() || gp.gpif_auto_f || gp.gpif_nonstop_f || gp.gpif_tatsujin_f)
 		{
             // ｵｰﾄﾌﾟﾚｲ
-			if( (gp.gpif_auto_f == true) ||
-				(gp.gpif_nonstop_f == true) ||
-				(gp.gpif_tatsujin_f == true) )
+			if( (gp.gpif_auto_f) || (gp.gpif_nonstop_f) || (gp.gpif_tatsujin_f) )
 			{
-                // ｵｰﾄﾌﾟﾚｲの予約
-				//DfMain.TRACE(("test:" + Mobile.int_m_value[Defines.DEF_INT_IS_MENU_AVAILABLE]);
-				// スロットゲーム中WAIT時以外は遷移しない
 				if (Mobile.int_m_value[Defines.DEF_INT_IS_MENU_AVAILABLE] == Defines.DEF_MENU_UNAVAILABLE)
 				{
                     // メニューが無効の時
-					//DfMain.TRACE(("ここきてる？:" + keyTrigger);
 					if ((keyTrigger & Defines.DEF_KEY_BIT_SOFT1) != 0)
 					{
-                        // ソフトキーがおされたら
-						//DfMain.TRACE(("メニュー予約！！！");
-						req_code = 1;
 						reqMenuFg = true;
 					}
+
 					if ((keyTrigger & Defines.DEF_KEY_BIT_SOFT2) != 0)
 					{
-                        // ソフトキーがおされたら
-						//DfMain.TRACE(("メニュー予約！！！");
-						req_code = 2;
 						reqMenuFg = true;
 					}
 				}
@@ -337,15 +317,8 @@ public partial class mOmatsuri
 		pressingSpan %= 10;
 		if (!IS_BONUS() && pressingSpan == 0) {}
 
-        // このwhile文はループさせるためではなく、
-        // 違うモードにすぐ遷移(conitnue)するための仕組みです。
-		while (int_s_value[Defines.DEF_INT_CURRENT_MODE] != int_s_value[Defines.DEF_INT_REQUEST_MODE])
+        while (int_s_value[Defines.DEF_INT_CURRENT_MODE] != int_s_value[Defines.DEF_INT_REQUEST_MODE])
         {
-			if (Defines.DEF_IS_DEBUG_PRINT_RMODE)
-            {
-				//Defines.TRACE("RMODE: " + int_s_value[Defines.DEF_INT_CURRENT_MODE]　+ " → " + int_s_value[Defines.DEF_INT_REQUEST_MODE]);
-			}
-
 			int_s_value[Defines.DEF_INT_CURRENT_MODE] = int_s_value[Defines.DEF_INT_REQUEST_MODE];
 
 			// スロットゲームモード変更時に更新するフラグ
@@ -358,8 +331,8 @@ public partial class mOmatsuri
 			switch (int_s_value[Defines.DEF_INT_CURRENT_MODE])
             {
 			    case Defines.DEF_RMODE_WIN:
-				    if (int_s_value[Defines.DEF_INT_WIN_LAMP] > 0
-						    && int_s_value[Defines.DEF_INT_WIN_LAMP_STATUS] == 0) {
+				    if (int_s_value[Defines.DEF_INT_WIN_LAMP] > 0 && int_s_value[Defines.DEF_INT_WIN_LAMP_STATUS] == 0)
+                    {
 					    // た～まや～点灯
 					    int_s_value[Defines.DEF_INT_WIN_LAMP_STATUS] = 1;
 					    // ボーナス当選時
@@ -367,7 +340,7 @@ public partial class mOmatsuri
                         // セルフオート停止フラグを立てる
                         GameManager.Instance.StopAutoPlay("たまや点灯");
 				    }
-				
+
 				    // さらに大当たりで止まっていたらかっきーん！
 				    if (int_s_value[Defines.DEF_INT_WIN_LAMP_STATUS] == 1)
                     {
@@ -384,12 +357,15 @@ public partial class mOmatsuri
 				    break;
 
 			    case Defines.DEF_RMODE_WAIT:
-                    // (モード初期)
+
 				    if(IS_HALL())
                     {
-					    Mobile.saveMenuData(true);//不正防止用にここで保存
+                        //不正防止用にここで保存
+                        Mobile.saveMenuData(true);
 				    }
-				    Mobile.setMenuAvarable(true);// 押せるようにする
+
+                    // 押せるようにする
+                    Mobile.setMenuAvarable(true);
 
 				    if (!IS_BONUS())
                     {
@@ -398,15 +374,15 @@ public partial class mOmatsuri
 
 				    // コイン７セグ描画用変数を初期化
 				    int_s_value[Defines.DEF_INT_BETTED_COUNT] = 0;
-				    Defines.TRACE("待機中");
 
 				    // 演出帳のデータを転送する
 				    GPW_eventProcess((int)Defines.EVENT_PROC.EVENT_PROC_WEB, -1);
+
 				    break;
 
 			    case Defines.DEF_RMODE_BET:
+
                     // MAXBETﾗﾝﾌﾟ表示期間(モード初期)
-				    //DfMain.TRACE(("ベット処理１");
 				    // リール全点滅は一回だけ
 				    if (int_s_value[Defines.DEF_INT_WIN_LAMP_STATUS] == 2)
                     {
@@ -415,12 +391,11 @@ public partial class mOmatsuri
 				
 				    // 払い出しコイン枚数（表示用）
 				    int_s_value[Defines.DEF_INT_WIN_GET_COIN] = 0;
-				    int_s_value[Defines.DEF_INT_WIN_COIN_NUM] = 0; // １ゲーム中の獲得コイン枚数
-				    // ﾃﾝﾊﾟｲ状態
-				    int_s_value[Defines.DEF_INT_IS_TEMPAI] = 0;
+				    int_s_value[Defines.DEF_INT_WIN_COIN_NUM] = 0;  // １ゲーム中の獲得コイン枚数
+				    int_s_value[Defines.DEF_INT_IS_TEMPAI] = 0;     // ﾃﾝﾊﾟｲ状態
 
-				    // 告知はBET時にクリア
-				    if (!IS_REPLAY()) {
+                    // 告知はBET時にクリア
+                    if (!IS_REPLAY()) {
 					    int_s_value[Defines.DEF_INT_KOKUCHI_X] = 0;
 				    }
 
@@ -436,8 +411,6 @@ public partial class mOmatsuri
                         /*プレーヤーコイン要求*/
 						if(hallData[Defines.DEF_H_PLAYER_COIN] < int_s_value[Defines.DEF_INT_BET_COUNT])
                         {
-							//鳴らさない
-							//DfMain.TRACE(("ベット音ならさない");
 							break;
 						}
 					}
@@ -463,8 +436,8 @@ public partial class mOmatsuri
 				
 				    break;
 
-			    // TOBE [=2.RMODE_SPIN init]
 			    case Defines.DEF_RMODE_SPIN:
+
                     // 回転開始(モード初期)
 				    if (!IS_REPLAY())
                     {
@@ -504,12 +477,14 @@ public partial class mOmatsuri
                     else if (IS_BONUS_GAME())
                     {
 					    // ビタ外し成功
-					    if ((clOHHB_V23.getWork(Defines.DEF_WAVEBIT) & 0x08) != 0) {
+					    if ((clOHHB_V23.getWork(Defines.DEF_WAVEBIT) & 0x08) != 0)
+                        {
 						    int_s_value[Defines.DEF_INT_JAC_HIT]++;
 					    }
 				    }
 
-				    if ((clOHHB_V23.getWork(Defines.DEF_GMLVSTS) & (0x08 | 0x10)) != 0) {
+				    if ((clOHHB_V23.getWork(Defines.DEF_GMLVSTS) & (0x08 | 0x10)) != 0)
+                    {
 					    int_s_value[Defines.DEF_INT_THIS_FLAG_GAME]++;
 				    }
 				
@@ -629,11 +604,9 @@ public partial class mOmatsuri
                     GameManager.Instance.OnStartPlay();
 				    break;
 
-			    // TOBE [=4.RMODE_FLASH init]
 			    case Defines.DEF_RMODE_FLASH: // (モード初期)
 				    break;
 
-			    // TOBE [=4.RMODE_RESULT init]
 			    case Defines.DEF_RMODE_RESULT:
                     // (モード初期)
 				    // RESULTに入った時間を記録
@@ -770,16 +743,23 @@ public partial class mOmatsuri
 			break;
 		}
 
-		if (int_s_value[Defines.DEF_INT_PREV_GAMEST] != clOHHB_V23.getWork(Defines.DEF_GAMEST)) {
+		if (int_s_value[Defines.DEF_INT_PREV_GAMEST] != clOHHB_V23.getWork(Defines.DEF_GAMEST))
+        {
 			int_s_value[Defines.DEF_INT_PREV_GAMEST] = clOHHB_V23.getWork(Defines.DEF_GAMEST);
-			if ((int_s_value[Defines.DEF_INT_PREV_GAMEST] & 0x01) != 0) {
+			if ((int_s_value[Defines.DEF_INT_PREV_GAMEST] & 0x01) != 0)
+            {
 				// TODO JACBGMを鳴らす
 				playBGM(Defines.DEF_SOUND_05, true);
-			} else if ((int_s_value[Defines.DEF_INT_PREV_GAMEST] & 0x80) != 0) {
+			}
+            else if ((int_s_value[Defines.DEF_INT_PREV_GAMEST] & 0x80) != 0)
+            {
 				// TODO BIGBGMを鳴らす
-				if (int_s_value[Defines.DEF_INT_BB_KIND] == Defines.DEF_BB_R7) {
+				if (int_s_value[Defines.DEF_INT_BB_KIND] == Defines.DEF_BB_R7)
+                {
 					playBGM(Defines.DEF_SOUND_07, true);
-				} else if (int_s_value[Defines.DEF_INT_BB_KIND] == Defines.DEF_BB_B7) {
+				}
+                else if (int_s_value[Defines.DEF_INT_BB_KIND] == Defines.DEF_BB_B7)
+                {
 					playBGM(Defines.DEF_SOUND_06, true);
 				}
 			}
@@ -798,14 +778,13 @@ public partial class mOmatsuri
 		return false;
 	}
 
+    // ======================================
+    // 各モードにおける毎回の処理
+    // ======================================
     private void DoModeAction(int keyTrigger)
     {
-        // ======================================
-        // 各モードにおける毎回の処理
-        // ======================================
-        //DfMain.TRACE(("リプレイある(毎回)？" + IS_REPLAY());
-        //DfMain.TRACE(("Defines.DEF_INT_CURRENT_MODE:" + int_s_value[Defines.DEF_INT_CURRENT_MODE] + ":" + (clOHHB_V23.getWork(Defines.DEF_GAMEST)&0xFFFF));
-        switch (int_s_value[Defines.DEF_INT_CURRENT_MODE]) {
+        switch (int_s_value[Defines.DEF_INT_CURRENT_MODE])
+        {
             // TOBE [=0.RMODE_WAIT rp]
             case Defines.DEF_RMODE_WAIT: // （毎回処理）
                 // 直前の停止音の完奏を待つ
@@ -1077,32 +1056,42 @@ public partial class mOmatsuri
                 }
 
                 break;
-            // TOBE [=3.RMODE_FLASH rp]
+
             case Defines.DEF_RMODE_FLASH: // 結果（毎回処理）
+
                 //スピード調整
-                if (ZZ.getThreadSpeed() < 40
-                        && int_s_value[Defines.DEF_INT_MODE_COUNTER] % 2 == 0) {
+                if (ZZ.getThreadSpeed() < 40 && int_s_value[Defines.DEF_INT_MODE_COUNTER] % 2 == 0)
+                {
                     break;
                 }
-                if (isPlay()) {
+
+                if (isPlay())
+                {
                     int_s_value[Defines.DEF_INT_FLASH_DATA] = getNext();
                     // リールフラッシュ以外の部分
-                    if ((int_s_value[Defines.DEF_INT_FLASH_DATA] & (1 << 10)) != 0) {
+                    if ((int_s_value[Defines.DEF_INT_FLASH_DATA] & (1 << 10)) != 0)
+                    {
                         lampSwitch(Defines.DEF_LAMP_4TH, Defines.DEF_LAMP_ACTION_ON);
-                    } else {
+                    }
+                    else
+                    {
                         lampSwitch(Defines.DEF_LAMP_4TH, Defines.DEF_LAMP_ACTION_OFF);
                     }
-                } else {
+                }
+                else
+                {
                     REQ_MODE(Defines.DEF_RMODE_WIN);
                 }
+
                 break;
+
             case Defines.DEF_RMODE_WIN:
-                if (_soundTime < Util.GetMilliSeconds()) {
+                if (_soundTime < Util.GetMilliSeconds())
+                {
                     REQ_MODE(Defines.DEF_RMODE_RESULT);
                 }
                 break;
 
-            // TOBE [=4.RMODE_RESULT rp]
             case Defines.DEF_RMODE_RESULT: // 結果（毎回処理）
                 if ((Mobile.isJacCut() == true))
                 {
@@ -1111,23 +1100,26 @@ public partial class mOmatsuri
                     int_s_value[Defines.DEF_INT_SLOT_COIN_NUM] += int_s_value[Defines.DEF_INT_WIN_COIN_NUM];
                     // 表示用は個々で増やす
                     int_s_value[Defines.DEF_INT_WIN_GET_COIN] += int_s_value[Defines.DEF_INT_WIN_COIN_NUM];
-                    /**/
                     hallData[Defines.DEF_H_PLAYER_COIN] += int_s_value[Defines.DEF_INT_WIN_COIN_NUM];
 
-
-                    // ５０枚まではクレジットへ貯めるぅ
-                    if (int_s_value[Defines.DEF_INT_CREDIT_COIN_NUM] > Defines.DEF_NUM_MAX_CREDIT) {
+                    // ５０枚まではクレジットへ貯める
+                    if (int_s_value[Defines.DEF_INT_CREDIT_COIN_NUM] > Defines.DEF_NUM_MAX_CREDIT)
+                    {
                         int_s_value[Defines.DEF_INT_CREDIT_COIN_NUM] = Defines.DEF_NUM_MAX_CREDIT;
                     }
+
                     // ＭＡＸを超えないように。
-                    if (int_s_value[Defines.DEF_INT_SLOT_COIN_NUM] > Defines.DEF_NUM_MAX_COIN) {
+                    if (int_s_value[Defines.DEF_INT_SLOT_COIN_NUM] > Defines.DEF_NUM_MAX_COIN)
+                    {
                         int_s_value[Defines.DEF_INT_SLOT_COIN_NUM] = Defines.DEF_NUM_MAX_COIN;
                     }
                     _soundTime = 0;
 
                     // 払い出し分加算
                     GPW_chgCredit(int_s_value[Defines.DEF_INT_WIN_COIN_NUM]);
-                } else {
+                }
+                else
+                {
                     // 一枚一枚移す
                     // satoh#暫定
                     if (int_s_value[Defines.DEF_INT_WIN_GET_COIN] < int_s_value[Defines.DEF_INT_WIN_COIN_NUM]) {
@@ -1140,7 +1132,6 @@ public partial class mOmatsuri
                                 int_s_value[Defines.DEF_INT_CREDIT_COIN_NUM]++;
                             }
                             int_s_value[Defines.DEF_INT_SLOT_COIN_NUM]++;
-                            /**/
                             hallData[Defines.DEF_H_PLAYER_COIN]++;
                             // 表示用は個々で増やす
                             int_s_value[Defines.DEF_INT_WIN_GET_COIN]++;
@@ -1160,7 +1151,8 @@ public partial class mOmatsuri
                     Mobile.stopSound(Defines.DEF_SOUND_MULTI_SE);
                     _soundTime = Util.GetMilliSeconds();
                     // REG入賞
-                    if ((clOHHB_V23.getWork(Defines.DEF_HITFLAG) & Defines.DEF_HITFLAG_NR_RB) != 0) {
+                    if ((clOHHB_V23.getWork(Defines.DEF_HITFLAG) & Defines.DEF_HITFLAG_NR_RB) != 0)
+                    {
                         int_s_value[Defines.DEF_INT_BONUS_GOT] = 15;
                         int_s_value[Defines.DEF_INT_REG_COUNT]++;
                         int_s_value[Defines.DEF_INT_FLAG_GAME_COUNT] += int_s_value[Defines.DEF_INT_THIS_FLAG_GAME];
@@ -1171,13 +1163,11 @@ public partial class mOmatsuri
                         int_s_value[Defines.DEF_INT_BB_KIND] = Defines.DEF_RB_IN;
                         REQ_MODE(Defines.DEF_RMODE_RB_FANFARE); // ＲＢファンファーレへ遷移
 
-                        Defines.TRACE("REG入賞処理");
                         gp.onBonusRB();
                         break;
                     }
-                        // BIG入賞
-                    else if ((clOHHB_V23.getWork(Defines.DEF_HITFLAG) & Defines.DEF_HITFLAG_NR_BB) != 0) {
-                        Defines.TRACE("BB入賞処理");
+                    else if ((clOHHB_V23.getWork(Defines.DEF_HITFLAG) & Defines.DEF_HITFLAG_NR_BB) != 0)
+                    {
                         int_s_value[Defines.DEF_INT_BONUS_GOT] = 15;
                         int_s_value[Defines.DEF_INT_FLAG_GAME_COUNT] += int_s_value[Defines.DEF_INT_THIS_FLAG_GAME];
                         int_s_value[Defines.DEF_INT_THIS_FLAG_GAME] = 0;
@@ -1193,56 +1183,65 @@ public partial class mOmatsuri
                     break;
                 }
                 break;
-            // TOBE [=6.RMODE_BB_FANFARE rp]
+
             case Defines.DEF_RMODE_BB_FANFARE:
             case Defines.DEF_RMODE_RB_FANFARE:
                 action4th();
-                if (_soundTime < Util.GetMilliSeconds()
-                        && int_s_value[Defines.DEF_INT_4TH_ACTION_FLAG] == 0) {
+                if (_soundTime < Util.GetMilliSeconds() && int_s_value[Defines.DEF_INT_4TH_ACTION_FLAG] == 0)
+                {
                     REQ_MODE(Defines.DEF_RMODE_FIN_WAIT);
                 }
                 break;
-            // TOBE [=5.RMODE_FIN_WAIT rp]
+
             case Defines.DEF_RMODE_FIN_WAIT:
-                if (int_s_value[Defines.DEF_INT_IS_BB_RB_END] > 0
-                        && int_s_value[Defines.DEF_INT_BB_KIND] == Defines.DEF_RB_IN) {
+                if (int_s_value[Defines.DEF_INT_IS_BB_RB_END] > 0 && int_s_value[Defines.DEF_INT_BB_KIND] == Defines.DEF_RB_IN)
+                {
                     int_s_value[Defines.DEF_INT_4TH_REEL_ANGLE] += Defines.DEF_POS_4TH_TOTAL_W - 20;
                     int_s_value[Defines.DEF_INT_4TH_REEL_ANGLE] %= Defines.DEF_POS_4TH_TOTAL_W;
                     if (Defines.DEF_RP19 - 20 < int_s_value[Defines.DEF_INT_4TH_REEL_ANGLE]
                             && int_s_value[Defines.DEF_INT_4TH_REEL_ANGLE] <= Defines.DEF_RP19 + 20) {
                         int_s_value[Defines.DEF_INT_4TH_REEL_ANGLE] = Defines.DEF_RP19;
-                        //					REQ_MODE(Defines.DEF_RMODE_WAIT); // 回転待ちへ遷移
-                    } else {
+                    }
+                    else
+                    {
                         break;
                     }
                 }
+
                 // 直前の音の完奏を待つ
-                if (_soundTime < Util.GetMilliSeconds()) {
-                    if (IS_HALL()) {
+                if (_soundTime < Util.GetMilliSeconds())
+                {
+                    if (IS_HALL())
+                    {
                         //ﾎﾞｰﾅｽ終了時通信
-                        if (int_s_value[Defines.DEF_INT_IS_BB_RB_END] == 1) {
+                        if (int_s_value[Defines.DEF_INT_IS_BB_RB_END] == 1)
+                        {
                             hallData[Defines.DEF_H_APPLI_REQ] = Defines.DEF_HRQ_BNSEND;
                             REQ_MODE(Defines.DEF_RMODE_HTTP);
                             // REG入賞時通信
-                        } else if ((clOHHB_V23.getWork(Defines.DEF_HITFLAG) & Defines.DEF_HITFLAG_NR_RB) != 0) {
+                        }
+                        else if ((clOHHB_V23.getWork(Defines.DEF_HITFLAG) & Defines.DEF_HITFLAG_NR_RB) != 0)
+                        {
                             hallData[Defines.DEF_H_APPLI_REQ] = Defines.DEF_HRQ_BNSIN;
                             REQ_MODE(Defines.DEF_RMODE_HTTP);
                             // BIG入賞時通信
-                        } else if ((clOHHB_V23.getWork(Defines.DEF_HITFLAG) & Defines.DEF_HITFLAG_NR_BB) != 0) {
+                        } else if ((clOHHB_V23.getWork(Defines.DEF_HITFLAG) & Defines.DEF_HITFLAG_NR_BB) != 0)
+                        {
                             hallData[Defines.DEF_H_APPLI_REQ] = Defines.DEF_HRQ_BNSIN;
                             REQ_MODE(Defines.DEF_RMODE_HTTP);
-                            //						//規定ゲーム通信
-                            //						}else if(hallData[Defines.DEF_H_GAME_COUNT] - lastHttpGame >= Defines.DEF_HALL_GAME_SPAN){
-                            //							hallData[Defines.DEF_H_APPLI_REQ] = Defines.DEF_HRQ_NORMAL;
-                            //							REQ_MODE(Defines.DEF_RMODE_HTTP);
-                            //10分経過後の最初のゲームで一応通信
-                        } else if (prevHttpTime + (5 * 60) < Util.GetMilliSeconds() / 1000) {
+                        }
+                        else if (prevHttpTime + (5 * 60) < Util.GetMilliSeconds() / 1000)
+                        {
                             hallData[Defines.DEF_H_APPLI_REQ] = Defines.DEF_HRQ_NORMAL;
                             REQ_MODE(Defines.DEF_RMODE_HTTP);
-                        } else {
+                        }
+                        else
+                        {
                             REQ_MODE(Defines.DEF_RMODE_WAIT); // 回転待ちへ遷移
                         }
-                    } else {
+                    }
+                    else
+                    {
                         REQ_MODE(Defines.DEF_RMODE_WAIT); // 回転待ちへ遷移
                     }
                 }
@@ -1271,15 +1270,35 @@ public partial class mOmatsuri
 		// ランプ
 		{
             // drawK1 4thリールの左右のランプ
-			int[] x = { Defines.DEF_POS_S1_X, Defines.DEF_POS_S2_X, Defines.DEF_POS_S3_X, Defines.DEF_POS_S4_X, Defines.DEF_POS_S5_X, Defines.DEF_POS_S6_X };
-			int[] y = { Defines.DEF_POS_S1_Y, Defines.DEF_POS_S2_Y, Defines.DEF_POS_S3_Y, Defines.DEF_POS_S4_Y, Defines.DEF_POS_S5_Y, Defines.DEF_POS_S6_Y };
+			int[] x = {
+                Defines.DEF_POS_S1_X,
+                Defines.DEF_POS_S2_X,
+                Defines.DEF_POS_S3_X,
+                Defines.DEF_POS_S4_X,
+                Defines.DEF_POS_S5_X,
+                Defines.DEF_POS_S6_X
+            };
+
+			int[] y = {
+                Defines.DEF_POS_S1_Y,
+                Defines.DEF_POS_S2_Y,
+                Defines.DEF_POS_S3_Y,
+                Defines.DEF_POS_S4_Y,
+                Defines.DEF_POS_S5_Y,
+                Defines.DEF_POS_S6_Y
+            };
+
 			// ランプの画像がなぜかでかすぎる為、いれとかないと枠外にでてしまう。
 			ZZ.setClip(Defines.DEF_POS_K1_X, Defines.DEF_POS_K1_Y, Defines.DEF_POS_K1_W, Defines.DEF_POS_K1_H);
-			for (int i = 0; i < 6; i++) {
-				if (getLampStatus(Defines.DEF_LAMP_S1 + i) == Defines.DEF_LAMP_STATUS_ON) {
+
+            for (int i = 0; i < 6; i++)
+            {
+				if (getLampStatus(Defines.DEF_LAMP_S1 + i) == Defines.DEF_LAMP_STATUS_ON)
+                {
 					ZZ.drawImage(Defines.DEF_RES_S1_B + i, x[i], y[i]);
 				}
 			}
+
 			// クリッピング領域の解除
 			ZZ.setClip(-ZZ.getOffsetX(), -ZZ.getOffsetY(), ZZ.getWidth(), ZZ.getHeight());
 		}
@@ -1382,7 +1401,10 @@ public partial class mOmatsuri
     {
 		// １リールずつ処理
 		int[] x = { 25, 92, 159 };
-		for (int i = 0; i < 3; i++) { // 左のリールから描画しています
+
+		for (int i = 0; i < 3; i++)
+        {
+            // 左のリールから描画しています
 			// リール部分クリッピング
 			ZZ.setClip(25, 114 + Defines.GP_DRAW_OFFSET_Y, 215 - 25, 96);
 			// 消灯
@@ -1402,18 +1424,25 @@ public partial class mOmatsuri
 				if ((int_s_value[Defines.DEF_INT_FLASH_DATA] & (1 << (i * 3 + 2))) != 0) {
 					state[3] = state[4] = 1;
 				}
-			} else {
+			}
+            else
+            {
 				state[0] = state[1] = state[2] = state[3] = state[4] = 1;
 			}
+
 			// ブラー
-			if ((int_s_value[Defines.DEF_INT_IS_REEL_STOPPED] & BIT(i)) == 0) {
+			if ((int_s_value[Defines.DEF_INT_IS_REEL_STOPPED] & BIT(i)) == 0)
+            {
 				// リールスピードが２以下の場合ブラー画像は使わない！
-				if (Mobile.getReelSpeed() >= 80) {
+				if (Mobile.getReelSpeed() >= 80)
+                {
 					// ブラー
 					state[0] = state[1] = state[2] = state[3] = state[4] = 2;
 				}
 				ZZ.drawImage(Defines.DEF_RES_BACK_B, x[i], 114 + Defines.GP_DRAW_OFFSET_Y);
-			} else {
+			}
+            else
+            {
 				ZZ.drawImage(Defines.DEF_RES_BACK, x[i], 114 + Defines.GP_DRAW_OFFSET_Y);
 			}
 
@@ -1423,10 +1452,13 @@ public partial class mOmatsuri
 			
 			// 例:15.75コマ回転していたら15番を取得
 			int mid = ((per21 >> 16) % Defines.DEF_N_FRAME); // 中段番号番号。
+
 			// 各y座標に0.75コマ分下に
 			int[] y = { 204, 176, 148, 120, 92 };
+
 			// // リールの描画
-			for (int j = 0; j < 5; j++) {// 0:枠下 1:下段 2:中段 3:上段 4:枠上
+			for (int j = 0; j < 5; j++) {
+                // 0:枠下 1:下段 2:中段 3:上段 4:枠上
 				int h = 28;
 				y[j] += (/* １コマに満たない分 */(per21 & ANGLE_2PI_MASK) * h) >> 16;
 
@@ -1451,7 +1483,9 @@ public partial class mOmatsuri
 		ZZ.setClip(25, 114 + Defines.GP_DRAW_OFFSET_Y, 215 - 25, 96);
 		ZZ.scale3D(100);// スケール弄るよ
 		int[] xx = { 25, 92, 159 };
-		for (int i = 0; i < 3; i++) {
+
+        for (int i = 0; i < 3; i++)
+        {
 			// 上の左影
 			_drawEffect(xx[i], 114, 56, 2, 61, 61, 61, Defines.DEF_INK_SUB);
 			_drawEffect(xx[i], 116, 56, 4, 36, 36, 36, Defines.DEF_INK_SUB);
@@ -1461,6 +1495,7 @@ public partial class mOmatsuri
 			_drawEffect(xx[i], 204, 56, 4, 36, 36, 36, Defines.DEF_INK_SUB);
 			_drawEffect(xx[i], 201, 56, 3, 18, 18, 18, Defines.DEF_INK_SUB);
 		}
+
 		ZZ.scale3D(50);// 戻すよ～
 		
 		// クリッピング領域の解除
@@ -1475,11 +1510,16 @@ public partial class mOmatsuri
 		int xx = Defines.DEF_POS_CREDIT_X;
 		int val = int_s_value[Defines.DEF_INT_CREDIT_COIN_NUM];
 		
-		for (int i = 0; i < Defines.DEF_POS_CREDIT_D; i++) {
-			if (val > 0) {
+		for (int i = 0; i < Defines.DEF_POS_CREDIT_D; i++)
+        {
+			if (val > 0)
+            {
 				ZZ.drawImage(Defines.DEF_RES_SEG_R0 + (val % 10), xx, Defines.DEF_POS_CREDIT_Y);
-			} else {
-				if (i == 0) {
+			}
+            else
+            {
+				if (i == 0)
+                {
 					ZZ.drawImage(Defines.DEF_RES_SEG_R0, xx, Defines.DEF_POS_CREDIT_Y);
 				}
 			}
@@ -1509,7 +1549,9 @@ public partial class mOmatsuri
 	 */
 	private static void drawBonusCount()
     {
-		if (IS_BONUS_JAC()) { // Jac 中
+		if (IS_BONUS_JAC())
+        {
+            // Jac 中
 			int i = clOHHB_V23.getWork(Defines.DEF_BIGBCTR);
 			i = (i == 0) ? 1 : i;
 			// (JACイン中)残り回数(3～1)
@@ -1521,15 +1563,17 @@ public partial class mOmatsuri
 			// ボーナスカウント(JACイン中)を表示します(8～1)
 			ZZ.drawImage(Defines.DEF_RES_SEG_G0 + clOHHB_V23.getWork(Defines.DEF_JAC_CTR),
 					Defines.DEF_POS_BONUS_X, Defines.DEF_POS_BONUS_Y);
-		} else if (IS_BONUS_GAME()) {
+		}
+        else if (IS_BONUS_GAME())
+        {
 			// ＢＢ残り回数を表示
 			int val = clOHHB_V23.getWork(Defines.DEF_BBGMCTR);
 			int xx = Defines.DEF_POS_BONUS_X;
-			for (int i = 0; i < 3; i++) {
-				if (val > 0) {
-					ZZ
-							.drawImage(Defines.DEF_RES_SEG_G0 + (val % 10), xx,
-									Defines.DEF_POS_BONUS_Y);
+			for (int i = 0; i < 3; i++)
+            {
+				if (val > 0)
+                {
+					ZZ.drawImage(Defines.DEF_RES_SEG_G0 + (val % 10), xx, Defines.DEF_POS_BONUS_Y);
 				}
 				val /= 10;
 				xx -= Defines.DEF_POS_BONUS_W;
@@ -1541,15 +1585,21 @@ public partial class mOmatsuri
     /// ボーナスカウンタ表示取得
     /// </summary>
     /// <returns></returns>
-    public static string GetBonusCount() {
-        if (IS_BONUS_JAC()) { // Jac 中
+    public static string GetBonusCount()
+    {
+        if (IS_BONUS_JAC())
+        {
+            // Jac 中
             int i = clOHHB_V23.getWork(Defines.DEF_BIGBCTR);
             i = (i == 0) ? 1 : i;
             return i + "-" + clOHHB_V23.getWork(Defines.DEF_JAC_CTR);
-        } else if (IS_BONUS_GAME()) {
+        }
+        else if (IS_BONUS_GAME())
+        {
             // ＢＢ残り回数を表示
             return clOHHB_V23.getWork(Defines.DEF_BBGMCTR).ToString();
         }
+
         return "";
     }
 
@@ -1568,21 +1618,28 @@ public partial class mOmatsuri
 
 	static bool isCanStop = false;//センサー通過フラグ
 
-	private static void action4th() {
+	private static void action4th()
+    {
 		// 動作状態でなければ飛ばす
-		if (int_s_value[Defines.DEF_INT_4TH_ACTION_FLAG] != 1) {
+		if (int_s_value[Defines.DEF_INT_4TH_ACTION_FLAG] != 1)
+        {
 			return;
 		}
+
 		// 一時停止中は何もしない
-		if (_4thTime > Util.GetMilliSeconds()) {
+		if (_4thTime > Util.GetMilliSeconds())
+        {
 			return;
 		}
+
 		// 読込
 		int[] data = RLPTNDT[int_s_value[Defines.DEF_INT_RLPTNDT]];
+
 		// 回転タイミングがまだの時
 		if (clOHHB_V23.getWork(Defines.DEF_PUSHCTR) > data[int_s_value[Defines.DEF_INT_RLPTNDT_COUNTER]] % 8) {
 			return;
 		}
+
 		// 回転パラ夢
 		int dir = data[int_s_value[Defines.DEF_INT_RLPTNDT_COUNTER] + 1] / 4;
 		int spe = data[int_s_value[Defines.DEF_INT_RLPTNDT_COUNTER] + 1] % 4;
@@ -1590,25 +1647,36 @@ public partial class mOmatsuri
 		dir = (dir == 0) ? -1 : 1;
 		spe = ((ZZ.getThreadSpeed()>=40)?20:10) / spe;
 		bool snd4th = false;
-		if(ZZ.getThreadSpeed()>=40){
-			if(spe == 20){
-				snd4th = true;
-			}
-		}else{
-			if(spe == 10){
+
+		if(ZZ.getThreadSpeed()>=40)
+        {
+			if(spe == 20)
+            {
 				snd4th = true;
 			}
 		}
+        else
+        {
+			if(spe == 10)
+            {
+				snd4th = true;
+			}
+		}
+
 		bool isNext = false;
-		for (int i = 0; i < spe; i++) {
+
+        for (int i = 0; i < spe; i++)
+        {
 			// 回転停止タイミングか？
-			if (data[int_s_value[Defines.DEF_INT_RLPTNDT_COUNTER]] / 8 == 0
-					|| clOHHB_V23.getWork(Defines.DEF_PUSHCTR) == 0) {
+			if (data[int_s_value[Defines.DEF_INT_RLPTNDT_COUNTER]] / 8 == 0 || clOHHB_V23.getWork(Defines.DEF_PUSHCTR) == 0) {
 				//センサーは通過しているか?
-				if (isCanStop) {
+				if (isCanStop)
+                {
 					//さらに少なくとも赤ドン←大当り分以上は回らないといけない。
-					if (int_s_value[Defines.DEF_INT_RLPTNDT_FLAG] > 100 / spe) {
-						if (int_s_value[Defines.DEF_INT_4TH_REEL_ANGLE] == pos) {
+					if (int_s_value[Defines.DEF_INT_RLPTNDT_FLAG] > 100 / spe)
+                    {
+						if (int_s_value[Defines.DEF_INT_4TH_REEL_ANGLE] == pos)
+                        {
 							isNext = true;
 							break;
 						}
@@ -1724,61 +1792,74 @@ public partial class mOmatsuri
 		}
 	}
 
-	/**
-	 * BETランプのスイッチ
-	 */
-	private static void ctrlBetLamp()
+    /// BETランプのスイッチ
+    private static void ctrlBetLamp()
     {
-		switch (int_s_value[Defines.DEF_INT_CURRENT_MODE]) {
-		case Defines.DEF_RMODE_BET:
-		case Defines.DEF_RMODE_SPIN:
-			for (int i = 0; i < 3; i++) {
-				if (int_s_value[Defines.DEF_INT_BETTED_COUNT] > i) {
-					lampSwitch(Defines.DEF_LAMP_BET_3 + i, Defines.DEF_LAMP_ACTION_ON);
-					lampSwitch(Defines.DEF_LAMP_BET_3 - i, Defines.DEF_LAMP_ACTION_ON);
-				} else {
-					lampSwitch(Defines.DEF_LAMP_BET_3 + i, Defines.DEF_LAMP_ACTION_OFF);
-					lampSwitch(Defines.DEF_LAMP_BET_3 - i, Defines.DEF_LAMP_ACTION_OFF);
-				}
-			}
-			break;
-		case Defines.DEF_RMODE_WAIT:
-		case Defines.DEF_RMODE_RESULT:
-		case Defines.DEF_RMODE_BB_FANFARE:
-		case Defines.DEF_RMODE_RB_FANFARE:
-			// そろったラインを光らす
-			for (int i = 0; i < 5; i++) {
-				if (_lampTime < Util.GetMilliSeconds()) {
-					lampSwitch(Defines.DEF_LAMP_BET_1 + i, Defines.DEF_LAMP_ACTION_OFF);
-				} else {
-					if ((clOHHB_V23.getWork(Defines.DEF_HITLINE) & (Defines.DEF__00001000B << i)) != 0) {
-						int id = 0;
-						switch (i) {
-						case 0:// センター
-							id = Defines.DEF_LAMP_BET_3;
-							break;
-						case 1:// トップ
-							id = Defines.DEF_LAMP_BET_2;
-							break;
-						case 2:// ボトム
-							id = Defines.DEF_LAMP_BET_4;
-							break;
-						case 3:// クロスダウン
-							id = Defines.DEF_LAMP_BET_1;
-							break;
-						case 4:// クロスｱｯﾌﾟ
-							id = Defines.DEF_LAMP_BET_5;
-							break;
-						}
-						if (int_s_value[Defines.DEF_INT_ON_OFF_EFFECT] > 0) {
-							lampSwitch(id, Defines.DEF_LAMP_ACTION_OFF);
-						} else {
-							lampSwitch(id, Defines.DEF_LAMP_ACTION_ON);
-						}
-					}
-				}
-			}
-			break;
+		switch (int_s_value[Defines.DEF_INT_CURRENT_MODE])
+        {
+		    case Defines.DEF_RMODE_BET:
+		    case Defines.DEF_RMODE_SPIN:
+			    for (int i = 0; i < 3; i++)
+                {
+				    if (int_s_value[Defines.DEF_INT_BETTED_COUNT] > i)
+                    {
+					    lampSwitch(Defines.DEF_LAMP_BET_3 + i, Defines.DEF_LAMP_ACTION_ON);
+					    lampSwitch(Defines.DEF_LAMP_BET_3 - i, Defines.DEF_LAMP_ACTION_ON);
+				    }
+                    else
+                    {
+					    lampSwitch(Defines.DEF_LAMP_BET_3 + i, Defines.DEF_LAMP_ACTION_OFF);
+					    lampSwitch(Defines.DEF_LAMP_BET_3 - i, Defines.DEF_LAMP_ACTION_OFF);
+				    }
+			    }
+			    break;
+		    case Defines.DEF_RMODE_WAIT:
+		    case Defines.DEF_RMODE_RESULT:
+		    case Defines.DEF_RMODE_BB_FANFARE:
+		    case Defines.DEF_RMODE_RB_FANFARE:
+			    // そろったラインを光らす
+			    for (int i = 0; i < 5; i++)
+                {
+				    if (_lampTime < Util.GetMilliSeconds())
+                    {
+					    lampSwitch(Defines.DEF_LAMP_BET_1 + i, Defines.DEF_LAMP_ACTION_OFF);
+				    }
+                    else
+                    {
+					    if ((clOHHB_V23.getWork(Defines.DEF_HITLINE) & (Defines.DEF__00001000B << i)) != 0)
+                        {
+						    int id = 0;
+						    switch (i)
+                            {
+						        case 0:// センター
+							        id = Defines.DEF_LAMP_BET_3;
+							        break;
+						        case 1:// トップ
+							        id = Defines.DEF_LAMP_BET_2;
+							        break;
+						        case 2:// ボトム
+							        id = Defines.DEF_LAMP_BET_4;
+							        break;
+						        case 3:// クロスダウン
+							        id = Defines.DEF_LAMP_BET_1;
+							        break;
+						        case 4:// クロスｱｯﾌﾟ
+							        id = Defines.DEF_LAMP_BET_5;
+							        break;
+						    }
+
+						    if (int_s_value[Defines.DEF_INT_ON_OFF_EFFECT] > 0)
+                            {
+							    lampSwitch(id, Defines.DEF_LAMP_ACTION_OFF);
+						    }
+                            else
+                            {
+							    lampSwitch(id, Defines.DEF_LAMP_ACTION_ON);
+						    }
+					    }
+				    }
+			    }
+			    break;
 		}
 	}
 
@@ -1786,99 +1867,148 @@ public partial class mOmatsuri
     {
 		if (int_s_value[Defines.DEF_INT_WIN_LAMP_STATUS] > 0)
         {
-			if (int_s_value[Defines.DEF_INT_ON_OFF_EFFECT] > 0) {
+			if (int_s_value[Defines.DEF_INT_ON_OFF_EFFECT] > 0)
+            {
 				lampSwitch(Defines.DEF_LAMP_WIN, Defines.DEF_LAMP_ACTION_ON);
 				lampSwitch(Defines.DEF_LAMP_BAR, Defines.DEF_LAMP_ACTION_ON);
-			} else {
+			}
+            else
+            {
 				lampSwitch(Defines.DEF_LAMP_WIN, Defines.DEF_LAMP_ACTION_OFF);
 				lampSwitch(Defines.DEF_LAMP_BAR, Defines.DEF_LAMP_ACTION_OFF);
 			}
-			if (int_s_value[Defines.DEF_INT_WIN_LAMP_STATUS] > 1) {
-				if (int_s_value[Defines.DEF_INT_ON_OFF_EFFECT] > 0) {
+
+			if (int_s_value[Defines.DEF_INT_WIN_LAMP_STATUS] > 1)
+            {
+				if (int_s_value[Defines.DEF_INT_ON_OFF_EFFECT] > 0)
+                {
 					lampSwitch(Defines.DEF_LAMP_4TH, Defines.DEF_LAMP_ACTION_OFF);
-				} else {
+				}
+                else
+                {
 					lampSwitch(Defines.DEF_LAMP_4TH, Defines.DEF_LAMP_ACTION_ON);
 				}
 			}
-		} else {
+		}
+        else
+        {
 			lampSwitch(Defines.DEF_LAMP_WIN, Defines.DEF_LAMP_ACTION_OFF);
 			lampSwitch(Defines.DEF_LAMP_BAR, Defines.DEF_LAMP_ACTION_OFF);
 		}
-		switch (int_s_value[Defines.DEF_INT_CURRENT_MODE]) {
-		case Defines.DEF_RMODE_RESULT:
-			if (IS_REPLAY()) {
-				lampSwitch(Defines.DEF_LAMP_FRE, Defines.DEF_LAMP_ACTION_ON);
-			}
-			break;
-		case Defines.DEF_RMODE_WAIT:
-		case Defines.DEF_RMODE_BET:
-            // TODO C#移植 フォールスルーしていたのでC#で動くように変更
-            if (int_s_value[Defines.DEF_INT_CURRENT_MODE] == Defines.DEF_RMODE_WAIT) {
-                if (int_s_value[Defines.DEF_INT_WIN_LAMP_STATUS] == 2) {
-                    if (int_s_value[Defines.DEF_INT_ON_OFF_EFFECT] > 0) {
-                        int_s_value[Defines.DEF_INT_FLASH_DATA] = 0x1ff;
-                    } else {
-                        int_s_value[Defines.DEF_INT_FLASH_DATA] = 0;
+
+		switch (int_s_value[Defines.DEF_INT_CURRENT_MODE])
+        {
+		    case Defines.DEF_RMODE_RESULT:
+			    if (IS_REPLAY())
+                {
+				    lampSwitch(Defines.DEF_LAMP_FRE, Defines.DEF_LAMP_ACTION_ON);
+			    }
+			    break;
+
+		    case Defines.DEF_RMODE_WAIT:
+		    case Defines.DEF_RMODE_BET:
+                // TODO C#移植 フォールスルーしていたのでC#で動くように変更
+                if (int_s_value[Defines.DEF_INT_CURRENT_MODE] == Defines.DEF_RMODE_WAIT)
+                {
+                    if (int_s_value[Defines.DEF_INT_WIN_LAMP_STATUS] == 2)
+                    {
+                        if (int_s_value[Defines.DEF_INT_ON_OFF_EFFECT] > 0)
+                        {
+                            int_s_value[Defines.DEF_INT_FLASH_DATA] = 0x1ff;
+                        }
+                        else
+                        {
+                            int_s_value[Defines.DEF_INT_FLASH_DATA] = 0;
+                        }
                     }
                 }
-            }
 
-			// ｽﾀｰﾄランプを点滅させる
-			if (int_s_value[Defines.DEF_INT_BETTED_COUNT] > 0) {
-				if (int_s_value[Defines.DEF_INT_ON_OFF_EFFECT] > 0) {
-					lampSwitch(Defines.DEF_LAMP_STA, Defines.DEF_LAMP_ACTION_OFF);
-				} else {
-					lampSwitch(Defines.DEF_LAMP_STA, Defines.DEF_LAMP_ACTION_ON);
-				}
-			} else {
-				lampSwitch(Defines.DEF_LAMP_STA, Defines.DEF_LAMP_ACTION_OFF);
-			}
-			// インサートコインランプを点滅させる
-			if (!IS_REPLAY()
-					&& ((IS_BONUS_JAC() && int_s_value[Defines.DEF_INT_BETTED_COUNT] < 1) || (!IS_BONUS_JAC() && (int_s_value[Defines.DEF_INT_CREDIT_COIN_NUM] < Defines.DEF_NUM_MAX_CREDIT || int_s_value[Defines.DEF_INT_BETTED_COUNT] < 3)))) {
-				if (int_s_value[Defines.DEF_INT_ON_OFF_EFFECT] > 0) {
-					lampSwitch(Defines.DEF_LAMP_INS, Defines.DEF_LAMP_ACTION_ON);
-				} else {
-					lampSwitch(Defines.DEF_LAMP_INS, Defines.DEF_LAMP_ACTION_OFF);
-				}
-			} else {
-				lampSwitch(Defines.DEF_LAMP_INS, Defines.DEF_LAMP_ACTION_OFF);
-			}
+			    // ｽﾀｰﾄランプを点滅させる
+			    if (int_s_value[Defines.DEF_INT_BETTED_COUNT] > 0)
+                {
+				    if (int_s_value[Defines.DEF_INT_ON_OFF_EFFECT] > 0)
+                    {
+					    lampSwitch(Defines.DEF_LAMP_STA, Defines.DEF_LAMP_ACTION_OFF);
+				    }
+                    else
+                    {
+					    lampSwitch(Defines.DEF_LAMP_STA, Defines.DEF_LAMP_ACTION_ON);
+				    }
+			    }
+                else
+                {
+				    lampSwitch(Defines.DEF_LAMP_STA, Defines.DEF_LAMP_ACTION_OFF);
+			    }
 
-			// BETボタンを点滅
-			if (int_s_value[Defines.DEF_INT_CREDIT_COIN_NUM] > 0) {
-				if ((IS_BONUS_JAC() && int_s_value[Defines.DEF_INT_BETTED_COUNT] < 1)
-						|| (!IS_BONUS_JAC() && int_s_value[Defines.DEF_INT_BETTED_COUNT] < 3)) {
-					if (int_s_value[Defines.DEF_INT_ON_OFF_EFFECT] > 0) {
-						lampSwitch(Defines.DEF_LAMP_MAXBET, Defines.DEF_LAMP_ACTION_OFF);
-					} else {
-						lampSwitch(Defines.DEF_LAMP_MAXBET, Defines.DEF_LAMP_ACTION_ON);
-					}
-				} else {
-					lampSwitch(Defines.DEF_LAMP_MAXBET, Defines.DEF_LAMP_ACTION_OFF);
-				}
-			} else {
-				lampSwitch(Defines.DEF_LAMP_MAXBET, Defines.DEF_LAMP_ACTION_OFF);
-			}
+			    // インサートコインランプを点滅させる
+			    if (!IS_REPLAY()
+					    && ((IS_BONUS_JAC() && int_s_value[Defines.DEF_INT_BETTED_COUNT] < 1) || (!IS_BONUS_JAC() && (int_s_value[Defines.DEF_INT_CREDIT_COIN_NUM] < Defines.DEF_NUM_MAX_CREDIT || int_s_value[Defines.DEF_INT_BETTED_COUNT] < 3)))) {
+				    if (int_s_value[Defines.DEF_INT_ON_OFF_EFFECT] > 0)
+                    {
+					    lampSwitch(Defines.DEF_LAMP_INS, Defines.DEF_LAMP_ACTION_ON);
+				    }
+                    else
+                    {
+					    lampSwitch(Defines.DEF_LAMP_INS, Defines.DEF_LAMP_ACTION_OFF);
+				    }
+			    }
+                else
+                {
+				    lampSwitch(Defines.DEF_LAMP_INS, Defines.DEF_LAMP_ACTION_OFF);
+			    }
 
-			break;
-		case Defines.DEF_RMODE_SPIN:
-			lampSwitch(Defines.DEF_LAMP_STA, Defines.DEF_LAMP_ACTION_OFF);
-			lampSwitch(Defines.DEF_LAMP_INS, Defines.DEF_LAMP_ACTION_OFF);
-			lampSwitch(Defines.DEF_LAMP_MAXBET, Defines.DEF_LAMP_ACTION_OFF);
-			lampSwitch(Defines.DEF_LAMP_FRE, Defines.DEF_LAMP_ACTION_OFF);
-			// ﾃﾝﾊﾟｲランプの点滅
-			if (int_s_value[Defines.DEF_INT_IS_TEMPAI] == 1) {
-				if (int_s_value[Defines.DEF_INT_ON_OFF_EFFECT] > 0) {
-					lampSwitch(Defines.DEF_LAMP_CHANCE, Defines.DEF_LAMP_ACTION_OFF);
-				} else {
-					lampSwitch(Defines.DEF_LAMP_CHANCE, Defines.DEF_LAMP_ACTION_ON);
-				}
-			} else {
-				lampSwitch(Defines.DEF_LAMP_CHANCE, Defines.DEF_LAMP_ACTION_OFF);
-			}
-			break;
-		}
+			    // BETボタンを点滅
+			    if (int_s_value[Defines.DEF_INT_CREDIT_COIN_NUM] > 0)
+                {
+				    if ((IS_BONUS_JAC() && int_s_value[Defines.DEF_INT_BETTED_COUNT] < 1) ||
+                        (!IS_BONUS_JAC() && int_s_value[Defines.DEF_INT_BETTED_COUNT] < 3))
+                    {
+					    if (int_s_value[Defines.DEF_INT_ON_OFF_EFFECT] > 0)
+                        {
+						    lampSwitch(Defines.DEF_LAMP_MAXBET, Defines.DEF_LAMP_ACTION_OFF);
+					    }
+                        else
+                        {
+						    lampSwitch(Defines.DEF_LAMP_MAXBET, Defines.DEF_LAMP_ACTION_ON);
+					    }
+				    }
+                    else
+                    {
+					    lampSwitch(Defines.DEF_LAMP_MAXBET, Defines.DEF_LAMP_ACTION_OFF);
+				    }
+			    }
+                else
+                {
+				    lampSwitch(Defines.DEF_LAMP_MAXBET, Defines.DEF_LAMP_ACTION_OFF);
+			    }
+
+			    break;
+
+		    case Defines.DEF_RMODE_SPIN:
+			    lampSwitch(Defines.DEF_LAMP_STA, Defines.DEF_LAMP_ACTION_OFF);
+			    lampSwitch(Defines.DEF_LAMP_INS, Defines.DEF_LAMP_ACTION_OFF);
+			    lampSwitch(Defines.DEF_LAMP_MAXBET, Defines.DEF_LAMP_ACTION_OFF);
+			    lampSwitch(Defines.DEF_LAMP_FRE, Defines.DEF_LAMP_ACTION_OFF);
+
+			    // ﾃﾝﾊﾟｲランプの点滅
+			    if (int_s_value[Defines.DEF_INT_IS_TEMPAI] == 1)
+                {
+				    if (int_s_value[Defines.DEF_INT_ON_OFF_EFFECT] > 0)
+                    {
+					    lampSwitch(Defines.DEF_LAMP_CHANCE, Defines.DEF_LAMP_ACTION_OFF);
+				    }
+                    else
+                    {
+					    lampSwitch(Defines.DEF_LAMP_CHANCE, Defines.DEF_LAMP_ACTION_ON);
+				    }
+			    }
+                else
+                {
+				    lampSwitch(Defines.DEF_LAMP_CHANCE, Defines.DEF_LAMP_ACTION_OFF);
+			    }
+
+			    break;
+    	}
 	}
 
     /// <summary>
@@ -1940,20 +2070,29 @@ public partial class mOmatsuri
     {
 		int snd_id = Defines.DEF_SOUND_UNDEF;
 		_soundTime = Util.GetMilliSeconds() + 0;
-		if (int_s_value[Defines.DEF_INT_WIN_COIN_NUM] <= 0) {
-			if (IS_REPLAY()) {
+		if (int_s_value[Defines.DEF_INT_WIN_COIN_NUM] <= 0)
+        {
+			if (IS_REPLAY())
+            {
 				snd_id = Defines.DEF_SOUND_24;
 				_soundTime = Util.GetMilliSeconds() + Defines.DEF_SOUND_MS_24;
 			}
-		} else if (int_s_value[Defines.DEF_INT_WIN_COIN_NUM] < 15) {
+		}
+        else if (int_s_value[Defines.DEF_INT_WIN_COIN_NUM] < 15)
+        {
 			snd_id = Defines.DEF_SOUND_16;
 			_soundTime = Util.GetMilliSeconds()
 					+ (120 * int_s_value[Defines.DEF_INT_WIN_COIN_NUM]);
-		} else {
-			if (IS_BONUS_JAC()) {
+		}
+        else
+        {
+			if (IS_BONUS_JAC())
+            {
 				snd_id = Defines.DEF_SOUND_18;
 				_soundTime = Util.GetMilliSeconds() + Defines.DEF_SOUND_MS_18;
-			} else {
+			}
+            else
+            {
 				snd_id = Defines.DEF_SOUND_17;
 				_soundTime = Util.GetMilliSeconds() + Defines.DEF_SOUND_MS_17;
 			}
@@ -1971,23 +2110,31 @@ public partial class mOmatsuri
     {
 		// Y軸 高さ.
 		int idx = current / Defines.DEF_UNIT_GAMES;
-		if (idx >= Defines.DEF_INFO_GAMES) { // == bonus_Data[x].Length
+		if (idx >= Defines.DEF_INFO_GAMES)
+        {
+            // == bonus_Data[x].Length
 			idx = Defines.DEF_INFO_GAMES - 1;
 		}
 
 		// --- set --
-		if (game_kind == Defines.DEF_PS_BB_RUN) {
+		if (game_kind == Defines.DEF_PS_BB_RUN)
+        {
 			bonus_Data[int_s_value[Defines.DEF_INT_BONUS_DATA_BASE],idx] = Defines.DEF_GAME_BIG;
-		} else if (game_kind == Defines.DEF_PS_RB_RUN) {
+		}
+        else if (game_kind == Defines.DEF_PS_RB_RUN)
+        {
 			bonus_Data[int_s_value[Defines.DEF_INT_BONUS_DATA_BASE],idx] = Defines.DEF_GAME_REG;
 		}
 
 		// -- shift --
 		int_s_value[Defines.DEF_INT_BONUS_DATA_BASE]--;
-		if (int_s_value[Defines.DEF_INT_BONUS_DATA_BASE] < 0) {
+		if (int_s_value[Defines.DEF_INT_BONUS_DATA_BASE] < 0)
+        {
             int_s_value[Defines.DEF_INT_BONUS_DATA_BASE] = Defines.DEF_INFO_GAME_HISTORY - 1; 
 		}
-        for (int i = 0; i < Defines.DEF_INFO_GAMES; i++) {
+
+        for (int i = 0; i < Defines.DEF_INFO_GAMES; i++)
+        {
 			bonus_Data[int_s_value[Defines.DEF_INT_BONUS_DATA_BASE],i] = Defines.DEF_GAME_NONE;
 		}
 	}
@@ -2001,12 +2148,15 @@ public partial class mOmatsuri
     {
 		// Y軸 高さ.
 		int idx = (current - 1) / Defines.DEF_UNIT_GAMES;
-		if (idx >= Defines.DEF_INFO_GAMES) { // == bonus_Data[x].Length
+		if (idx >= Defines.DEF_INFO_GAMES)
+        {
+            // == bonus_Data[x].Length
 			idx = Defines.DEF_INFO_GAMES - 1;
 		}
 
 		// 通常.
-		if (bonus_Data[int_s_value[Defines.DEF_INT_BONUS_DATA_BASE],idx] == Defines.DEF_GAME_NONE) {
+		if (bonus_Data[int_s_value[Defines.DEF_INT_BONUS_DATA_BASE],idx] == Defines.DEF_GAME_NONE)
+        {
 			bonus_Data[int_s_value[Defines.DEF_INT_BONUS_DATA_BASE],idx] = Defines.DEF_GAME_NORMAL;
 		}
 	}
@@ -2047,20 +2197,20 @@ public partial class mOmatsuri
 	public static int getReelId(int reelBit)
     {
 		switch (reelBit) {
-		case Defines.DEF_BAR_:
-			return Defines.DEF_ID_REEL_BAR_;
-		case Defines.DEF_BELL:
-			return Defines.DEF_ID_REEL_BELL;
-		case Defines.DEF_BSVN:
-			return Defines.DEF_ID_REEL_BSVN;
-		case Defines.DEF_CHRY:
-			return Defines.DEF_ID_REEL_CHRY;
-		case Defines.DEF_RPLY:
-			return Defines.DEF_ID_REEL_RPLY;
-		case Defines.DEF_DON_:
-			return Defines.DEF_ID_REEL_RSVN;
-		case Defines.DEF_WMLN:
-			return Defines.DEF_ID_REEL_WMLN;
+		    case Defines.DEF_BAR_:
+			    return Defines.DEF_ID_REEL_BAR_;
+		    case Defines.DEF_BELL:
+			    return Defines.DEF_ID_REEL_BELL;
+		    case Defines.DEF_BSVN:
+			    return Defines.DEF_ID_REEL_BSVN;
+		    case Defines.DEF_CHRY:
+			    return Defines.DEF_ID_REEL_CHRY;
+		    case Defines.DEF_RPLY:
+			    return Defines.DEF_ID_REEL_RPLY;
+		    case Defines.DEF_DON_:
+			    return Defines.DEF_ID_REEL_RSVN;
+		    case Defines.DEF_WMLN:
+			    return Defines.DEF_ID_REEL_WMLN;
 		}
 		return 0;
 	}
@@ -2069,19 +2219,30 @@ public partial class mOmatsuri
     {
 		int[] tempai = { Defines.DEF_BB_UNDEF, 0 };
 		int yukou = 5;// 有効ライン
-		if (int_s_value[Defines.DEF_INT_BET_COUNT] == 1) {
+
+		if (int_s_value[Defines.DEF_INT_BET_COUNT] == 1)
+        {
 			yukou = 1;
-		} else if (int_s_value[Defines.DEF_INT_BET_COUNT] == 2) {
+		}
+        else if (int_s_value[Defines.DEF_INT_BET_COUNT] == 2)
+        {
 			yukou = 3;
 		}
-		for (int line = 0; line < yukou; line++) {
+
+		for (int line = 0; line < yukou; line++)
+        {
 			int tmp = Defines.DEF_ARAY;
-			for (int reel = 0; reel < 3; reel++) {
+			for (int reel = 0; reel < 3; reel++)
+            {
 				tmp &= clOHHB_V23.getWork(Defines.DEF_ARAY11 + (line * 3) + reel);
 			}
-			if ((tmp & Defines.DEF_BSVN) != 0) {
+
+			if ((tmp & Defines.DEF_BSVN) != 0)
+            {
 				tempai[0] = Defines.DEF_BB_B7;
-			} else if ((tmp & Defines.DEF_DON_) != 0) {
+			}
+            else if ((tmp & Defines.DEF_DON_) != 0)
+            {
 				tempai[0] = Defines.DEF_BB_R7;
 				tempai[1]++;
 			}
@@ -2147,7 +2308,7 @@ public partial class mOmatsuri
     {
 		if (idx > 0)
         {
-			flash = FLASHTBL[idx - 1];
+            flash = FLASHTBL[idx - 1];
 			current = -2;
 			repeat = 0;
 			play = true;
@@ -2195,130 +2356,131 @@ public partial class mOmatsuri
 		return play;
 	}
 
-	public static readonly int[][] RLPTNDT = {
-	// RLPTNDT01
-			new int[] { Defines.DEF_R_ST3 + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_RVS, Defines.DEF_RP13, // 1
-					Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_SLW + Defines.DEF_R_NRL, Defines.DEF_RP13, // 2
-					Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_SLW + Defines.DEF_R_RVS, Defines.DEF_RP13, // 3
-					Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_SLW + Defines.DEF_R_NRL, Defines.DEF_RP08, // 4
-			},
-			// RLPTNDT02
-			new int[] { Defines.DEF_R_ST3 + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_RVS, Defines.DEF_RP13, // 1
-					Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_SLW + Defines.DEF_R_NRL, Defines.DEF_RP13, // 2
-					Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_SLW + Defines.DEF_R_RVS, Defines.DEF_RP01, // 3
-					Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_SLW + Defines.DEF_R_NRL, Defines.DEF_RP08, // 4
-			},
-			// RLPTNDT03
-			new int[] { Defines.DEF_R_ST3 + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP13, // 1
-					Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_NRS + Defines.DEF_R_RVS, Defines.DEF_RP01, // 2
-					Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_SLW + Defines.DEF_R_NRL, Defines.DEF_RP08, // 3
-			},
-			// RLPTNDT04
-			new int[] { Defines.DEF_R_ST3 + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP13, // 1
-					Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_NRS + Defines.DEF_R_RVS, Defines.DEF_RP01, // 2
-					Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_SLW + Defines.DEF_R_NRL, Defines.DEF_RP19, // 3
-			},
-			// RLPTNDT05
-			new int[] { Defines.DEF_R_ST3 + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_RVS, Defines.DEF_RP13, // 1
-					Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_NRS + Defines.DEF_R_RVS, Defines.DEF_RP16, // 2
-			},
-			// RLPTNDT06
-			new int[] { Defines.DEF_R_ST3 + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP01, // 1
-					Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_NRS + Defines.DEF_R_RVS, Defines.DEF_RP01, // 2
-					Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_SLW + Defines.DEF_R_NRL, Defines.DEF_RP01, // 3
-					Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_SLW + Defines.DEF_R_NRL, Defines.DEF_RP08, // 4
-			},
-			// RLPTNDT07
-			new int[] { Defines.DEF_R_ST3 + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP01, // 1
-					Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP01, // 2
-					Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_SLW + Defines.DEF_R_RVS, Defines.DEF_RP13, // 3
-					Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_SLW + Defines.DEF_R_RVS, Defines.DEF_RP08, // 4
-			},
-			// RLPTNDT08
-			new int[] { Defines.DEF_R_ST3 + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_RVS, Defines.DEF_RP01, // 1
-					Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_SLW + Defines.DEF_R_NRL, Defines.DEF_RP13, // 2
-					Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_SLW + Defines.DEF_R_NRL, Defines.DEF_RP19, // 3
-					Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_SLW + Defines.DEF_R_RVS, Defines.DEF_RP08, // 4
-			},
-			// RLPTNDT09
-			new int[] { Defines.DEF_R_ST3 + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_RVS, Defines.DEF_RP01, // 1
-					Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_SLW + Defines.DEF_R_NRL, Defines.DEF_RP13, // 2
-					Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_SLW + Defines.DEF_R_NRL, Defines.DEF_RP19, // 3
-			},
-			// RLPTNDT10
-			new int[] { Defines.DEF_R_ST3 + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP01, // 1
-					Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_NRS + Defines.DEF_R_RVS, Defines.DEF_RP16, // 2
-			},
-			// RLPTNDT11
-			new int[] { Defines.DEF_R_ST2 + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_RVS, Defines.DEF_RP13, // 1
-					Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_NRS + Defines.DEF_R_RVS, Defines.DEF_RP16, // 2
-			},
-			// RLPTNDT12
-			new int[] { Defines.DEF_R_ST2 + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_RVS, Defines.DEF_RP01, // 1
-					Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_NRS + Defines.DEF_R_RVS, Defines.DEF_RP16, // 2
-			},
-			// RLPTNDT13
-			new int[] { Defines.DEF_R_ST2 + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP13, // 1
-			},
-			// RLPTNDT14
-			new int[] { Defines.DEF_R_ST2 + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP01, // 1
-			},
-			// RLPTNDT15
-			new int[] { Defines.DEF_R_ST2 + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP16, // 1
-			},
-			// RLPTNDT16
-			new int[] { Defines.DEF_R_ST2 + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP04, // 1
-			},
-			// RLPTNDT17
-			new int[] { Defines.DEF_R_ST1 + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_RVS, Defines.DEF_RP13, // 1
-					Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP04, // 2
-			},
-			// RLPTNDT18
-			new int[] { Defines.DEF_R_ST1 + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_RVS, Defines.DEF_RP01, // 1
-					Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP04, // 2
-			},
-			// RLPTNDT19
-			new int[] { Defines.DEF_R_ST1 + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP13, // 1
-			},
-			// RLPTNDT20
-			new int[] { Defines.DEF_R_ST1 + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP01, // 1
-			},
-			// RLPTNDT21
-			new int[] { Defines.DEF_R_ST1 + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP16, // 1
-			},
-			// RLPTNDT22
-			new int[] { Defines.DEF_R_ST1 + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP04, // 1
-			},
-			// RLPTNDT23
-			new int[] { Defines.DEF_R_STS + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_RVS, Defines.DEF_RP08, // 1
-			},
-			// RLPTNDT24
-			new int[] { Defines.DEF_R_STS + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP19, // 1
-			},
-			// RLPTNDT25
-			new int[] { Defines.DEF_R_STS + Defines.DEF_ST_T3, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP04, // 1
-					Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP05, // 2
-					Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP06, // 3
-					Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP07, // 4
-					Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_SLW + Defines.DEF_R_NRL, Defines.DEF_RP19, // 5
-			},
-			// RLPTNDT26
-			new int[] { Defines.DEF_R_STS + Defines.DEF_ST_T3, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP04, // 1
-					Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP05, // 2
-					Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP06, // 3
-					Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP07, // 4
-					Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_SLW + Defines.DEF_R_NRL, Defines.DEF_RP08, // 5
-			},
-			// RLPTNDT27
-			new int[] { Defines.DEF_R_STS + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP13, // 1
-			},
-			// RLPTNDT28
-			new int[] { Defines.DEF_R_STS + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_RVS, Defines.DEF_RP01, // 1
-			},
-			// RLPTNDT29
-			new int[] { Defines.DEF_R_STS + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP08, // 1
-			}, 
-			};
+	public static readonly int[][] RLPTNDT =
+    {
+	    // RLPTNDT01
+		new int[] { Defines.DEF_R_ST3 + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_RVS, Defines.DEF_RP13, // 1
+				Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_SLW + Defines.DEF_R_NRL, Defines.DEF_RP13, // 2
+				Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_SLW + Defines.DEF_R_RVS, Defines.DEF_RP13, // 3
+				Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_SLW + Defines.DEF_R_NRL, Defines.DEF_RP08, // 4
+		},
+		// RLPTNDT02
+		new int[] { Defines.DEF_R_ST3 + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_RVS, Defines.DEF_RP13, // 1
+				Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_SLW + Defines.DEF_R_NRL, Defines.DEF_RP13, // 2
+				Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_SLW + Defines.DEF_R_RVS, Defines.DEF_RP01, // 3
+				Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_SLW + Defines.DEF_R_NRL, Defines.DEF_RP08, // 4
+		},
+		// RLPTNDT03
+		new int[] { Defines.DEF_R_ST3 + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP13, // 1
+				Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_NRS + Defines.DEF_R_RVS, Defines.DEF_RP01, // 2
+				Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_SLW + Defines.DEF_R_NRL, Defines.DEF_RP08, // 3
+		},
+		// RLPTNDT04
+		new int[] { Defines.DEF_R_ST3 + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP13, // 1
+				Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_NRS + Defines.DEF_R_RVS, Defines.DEF_RP01, // 2
+				Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_SLW + Defines.DEF_R_NRL, Defines.DEF_RP19, // 3
+		},
+		// RLPTNDT05
+		new int[] { Defines.DEF_R_ST3 + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_RVS, Defines.DEF_RP13, // 1
+				Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_NRS + Defines.DEF_R_RVS, Defines.DEF_RP16, // 2
+		},
+		// RLPTNDT06
+		new int[] { Defines.DEF_R_ST3 + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP01, // 1
+				Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_NRS + Defines.DEF_R_RVS, Defines.DEF_RP01, // 2
+				Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_SLW + Defines.DEF_R_NRL, Defines.DEF_RP01, // 3
+				Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_SLW + Defines.DEF_R_NRL, Defines.DEF_RP08, // 4
+		},
+		// RLPTNDT07
+		new int[] { Defines.DEF_R_ST3 + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP01, // 1
+				Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP01, // 2
+				Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_SLW + Defines.DEF_R_RVS, Defines.DEF_RP13, // 3
+				Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_SLW + Defines.DEF_R_RVS, Defines.DEF_RP08, // 4
+		},
+		// RLPTNDT08
+		new int[] { Defines.DEF_R_ST3 + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_RVS, Defines.DEF_RP01, // 1
+				Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_SLW + Defines.DEF_R_NRL, Defines.DEF_RP13, // 2
+				Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_SLW + Defines.DEF_R_NRL, Defines.DEF_RP19, // 3
+				Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_SLW + Defines.DEF_R_RVS, Defines.DEF_RP08, // 4
+		},
+		// RLPTNDT09
+		new int[] { Defines.DEF_R_ST3 + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_RVS, Defines.DEF_RP01, // 1
+				Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_SLW + Defines.DEF_R_NRL, Defines.DEF_RP13, // 2
+				Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_SLW + Defines.DEF_R_NRL, Defines.DEF_RP19, // 3
+		},
+		// RLPTNDT10
+		new int[] { Defines.DEF_R_ST3 + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP01, // 1
+				Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_NRS + Defines.DEF_R_RVS, Defines.DEF_RP16, // 2
+		},
+		// RLPTNDT11
+		new int[] { Defines.DEF_R_ST2 + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_RVS, Defines.DEF_RP13, // 1
+				Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_NRS + Defines.DEF_R_RVS, Defines.DEF_RP16, // 2
+		},
+		// RLPTNDT12
+		new int[] { Defines.DEF_R_ST2 + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_RVS, Defines.DEF_RP01, // 1
+				Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_NRS + Defines.DEF_R_RVS, Defines.DEF_RP16, // 2
+		},
+		// RLPTNDT13
+		new int[] { Defines.DEF_R_ST2 + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP13, // 1
+		},
+		// RLPTNDT14
+		new int[] { Defines.DEF_R_ST2 + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP01, // 1
+		},
+		// RLPTNDT15
+		new int[] { Defines.DEF_R_ST2 + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP16, // 1
+		},
+		// RLPTNDT16
+		new int[] { Defines.DEF_R_ST2 + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP04, // 1
+		},
+		// RLPTNDT17
+		new int[] { Defines.DEF_R_ST1 + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_RVS, Defines.DEF_RP13, // 1
+				Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP04, // 2
+		},
+		// RLPTNDT18
+		new int[] { Defines.DEF_R_ST1 + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_RVS, Defines.DEF_RP01, // 1
+				Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP04, // 2
+		},
+		// RLPTNDT19
+		new int[] { Defines.DEF_R_ST1 + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP13, // 1
+		},
+		// RLPTNDT20
+		new int[] { Defines.DEF_R_ST1 + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP01, // 1
+		},
+		// RLPTNDT21
+		new int[] { Defines.DEF_R_ST1 + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP16, // 1
+		},
+		// RLPTNDT22
+		new int[] { Defines.DEF_R_ST1 + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP04, // 1
+		},
+		// RLPTNDT23
+		new int[] { Defines.DEF_R_STS + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_RVS, Defines.DEF_RP08, // 1
+		},
+		// RLPTNDT24
+		new int[] { Defines.DEF_R_STS + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP19, // 1
+		},
+		// RLPTNDT25
+		new int[] { Defines.DEF_R_STS + Defines.DEF_ST_T3, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP04, // 1
+				Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP05, // 2
+				Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP06, // 3
+				Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP07, // 4
+				Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_SLW + Defines.DEF_R_NRL, Defines.DEF_RP19, // 5
+		},
+		// RLPTNDT26
+		new int[] { Defines.DEF_R_STS + Defines.DEF_ST_T3, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP04, // 1
+				Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP05, // 2
+				Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP06, // 3
+				Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP07, // 4
+				Defines.DEF_R_STE + Defines.DEF_ST_TE, Defines.DEF_R_SLW + Defines.DEF_R_NRL, Defines.DEF_RP08, // 5
+		},
+		// RLPTNDT27
+		new int[] { Defines.DEF_R_STS + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP13, // 1
+		},
+		// RLPTNDT28
+		new int[] { Defines.DEF_R_STS + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_RVS, Defines.DEF_RP01, // 1
+		},
+		// RLPTNDT29
+		new int[] { Defines.DEF_R_STS + Defines.DEF_ST_TN, Defines.DEF_R_NRS + Defines.DEF_R_NRL, Defines.DEF_RP08, // 1
+		}, 
+	};
 
 	private static char[] flash = "\u0000".ToCharArray();
 
@@ -2336,7 +2498,6 @@ public partial class mOmatsuri
 					.ToCharArray(),
 			"\u0002\u0FFF\u0002\u01FF\u0002\u0FFF\uFFFF".ToCharArray(), };
 
-	/** AUTO GENERATED char ARRAY BY compact.CompactClass */
 	public static char[][] FLLXX = {
 			"\u0064\u0000\u0000\u0000\u0000\u0000".ToCharArray(),
 			"\u0078\u0091\u004E\u0024\u004E\u0000".ToCharArray(),
@@ -2353,19 +2514,9 @@ public partial class mOmatsuri
 
 	/**
 	 * 透過矩形描画.
-	 * 
-	 * @param x0
-	 * @param y0
-	 * @param w
-	 * @param h
-	 * @param r
-	 * @param g
-	 * @param b
-	 * @param ink
 	 */
-	public static void _drawEffect(int x0, int y0, int w, int h, int r, int g,
-			int b, int ink) {
-
+	public static void _drawEffect(int x0, int y0, int w, int h, int r, int g, int b, int ink)
+    {
 		const int bias_x = 120;// ZZ.centerX;
 		const int bias_y = 120;// ZZ.centerY;
 				
@@ -2417,13 +2568,19 @@ public partial class mOmatsuri
 		polygon_color[1] = g;
 		polygon_color[2] = b;
 
-		if (ink == Defines.DEF_INK_SUB) {
+		if (ink == Defines.DEF_INK_SUB)
+        {
 			ZZ.drawPolygonRectSub(polygon, polygon_color);
-		} else if (ink == Defines.DEF_INK_ADD) {
+		}
+        else if (ink == Defines.DEF_INK_ADD)
+        {
 			ZZ.drawPolygonRectAdd(polygon, polygon_color);
-		} else {
+		}
+        else
+        {
 			ZZ.drawPolygonRect(polygon, polygon_color);
 		}
+
 		ZZ.flush3D();
 	}
 }

@@ -18,7 +18,7 @@ public class Post : MonoBehaviour
     // WEB - 本番
     // DESKTOP - TEST MODE
     //MODE mode = MODE.WEB;
-    Mode mode = Mode.Web;
+    Mode mode = Mode.Desktop;
 
     static string serverHead = "../pachinko/";
     static string logicHead = "http://localhost:9876/";
@@ -200,6 +200,11 @@ public class Post : MonoBehaviour
             clOHHB_V23.setWork(Defines.DEF_WAVENUM, (ushort)setting);
 
             var status = "ok";
+
+            // 1000枚セット
+            var coinCount = 1000;
+            mOmatsuri.GPW_chgCredit(coinCount);
+            CasinoData.Instance.Exchange = coinCount * Rate.Instanse.GetRate();
 
             if (status.Contains("error"))
             {
@@ -545,12 +550,6 @@ public class Post : MonoBehaviour
 
         if (mode == Mode.Desktop)
         {
-            if (mode == Mode.Desktop)
-            {
-                // コインを補充
-                //GameManager.Instance.InsertCoin(1000);
-            }
-
             var msg = "gameId=101&token=aaa&language=ja&operatorId=1&mode=0";
             Response(msg);
         }
@@ -576,6 +575,7 @@ public class Post : MonoBehaviour
         //Application.ExternalCall("AlertByUnity", msg);
 
         var param = new Dictionary<string, string>();
+        var fsm = GetComponent<PlayMakerFSM>();
 
         var kvs = msg.Split('&')
            .Select(query => query.Split('='))
@@ -590,20 +590,14 @@ public class Post : MonoBehaviour
         {
             // デモモード
             GameMode.Mode = GameModeType.Demo;
-
-            // 1000枚セット
-            var coinCount = 1000;
-            mOmatsuri.GPW_chgCredit(coinCount);
-            CasinoData.Instance.Exchange = coinCount * Rate.Instanse.GetRate();
+            fsm.SendEvent("Demo");
         }
         else
         {
             // リアルモード
             GameMode.Mode = GameModeType.Real;
+            fsm.SendEvent("Succeed");
         }
-
-        var fsm = GetComponent<PlayMakerFSM>();
-        fsm.SendEvent("Succeed");
     }
 
     void PostWWW(
