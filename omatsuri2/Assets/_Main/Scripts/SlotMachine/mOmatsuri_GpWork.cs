@@ -248,7 +248,6 @@ public partial class mOmatsuri
 	    //DFMain.APP_TRACE("ボーナスカットチェック:" + gp.getOptValue(gp.OPT_BONUS_CUT));
 	    // num=1 JACゲームのみ
 	    // num=2 ボーナス全部
-
 	    int num;
 	
 	    Defines.APP_TRACE("gp.gpif_bonuscut_f:" + gp.gpif_bonuscut_f);
@@ -400,39 +399,35 @@ public partial class mOmatsuri
 				}
 				else if(flash == (int)Defines.EVENT.EVENT_NO3)
 				{
-					// これで図柄をとれるのかな？
-					//	図柄コード
-					//#define DfOHHB_V23_DEF.DEF_BSVN         	     0x01                // 青７
-					//#define DfOHHB_V23_DEF.DEF_DON_         	     0x02                // ﾄﾞﾝ
-					//#define DfOHHB_V23_DEF.DEF_BAR_         	     0x04                // BAR
-					//#define DfOHHB_V23_DEF.DEF_RPLY         	     0x08                // ｾﾝｽ
-					//#define DfOHHB_V23_DEF.DEF_WMLN         	     0x10                // 大山
-					//#define DfOHHB_V23_DEF.DEF_BELL         	     0x20                // ﾊﾅﾋﾞ
-					//#define DfOHHB_V23_DEF.DEF_CHRY         	     0x40                // ﾁｪﾘｰ
-					//#define DfOHHB_V23_DEF.DEF_ANY_         	     0x00                // －
-                    
-                    // TODO ZZ.hexShortが__DEBUG__でないと使えない？
-                    Defines.TRACE("★停止図柄1:" + ZZ.hexShort((short)(clOHHB_V23.getWork(Defines.DEF_ARAY21) & 0xFFFF)) + ":" +
-                                            ZZ.hexShort((short)(clOHHB_V23.getWork(Defines.DEF_ARAY22) & 0xFFFF)) + ":" +
-                                            ZZ.hexShort((short)(clOHHB_V23.getWork(Defines.DEF_ARAY23) & 0xFFFF)));
-                    Defines.TRACE("★停止図柄2:" + ZZ.hexShort((short)(clOHHB_V23.getWork(Defines.DEF_ARAY11) & 0xFFFF)) + ":" +
-                                            ZZ.hexShort((short)(clOHHB_V23.getWork(Defines.DEF_ARAY12) & 0xFFFF)) + ":" +
-                                            ZZ.hexShort((short)(clOHHB_V23.getWork(Defines.DEF_ARAY13) & 0xFFFF)));
-                    Defines.TRACE("★停止図柄3:" + ZZ.hexShort((short)(clOHHB_V23.getWork(Defines.DEF_ARAY31) & 0xFFFF)) + ":" +
-                                            ZZ.hexShort((short)(clOHHB_V23.getWork(Defines.DEF_ARAY32) & 0xFFFF)) + ":" +
-                                            ZZ.hexShort((short)(clOHHB_V23.getWork(Defines.DEF_ARAY33) & 0xFFFF)));
+                    Defines.TRACE("★停止図柄1:" +
+                        ZZ.hexShort((short)(clOHHB_V23.getWork(Defines.DEF_ARAY21) & 0xFFFF)) + ":" +
+                        ZZ.hexShort((short)(clOHHB_V23.getWork(Defines.DEF_ARAY22) & 0xFFFF)) + ":" +
+                        ZZ.hexShort((short)(clOHHB_V23.getWork(Defines.DEF_ARAY23) & 0xFFFF)));
+                    Defines.TRACE("★停止図柄2:" +
+                        ZZ.hexShort((short)(clOHHB_V23.getWork(Defines.DEF_ARAY11) & 0xFFFF)) + ":" +
+                        ZZ.hexShort((short)(clOHHB_V23.getWork(Defines.DEF_ARAY12) & 0xFFFF)) + ":" +
+                        ZZ.hexShort((short)(clOHHB_V23.getWork(Defines.DEF_ARAY13) & 0xFFFF)));
+                    Defines.TRACE("★停止図柄3:" +
+                        ZZ.hexShort((short)(clOHHB_V23.getWork(Defines.DEF_ARAY31) & 0xFFFF)) + ":" +
+                        ZZ.hexShort((short)(clOHHB_V23.getWork(Defines.DEF_ARAY32) & 0xFFFF)) + ":" +
+                        ZZ.hexShort((short)(clOHHB_V23.getWork(Defines.DEF_ARAY33) & 0xFFFF)));
 					
                     if( Defines.CHECK_FLAG(clOHHB_V23.getWork(Defines.DEF_ARAY33), Defines.DEF_BSVN) &&
 						Defines.CHECK_FLAG(clOHHB_V23.getWork(Defines.DEF_ARAY13), Defines.DEF_CHRY))
-					{	// 右リール下段にﾁｪﾘｰ付き青七図柄
-						if( Defines.CHECK_FLAG(clOHHB_V23.getWork(Defines.DEF_ARAY21), (Defines.DEF_BSVN | Defines.DEF_DON_ | Defines.DEF_BAR_)) )
-						{	// 左リール上段にボーナス図柄
+					{
+                        // 右リール下段にﾁｪﾘｰ付き青七図柄
+						if( Defines.CHECK_FLAG(clOHHB_V23.getWork(Defines.DEF_ARAY21),
+                            (Defines.DEF_BSVN | Defines.DEF_DON_ | Defines.DEF_BAR_)) )
+						{
+                            // 左リール上段にボーナス図柄
 							Defines.TRACE("演出３：上段タイプのゲチェナ");
 							Defines.APP_TRACE("演出３：上段タイプのゲチェナ");
 							GPW_SET_EVENT((int)Defines.EVENT.EVENT_NO3);
 						}
-						else if( Defines.CHECK_FLAG( clOHHB_V23.getWork(Defines.DEF_ARAY31), (Defines.DEF_BSVN | Defines.DEF_DON_ | Defines.DEF_BAR_) ) )
-						{	// 左リール下段にボーナス図柄
+						else if( Defines.CHECK_FLAG( clOHHB_V23.getWork(Defines.DEF_ARAY31),
+                            (Defines.DEF_BSVN | Defines.DEF_DON_ | Defines.DEF_BAR_) ) )
+						{
+                            // 左リール下段にボーナス図柄
 							Defines.TRACE("演出３：上段タイプのゲチェナ");
 							Defines.APP_TRACE("演出３：下段タイプのゲチェナ");
 							GPW_SET_EVENT((int)Defines.EVENT.EVENT_NO3);
@@ -441,14 +436,14 @@ public partial class mOmatsuri
 				}
 			}
 			break;
+
 		case (int)Defines.EVENT_PROC.EVENT_PROC_CHK_FLASH:
 			// 演出によるチェック
-			
-			//////////////////////////////////////////////////////////////////////////////////
 			// あまりタイプ
 			tmp = (flash % 32);
 			// 演出チェック
-			if (tmp == 1) {
+			if (tmp == 1)
+            {
 				Defines.APP_TRACE("演出６：鉢巻リールアクション「赤ドン」３回停止");
 				//enshutu += "6,";
 				GPW_SET_EVENT((int)Defines.EVENT.EVENT_NO6);
@@ -464,7 +459,6 @@ public partial class mOmatsuri
 				GPW_SET_EVENT((int)Defines.EVENT.EVENT_NO5);
 			}
 			
-			//////////////////////////////////////////////////////////////////////////////////
 			// 割り算タイプ
 			tmp = (int)(flash / 32);
 			if (tmp == 7) {
@@ -472,8 +466,8 @@ public partial class mOmatsuri
 				//enshutu += "4,";
 				GPW_SET_EVENT((int)Defines.EVENT.EVENT_NO4);
 			}
-
 			break;
+
 		case (int)Defines.EVENT_PROC.EVENT_PROC_CHK_LANP:
 			// 確定ランプフラグ
 			if( (mOmatsuri.int_s_value[Defines.DEF_INT_WIN_LAMP] == 0) && (flash != 0) )
@@ -482,6 +476,7 @@ public partial class mOmatsuri
 				GPW_SET_EVENT((int)Defines.EVENT.EVENT_NO8);
 			}
 			break;
+
 		case (int)Defines.EVENT_PROC.EVENT_PROC_WEB:
 			// イベント情報の送信
 			if( eventFlagList[(int)Defines.EVENT.EVENT_WEB] == true )
@@ -515,169 +510,6 @@ public partial class mOmatsuri
 			}
 			break;
 		}
-	}
-	
-	// 大祭り用のサーバー文字列の作成
-	public static String OmatsuriToString(bool intfg)
-	{
-        // リール停止の初期値
-		Defines.APP_TRACE("★リール位置の初期化★");
-		mOmatsuri.int_s_value[Defines.DEF_INT_REEL_ANGLE_R0] = INDEX2ANGLE(9);
-		mOmatsuri.int_s_value[Defines.DEF_INT_REEL_ANGLE_R1] = INDEX2ANGLE(16);
-		mOmatsuri.int_s_value[Defines.DEF_INT_REEL_ANGLE_R2] = INDEX2ANGLE(14);
-		
-		// 停止フラグを立てる
-		mOmatsuri.int_s_value[Defines.DEF_INT_REEL_STOP_R0] = mOmatsuri.int_s_value[Defines.DEF_INT_REEL_ANGLE_R0];
-		mOmatsuri.int_s_value[Defines.DEF_INT_REEL_STOP_R1] = mOmatsuri.int_s_value[Defines.DEF_INT_REEL_ANGLE_R1];
-		mOmatsuri.int_s_value[Defines.DEF_INT_REEL_STOP_R2] = mOmatsuri.int_s_value[Defines.DEF_INT_REEL_ANGLE_R2];
-		mOmatsuri.int_s_value[Defines.DEF_INT_IS_REEL_STOPPED] = 7; // リールストップ
-		
-		return OmatsuriToString();
-	}
-
-	public static String OmatsuriToString()
-	{
-		int i;
-		String str;
-		int tmp;
-		
-		str = "";
-		
-		Defines.APP_TRACE("★乱数用シードの登録★:" + clRAND8.mRndbuf.Length);
-
-		// 乱数用シードの登録
-		for( i=0; i < Defines.RAND_SEED_SIZE; i++)
-		{
-			//DFMain.APP_TRACE("["+i+"]"+  (clRAND8.mRndbuf[i] & 0xFFFF) );
-			str = str + Str2Str( (clRAND8.mRndbuf[i] & 0xFFFF) );
-			
-			if( i != (Defines.RAND_SEED_SIZE-1))
-			{
-				str = str + ",";
-			}
-		}
-		
-		str = str + ",";
-		
-		Defines.APP_TRACE("★ランダムの参照先の登録★");
-		str = str + Str2Str(clRAND8.mRndwl & 0xFFFF) + ",";
-		str = str + Str2Str(clRAND8.mRndwh & 0xFFFF);
-		
-		str = str + ",";
-
-		// バージョン11以上からサブのバージョンを付与
-		Defines.APP_TRACE("★サウンドの再生登録★["+mOmatsuri.bgm_no+"]");
-		str = str + mOmatsuri.bgm_no + ",";
-		if( mOmatsuri.bgm_loop == true)
-		{
-			tmp = 1;
-		} else {
-			tmp = 0;
-		}
-		str = str + tmp;
-		str = str + ",";
-
-		Defines.APP_TRACE("★グローバル変数の登録★:" + Defines.DEF_INT_SLOT_VALUE_MAX);
-		for( i=0; i < Defines.DEF_INT_SLOT_VALUE_MAX; i++)
-		{
-			if( (i == Defines.DEF_INT_REEL_ANGLE_R0) ||
-				(i == Defines.DEF_INT_REEL_ANGLE_R1) ||
-				(i == Defines.DEF_INT_REEL_ANGLE_R2))
-			{
-                // リールの位置
-				tmp = ANGLE2INDEX(mOmatsuri.int_s_value[i]);
-				// 角度補正で+1されてしまうので-1する
-				//DFMain.APP_TRACE("["+i+"]:"+(tmp-1));
-				//str = str + GpHandler.PadLeft( Integer.toString((tmp-1)), 2, "0");
-				str = str + Str2Str((tmp-1));
-			}
-			else
-			{
-				//str = str + Integer.toString(mOmatsuri.int_s_value[i]);
-				str = str + Str2Str(mOmatsuri.int_s_value[i]);
-			}
-			if( i != (Defines.DEF_INT_SLOT_VALUE_MAX-1))
-			{
-				str = str + ",";
-			}
-			//ofset++;
-		}
-		
-		return str;
-	}
-	
-	// 大祭り用のサーバー文字列の復元
-	public static int StringToOmatsuri(string[] appData, int top)
-	{
-		int i;
-		int ofset = 0;
-		int tmp;
-		
-        //		// リールの出目
-        //		for(i = 0; i < 3; i++)
-        //		{
-        //			tmp = Integer.parseInt(appData[top + ofset]);
-        //			if( tmp != 0)
-        //			{	// tmp=0の場合は初期値になる為、代入しない
-        //				mOmatsuri.int_s_value[DfOHHB_V23_DEF.DEF_INT_REEL_ANGLE_R0 + ofset] = INDEX2ANGLE(tmp);
-        //			}
-        //			ofset++;
-        //		}
-		
-		//DFMain.APP_TRACE("★乱数用シードの登録★:" + clRAND8.mRndbuf.length);
-		// 乱数用シードの登録
-		for( i=0; i < Defines.RAND_SEED_SIZE; i++)
-		{
-			tmp = Str2Int(appData[top + ofset]);
-			
-			clRAND8.mRndbuf[i] = (ushort)tmp;
-			//DFMain.APP_TRACE("mRndbuf復元["+i+"]=" + clRAND8.mRndbuf[i]);
-			ofset++;
-		}
-		//DFMain.APP_TRACE("★ランダムの参照先の登録★");
-		clRAND8.mRndwl = Str2Ushort(appData[top + ofset]); ofset++;
-		clRAND8.mRndwh = Str2Ushort(appData[top + ofset]); ofset++;
-		
-		if( mOmatsuri.maj_ver >= 12 && mOmatsuri.sub_ver >= 0)
-		{
-            // バージョン11以上からサブのバージョンを付与
-			//DFMain.APP_TRACE("★サウンドの再生登録★");
-			mOmatsuri.bgm_no = Str2Int(appData[top + ofset]); ofset++;
-			tmp = Str2Int(appData[top + ofset]); ofset++;
-			if( tmp == 1)
-			{
-				mOmatsuri.bgm_loop = true;
-			} else {
-				mOmatsuri.bgm_loop = false;
-			}
-			if( mOmatsuri.bgm_no > -1)bgm_resumeFg = true;// アプリ復帰時に
-		}
-		
-		Defines.APP_TRACE("★グローバル変数の登録★:" + Defines.DEF_INT_SLOT_VALUE_MAX);
-		for( i=0; i < Defines.DEF_INT_SLOT_VALUE_MAX; i++)
-		{
-			//DFMain.APP_TRACE("["+i+"]=" + Integer.parseInt(appData[top + ofset]));
-			tmp = Str2Int(appData[top + ofset]);
-			
-			mOmatsuri.int_s_value[i] = tmp;
-			
-			if( (i == Defines.DEF_INT_REEL_ANGLE_R0) ||
-				(i == Defines.DEF_INT_REEL_ANGLE_R1) ||
-				(i == Defines.DEF_INT_REEL_ANGLE_R2))
-			{
-                // リールの位置
-				if( tmp != 0)
-				{
-                    // tmp=0の場合は初期値になる為、代入しない
-					//DFMain.APP_TRACE("リール位置["+i+"]:" + tmp + ":" + INDEX2ANGLE(tmp));
-					mOmatsuri.int_s_value[i] = INDEX2ANGLE(tmp);
-				}
-			}
-			
-			ofset++;
-		}
-		
-		return (top +ofset);
 	}
 
     /// <summary>

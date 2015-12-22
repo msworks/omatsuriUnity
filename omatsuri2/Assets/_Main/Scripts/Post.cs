@@ -98,7 +98,6 @@ public class Post : MonoBehaviour
         {
             // コイン枚数を金額に変換する
             var coin = mOmatsuri.int_s_value[Defines.DEF_INT_SLOT_COIN_NUM];
-            var cent = Rate.Instanse.Coin2Cent(coin);
 
             if (coin <= 2)
             {

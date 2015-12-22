@@ -61,7 +61,6 @@
             case Defines.DEF_MODE_RUN:
                 ctrlRun();
                 break;
-
         }
     }
 

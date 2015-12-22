@@ -1242,6 +1242,7 @@ public class clOHHB_V23 : clZ80RAM
 		CY = true;		
 		return CY;
 	}
+
 	//========================================================================================
 	//== (4-09)MN_GMIT_00 特賞作動チェック処理
 	//========================================================================================
@@ -1297,34 +1298,16 @@ public class clOHHB_V23 : clZ80RAM
 			break;
 		}
 	}
+
 	//========================================================================================
 	//== (6-17)SB_RRND_00 乱数値更新処理
 	//========================================================================================
-	//
-	//入力パラメータ
-	//            なし
-	//
-	//出力パラメータ
-	//            なし
-	//	
-	//破壊レジスタ
-	//            なし
-	//
+	//入力パラメータ なし
+	//出力パラメータ なし
+	//破壊レジスタ　 なし
 	//========================================================================================
 	static void mSB_RRND_00()
 	{
-	//大祭りではこの関数は使用しない。
-/*
-		  int pushHL = getHL();
-		  int pushDE = getDE();
-		
-		mLD_HL_Nm(RANDOMA);
-		setHL(getHL()+RNDPLUS);
-		mLD_Nm_HL(RANDOMA);
-
-		setHL(pushHL);
-		setDE(pushDE);
-*/
 	}
 
 	//========================================================================================
@@ -1354,6 +1337,7 @@ public class clOHHB_V23 : clZ80RAM
         setA((ushort)clRAND8.mGetRnd8());
 		mLD_Nm_A(Defines.DEF_RANDOMY);
 	}
+
 	////////////////////////////////////////////////////////////////
 	//↓ユーザー公開メソッド
 	////////////////////////////////////////////////////////////////
@@ -1401,7 +1385,8 @@ public class clOHHB_V23 : clZ80RAM
 		setHLm( (getHLm() & ~(0x01<<Defines.DEF_RPLC_FLN)) );
 		//デバッグ用フラグをクリア
 		setHLm( (getHLm() & ~(0x01<<Defines.DEF_STOPRND_FLN)) );
-	}	
+	}
+
 	//========================================================================================
 	//== (4-04)MN_WCAL_00 確率抽選処理
 	//========================================================================================
@@ -1704,6 +1689,7 @@ public class clOHHB_V23 : clZ80RAM
 		mSB_ADRA_00(getA());
 		mLD_Nm_A(Defines.DEF_LINENUM);
 	}
+
 	//========================================================================================
 	//== (5-01)MN_STOP_00 回胴停止制御処理
 	//========================================================================================
@@ -1726,18 +1712,6 @@ public class clOHHB_V23 : clZ80RAM
 			}			
 		}
 	
-/*
-		//DfOHHB_V23_DEF.DEF_ARAY11～DfOHHB_V23_DEF.DEF_ARAY13の全てを回転中コードにする(0x7F)
-		setHL( (DfOHHB_V23_DEF.DEF_ARAY * 256 ) + DfOHHB_V23_DEF.DEF_ARAY );
-		mLD_Nm_HL( DfOHHB_V23_DEF.DEF_ARAY11 );
-		mLD_Nm_HL( DfOHHB_V23_DEF.DEF_ARAY12 );
-*/		
-//MN_STOP_01～MN_STOP_02はアプリでは処理しない。
-
-//MN_STOP_03:
-//
-//=== ｽﾄｯﾌﾟﾎﾞﾀﾝ の ﾁｪｯｸ
-//
 		setHL(Defines.DEF_SLAMPBIT);		//ｽﾄｯﾌﾟﾎﾞﾀﾝ LED 状態格納領域 ｾｯﾄ
 		setA(getHLm());			//ｽﾄｯﾌﾟﾎﾞﾀﾝ LED 状態 取得 ( 点灯で回転中 )
 		setD( ~getA() );		//反転 ( 消灯で回転中 )
@@ -1799,16 +1773,6 @@ public class clOHHB_V23 : clZ80RAM
 				mINC_HL(1);
 				setHLm( getHLm()-1 );
 
-/*				ここはアプリでは処理しないが、SB_BCLR_00は4ｔｈ制御するなら必要。
-				LD      A,(HL)
-				CALL    SB_BCLR_00          ; 回転表示器回転要求ﾋﾞｯﾄｸﾘｱ処理
-;
-				LD      HL,STOPON           ; ﾘｰﾙ ｽﾄｯﾌﾟ管理用 ﾀｲﾏｰ ｾｯﾄ
-				RST     SB_SCHD_00          ; ｽﾄｯﾌﾟﾎﾞﾀﾝ 1-3 LED ｵﾌ
-				CALL    SB_OTLP_00          ; ﾘｰﾙ 回転停止音 ｵﾝ
-*/
-
-//				  ushort R = 1;
                 ushort R = (ushort)(clRAND8.mGetRnd8() & 0x7F);
 				//デバッグフラグは立っているか？
 				if( ( getWork(Defines.DEF_GAMEST) & (0x01<<Defines.DEF_STOPRND_FLN) ) == 0)
@@ -1861,6 +1825,7 @@ public class clOHHB_V23 : clZ80RAM
 			}
 		}
 	}
+
 	/////////////////////////////////////////////////////////////////////////
 	//初期化関数
 	/////////////////////////////////////////////////////////////////////////
@@ -1868,12 +1833,10 @@ public class clOHHB_V23 : clZ80RAM
 	//-----------------------------------------------------------------------
 	public static void mInitializaion(int n )
 	{
-//System.out.println("Randseed="+(n&0xffff));
-        //clRAND8.mInitializaion(n & 0xFFFF);
         clRAND8.mInitializaion(n);
         clearWork(Defines.DEF_CLR_AREA_1);
-//		mRtEndBakup_f = false;			
 	}
+
 	/////////////////////////////////////////////////////////////////////////
 	//乱数更新処理（必ず最も速くループする処理プロセス内で呼んで下さい！）
 	/////////////////////////////////////////////////////////////////////////
@@ -1883,6 +1846,7 @@ public class clOHHB_V23 : clZ80RAM
 	{
 		mSB_RRND_00();
 	}
+
 	/////////////////////////////////////////////////////////////////////////
 	//乱数取得（パチスロの抽選以外では使用しないで下さい！！）
 	/////////////////////////////////////////////////////////////////////////
@@ -1893,6 +1857,7 @@ public class clOHHB_V23 : clZ80RAM
 		mMN_PRND_00();	
 		return getWork16(Defines.DEF_RANDOMX);
 	}
+
 	/////////////////////////////////////////////////////////////////////////
 	//リールスタート関数（レバーＯＮ）
 	/////////////////////////////////////////////////////////////////////////
@@ -1915,11 +1880,9 @@ public class clOHHB_V23 : clZ80RAM
         //RST     SB_ADRA_00
         //LD      (DfOHHB_V23_DEF.DEF_MLAMPST),A         ; 有効 ﾗｲﾝ ｾｯﾄ
 		// 有効ライン数のセット。
-
         setWork(Defines.DEF_MEDLCTR, (ushort)medal);
 
-
-		  ushort[] MLAMPTBL={           // ﾒﾀﾞﾙﾗｲﾝﾗﾝﾌﾟの点灯ﾊﾟﾀｰﾝﾃｰﾌﾞﾙ
+		ushort[] MLAMPTBL={           // ﾒﾀﾞﾙﾗｲﾝﾗﾝﾌﾟの点灯ﾊﾟﾀｰﾝﾃｰﾌﾞﾙ
              0x08,                    // 1ﾒﾀﾞﾙ投入時(ﾒﾀﾞﾙﾗｲﾝﾗﾝﾌﾟ1点灯)
              0x38,                    // 2ﾒﾀﾞﾙ投入時(ﾒﾀﾞﾙﾗｲﾝﾗﾝﾌﾟ1､2A､2B点灯)
              0xF8,                    // 3ﾒﾀﾞﾙ投入時(全ﾒﾀﾞﾙﾗｲﾝﾗﾝﾌﾟ点灯)
@@ -1934,21 +1897,15 @@ public class clOHHB_V23 : clZ80RAM
 
 		// 遊技状態監視処理
 		mMN_GLCK_00();
-//MAIN_04:
+
 		// 確率抽選処理
 		mMN_WCAL_00();
-/*
-		※mMN_GLCK_00内へ移動
-
-*/
-//
-//=== ﾘｰﾙ ｽﾄｯﾌﾟ 実行
-//
 		mMN_SDAT_00();
 
 		//MN_STOP_00の先頭で行っている回転中コードをここで行う。
 		setHL(Defines.DEF_ARAY11);
 		setBC(15*256+Defines.DEF_ARAY);
+
 		//SB_WKST_00を展開
 		while(true)
 		{
@@ -1956,22 +1913,22 @@ public class clOHHB_V23 : clZ80RAM
 			mINC_HL(1);
 			if(mDJNZ() == true)break;
 		}
-
 	}
+
 	/////////////////////////////////////////////////////////////////////////
 	//強制フラグのセット（mReelStartメソッドの前で呼んで下さい。）
 	/////////////////////////////////////////////////////////////////////////
 	// flagIndex : 強制フラグ(0:無効/1～DfOHHB_V23_DEF.DEF_FORCE_MAX-1）※下記のワードを参照。
 	//-----------------------------------------------------------------------
-	//					BB未動作時		｜	BB作動時				｜	JAC作動中
+	//					BB未動作時		｜	BB作動時			｜	JAC作動中
 	//DfOHHB_V23_DEF.DEF_FORCE_HAZURE	：（ﾊｽﾞﾚ）			｜（ﾊｽﾞﾚ）					｜（ﾊｽﾞﾚ）		
 	//DfOHHB_V23_DEF.DEF_FORCE_CHERY 	：（ﾁｪﾘｰ）			｜（15枚役）ﾄﾞﾝ・ﾍﾞﾙ・ﾍﾞﾙ	｜（無効）	
 	//FORCE_DfOHHB_V23_DEF.DEF_BELL 	：（ﾍﾞﾙ）			｜（ﾍﾞﾙ）					｜（無効）		
 	//DfOHHB_V23_DEF.DEF_FORCE_SUIKA 	：（ｽｲｶ）			｜（ｽｲｶ　or ﾁｪﾘｰ）			｜（無効）
 	//DfOHHB_V23_DEF.DEF_FORCE_REPLAY	：（ﾘﾌﾟﾚｲ）			｜（JACIN）					｜（15枚役）ﾘﾌﾟ・ﾘﾌﾟ・ﾘﾌﾟ
-	//DfOHHB_V23_DEF.DEF_FORCE_REG 	：（ﾚｷﾞｭﾗｰﾎﾞｰﾅｽ）	｜（無効）					｜（無効）
-	//DfOHHB_V23_DEF.DEF_FORCE_BIG 	：（ﾋﾞｯｸﾞﾎﾞｰﾅｽ）	｜（無効）					｜（無効）
-	//DfOHHB_V23_DEF.DEF_FORCE_MAX 	： フラグ数
+	//DfOHHB_V23_DEF.DEF_FORCE_REG 	    ：（ﾚｷﾞｭﾗｰﾎﾞｰﾅｽ）	｜（無効）					｜（無効）
+	//DfOHHB_V23_DEF.DEF_FORCE_BIG 	    ：（ﾋﾞｯｸﾞﾎﾞｰﾅｽ）	    ｜（無効）					｜（無効）
+	//DfOHHB_V23_DEF.DEF_FORCE_MAX 	    ： フラグ数
 	//-----------------------------------------------------------------------
 	//※無効時は、通常通りmReelStart()がRAMDOMXを参照し処理されます。
 	//※セットされている強制フラグはDfOHHB_V23_DEF.DEF_FORCE_FLAGという名の場所に保存されます。
@@ -2101,17 +2058,14 @@ public class clOHHB_V23 : clZ80RAM
 			{
 				clearWork(Defines.DEF_CLR_AREA_2);
 				ret = Defines.DEF_BBEND_FLX;
-			}else{
-
-//             CALL    MN_BSEG_00          ; ﾎﾞｰﾅｽ 7SEG 制御処理
-
+			}
+            else
+            {
 				return ret;
 			}
 		}
-//MAIN_06:
-		mMN_GMIT_00();
 
-//             CALL    MN_BSEG_00          ; ﾎﾞｰﾅｽ 7SEG 制御処理
+		mMN_GMIT_00();
 		
 		return ret;
 	}
@@ -2128,8 +2082,6 @@ public class clOHHB_V23 : clZ80RAM
 		sbyte[] mDataTable;
 
 		try {
-			// javaはビックエンディアンらしいので
-            // TODO エンディアン
             mDataTable = SlotInterface.getResourceData("ClZ80RAM_big.dat");
 			clZ80RAM.mDataTable = new ushort[mDataTable.Length/2];
             
@@ -2142,7 +2094,6 @@ public class clOHHB_V23 : clZ80RAM
 		catch( Exception e )
 		{
             throw e;
-			//clZ80RAM.mDataTable[-1] = 00; // ROMデータの読み込み失敗(強制落とし)
 		}
 	}
 }

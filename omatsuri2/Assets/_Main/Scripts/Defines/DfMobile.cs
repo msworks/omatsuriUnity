@@ -1,15 +1,5 @@
-﻿public partial class Defines {
-
-/*
- * Created on 2003/08/19
- */
-
-/**
- * モバイルアプリのための定義をします
- * 
- * @author A03605WO
- */
-
+﻿public partial class Defines
+{
 	/** スクロールメニューで描く各上下の数 */
 	public const int DEF_MENU_DEPTH = 2;
 
@@ -381,5 +371,4 @@
 	public const int DEF_SAVE_KASIDASI_2 = 15;
 	public const int DEF_SAVE_KASIDASI_3 = 16;
 	public const int DEF_SAVE_HALL_PARAM = 17;
-
 }

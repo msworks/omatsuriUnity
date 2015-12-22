@@ -4,17 +4,12 @@
     int[] opt_value = new int[PublicDefine.OPT_MAX];                // 設定値
     public string userDirection = "";
     public bool l_m_bEyeSupport;
-
-    int slump_count = 0;
-	public int bonus_type;    // 獲得種別(BB=1,RB=2)
-	public int bonus_incount; // 回転数(ボーナス当選時のhall.dai_bns_rotを入れる）
-	public int bonus_getcoin; // 獲得枚数(777時の15枚含む)
+	public int bonus_incount;       // 回転数(ボーナス当選時のhall.dai_bns_rotを入れる）
 
 	// 設定系
-	public int gpif_setting; // 台設定
-	public int gpif_coin;    // 台総コイン(ユーザー不可視※クレジット表示とは別です)
-	public bool gpif_bonuscyu_f; // ボーナス中フラグ
-	public bool gpif_naibucyu_f; // ボーナス内部中フラグ
+	public int gpif_setting;        // 台設定
+	public int gpif_coin;           // 台総コイン(ユーザー不可視※クレジット表示とは別です)
+	public bool gpif_bonuscyu_f;    // ボーナス中フラグ
 	public bool gpif_auto_f;        // オートフラグ
 
 	// アイテム効果
@@ -35,19 +30,16 @@
 		new short[]{2,0,1},	//4:右、左、中
 		new short[]{2,1,0}	//5:右、中、左（逆押し）
 	};
-		
-	// コイン補充タイミング用
-	bool get_coin_f = false;
 
 	// 参照系
 	public bool betFlag = false;
 		
 	// コールバック
 	// クレジットが0で投入が必要な時に呼ばれる
+    // コールバックというのは依存関係の問題解決方法でもあってですね。。。
 	public void onCreditZero()
 	{
 		Defines.TRACE("call onCreditZero");
-		get_coin_f = true;
 	}
 
 	// クレジット加算（コイン＋1時）時に呼ばれる
