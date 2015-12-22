@@ -34,31 +34,31 @@ namespace HutongGames.PlayMaker.Actions
 			mode = RPCMode.All;
 		}
 
-		public override void OnEnter()
-		{
-			DoRPC();
+		//public override void OnEnter()
+		//{
+		//	DoRPC();
 			
-			Finish();
-		}
+		//	Finish();
+		//}
 
-		void DoRPC()
-		{
-			var go = Fsm.GetOwnerDefaultTarget(gameObject);
-			if (!UpdateCache(go))
-			{
-				return;
-			}
+		//void DoRPC()
+		//{
+		//	var go = Fsm.GetOwnerDefaultTarget(gameObject);
+		//	if (!UpdateCache(go))
+		//	{
+		//		return;
+		//	}
 
-            if (!stringData.IsNone && stringData.Value != "")
-            {
-                networkView.RPC("ForwardEvent", mode, remoteEvent.Name, stringData.Value);
-            }
-            else
-            {
-                networkView.RPC("ForwardEvent", mode, remoteEvent.Name);
-            }
+  //          if (!stringData.IsNone && stringData.Value != "")
+  //          {
+  //              networkView.RPC("ForwardEvent", mode, remoteEvent.Name, stringData.Value);
+  //          }
+  //          else
+  //          {
+  //              networkView.RPC("ForwardEvent", mode, remoteEvent.Name);
+  //          }
 			
-		}
+		//}
 	}
 }
 

@@ -9,16 +9,16 @@ using System.IO;
 
 public class Post : MonoBehaviour
 {
-    enum MODE
+    enum Mode
     {
-        WEB,
-        DESKTOP,
+        Web,
+        Desktop,
     }
 
     // WEB - 本番
     // DESKTOP - TEST MODE
     //MODE mode = MODE.WEB;
-    MODE mode = MODE.DESKTOP;
+    Mode mode = Mode.Web;
 
     static string serverHead = "../pachinko/";
     static string logicHead = "http://localhost:9876/";
@@ -44,12 +44,12 @@ public class Post : MonoBehaviour
 
     void Start()
     {
-        if( mode==MODE.WEB)
+        if( mode==Mode.Web)
         {
             head = serverHead;
             verbs = verbsServer;
         }
-        else if( mode == MODE.DESKTOP)
+        else if( mode == Mode.Desktop)
         {
             head = logicHead;
             verbs = verbsLogic;
@@ -99,7 +99,6 @@ public class Post : MonoBehaviour
             // コイン枚数を金額に変換する
             var coin = mOmatsuri.int_s_value[Defines.DEF_INT_SLOT_COIN_NUM];
             var cent = Rate.Instanse.Coin2Cent(coin);
-            var doller = cent / 100f;
 
             if (coin <= 2)
             {
@@ -226,13 +225,30 @@ public class Post : MonoBehaviour
                 associate.Add(node.Name, node.InnerText);
             }
 
-            var status = associate["status"].ToString();
-            var balance = Decimal.Parse(associate["balance"].ToString());
-            var setting = associate["setting"].ToString().ParseInt();
-            var reelleft = associate["reelLeft"].ToString().ParseInt();
-            var reelcenter = associate["reelCenter"].ToString().ParseInt();
-            var reelright = associate["reelRight"].ToString().ParseInt();
-            var seed = associate["seed"].ToString().ParseInt();
+            var status = "";
+            var balance = 0m;
+            var setting = 0;
+            var reelleft = 0;
+            var reelcenter = 0;
+            var reelright = 0;
+            var seed = 0;
+
+            try
+            {
+                status = associate["status"].ToString();
+                balance = Decimal.Parse(associate["balance"].ToString());
+                setting = associate["setting"].ToString().ParseInt();
+                reelleft = associate["reelLeft"].ToString().ParseInt();
+                reelcenter = associate["reelCenter"].ToString().ParseInt();
+                reelright = associate["reelRight"].ToString().ParseInt();
+                seed = associate["seed"].ToString().ParseInt();
+            }
+            catch(Exception e)
+            {
+                Debug.Log(e);
+                ErrorCode.Set("2", "1", "0");
+                fsm.SendEvent("Failed");
+            }
 
             Debug.Log("L:"+reelleft+"C:"+reelcenter+"R:"+reelright+"}");
 
@@ -243,24 +259,12 @@ public class Post : MonoBehaviour
             }
 
             mOmatsuri.chgPrayer();
-
             clOHHB_V23.mInitializaion(seed);
             clOHHB_V23.setWork(Defines.DEF_WAVENUM, (ushort)setting);
 
-            // コインチャージ
-            // balance  : 所持金($)
-            // balanceCent : 所持金（セント）
-            // rateCent : コイン１毎あたりの値段（単位：セント）
-            // coinNum  : コイン枚数
-            // coinNum = balanceCent / rateCent
             var rateCent = Rate.Instanse.GetRate();
-
             var balanceCent = balance * 100m;
             var coinNum = (int)(balanceCent / rateCent);
-
-            // 端数計算
-            var fract = (balanceCent - coinNum * rateCent) / 100m;
-            CasinoData.Instance.exchangeFract = fract;
 
             CasinoData.Instance.Exchange = balance;
 
@@ -271,6 +275,7 @@ public class Post : MonoBehaviour
 
             if (status.Contains("error"))
             {
+                ErrorCode.Set("2", "1", "0");
                 fsm.SendEvent("Failed");
             }
             else
@@ -279,8 +284,8 @@ public class Post : MonoBehaviour
             }
         };
 
-        var param = mode == MODE.WEB ? webParam : desktopParam;
-        var success = mode == MODE.WEB ? webAction : desktopAction;
+        var param = mode == Mode.Web ? webParam : desktopParam;
+        var success = mode == Mode.Web ? webAction : desktopAction;
 
         PostWWW(url, param, success, failed);
     }
@@ -325,13 +330,25 @@ public class Post : MonoBehaviour
                 associate.Add(node.Name, node.InnerText);
             }
 
-            var status = associate["status"].ToString();
-            var balance = Decimal.Parse(associate["balance"].ToString());
+            var status = "";
+            var balance = 0m;
+
+            try
+            {
+                status = associate["status"].ToString();
+                balance = Decimal.Parse(associate["balance"].ToString());
+            }
+            catch(Exception e)
+            {
+                Debug.Log(e);
+                ErrorCode.Set("2", "2", "0");
+            }
 
             CasinoData.Instance.Exchange = balance;
 
             if (status.Contains("error"))
             {
+                ErrorCode.Set("2", "2", "0");
                 fsm.SendEvent("Failed");
             }
             else
@@ -340,8 +357,8 @@ public class Post : MonoBehaviour
             }
         };
 
-        var param = mode == MODE.WEB ? webParam : desktopParam;
-        var success = mode == MODE.WEB ? webAction : desktopAction;
+        var param = mode == Mode.Web ? webParam : desktopParam;
+        var success = mode == Mode.Web ? webAction : desktopAction;
 
         PostWWW(url, param, success, failed);
     }
@@ -380,9 +397,7 @@ public class Post : MonoBehaviour
         {
             Debug.Log(www.text);
             //var json = new JSONObject(www.text);
-
             //var yaku = json.GetField("yaku").ToString().ParseInt();
-
             fsm.SendEvent("Succeed");
         };
 
@@ -399,9 +414,21 @@ public class Post : MonoBehaviour
                 associate.Add(node.Name, node.InnerText);
             }
 
-            var status = associate["status"].ToString();
-            var yaku = associate["yaku"].ToString().ParseInt();
-            var balance = Decimal.Parse(associate["balance"].ToString());
+            var status = "";
+            var yaku = 0;
+            var balance = 0m;
+
+            try
+            {
+                status = associate["status"].ToString();
+                yaku = associate["yaku"].ToString().ParseInt();
+                balance = Decimal.Parse(associate["balance"].ToString());
+            }
+            catch(Exception e)
+            {
+                ErrorCode.Set("2", "3", "0");
+                Debug.Log(e);
+            }
 
             Debug.Log("Yaku:" + yaku);
 
@@ -409,6 +436,7 @@ public class Post : MonoBehaviour
 
             if (status.Contains("error"))
             {
+                ErrorCode.Set("2", "3", "0");
                 fsm.SendEvent("Failed");
             }
             else
@@ -417,8 +445,8 @@ public class Post : MonoBehaviour
             }
         };
 
-        var param = mode == MODE.WEB ? webParam : desktopParam;
-        var success = mode == MODE.WEB ? webAction : desktopAction;
+        var param = mode == Mode.Web ? webParam : desktopParam;
+        var success = mode == Mode.Web ? webAction : desktopAction;
 
         PostWWW(url, param, success, failed);
 
@@ -457,10 +485,8 @@ public class Post : MonoBehaviour
         {
             Debug.Log(www.text);
             //var json = new JSONObject(www.text);
-
             //var result = json.GetField("result").ToString();
             //var winnings = Decimal.Parse(json.GetField("winnings").ToString());
-
             fsm.SendEvent("Succeed");
         };
 
@@ -477,14 +503,26 @@ public class Post : MonoBehaviour
                 associate.Add(node.Name, node.InnerText);
             }
 
-            var status = associate["status"].ToString();
-            var balance = Decimal.Parse(associate["balance"].ToString());
-            //var result = associate["result"].ToString();
+            var status = "";
+            var balance = 0m;
+
+            try
+            {
+                status = associate["status"].ToString();
+                balance = Decimal.Parse(associate["balance"].ToString());
+            }
+            catch(Exception e)
+            {
+                Debug.Log(e);
+                ErrorCode.Set("2", "4", "0");
+                fsm.SendEvent("Failed");
+            }
 
             CasinoData.Instance.Exchange = balance;
 
             if (status.Contains("error"))
             {
+                ErrorCode.Set("2", "4", "0");
                 fsm.SendEvent("Failed");
             }
             else
@@ -493,8 +531,8 @@ public class Post : MonoBehaviour
             }
         };
 
-        var param = mode == MODE.WEB ? webParam : desktopParam;
-        var success = mode == MODE.WEB ? webAction : desktopAction;
+        var param = mode == Mode.Web ? webParam : desktopParam;
+        var success = mode == Mode.Web ? webAction : desktopAction;
 
         PostWWW(url, param, success, failed);
     }
@@ -506,9 +544,9 @@ public class Post : MonoBehaviour
     {
         var fsm = GetComponent<PlayMakerFSM>();
 
-        if (mode == MODE.DESKTOP)
+        if (mode == Mode.Desktop)
         {
-            if (mode == MODE.DESKTOP)
+            if (mode == Mode.Desktop)
             {
                 // コインを補充
                 //GameManager.Instance.InsertCoin(1000);
@@ -517,13 +555,14 @@ public class Post : MonoBehaviour
             var msg = "gameId=101&token=aaa&language=ja&operatorId=1&mode=0";
             Response(msg);
         }
-        else if (mode == MODE.WEB)
+        else if (mode == Mode.Web)
         {
             // Webページに対してパラメータ送信要求
             Application.ExternalCall("GetParameter");
         }
         else
         {
+            ErrorCode.Set("1", "0", "0");
             fsm.SendEvent("Failed");
         }
     }
@@ -551,11 +590,17 @@ public class Post : MonoBehaviour
         if(param["mode"]=="0")
         {
             // デモモード
+            GameMode.Mode = GameModeType.Demo;
 
             // 1000枚セット
             var coinCount = 1000;
             mOmatsuri.GPW_chgCredit(coinCount);
             CasinoData.Instance.Exchange = coinCount * Rate.Instanse.GetRate();
+        }
+        else
+        {
+            // リアルモード
+            GameMode.Mode = GameModeType.Real;
         }
 
         var fsm = GetComponent<PlayMakerFSM>();

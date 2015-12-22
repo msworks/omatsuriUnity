@@ -77,7 +77,9 @@ public class GameManager : MonoBehaviour
     /// ポーズ状態
     /// </summary>
     private PAUSE_STATE pauseState = PAUSE_STATE.PLAY;
-    public PAUSE_STATE PauseState {
+
+    public PAUSE_STATE PauseState
+    {
         set { pauseState = value; }
         get { return pauseState; }
     }
@@ -723,14 +725,18 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        // サーバーと通信中のとき、
-        // かつ、コイン投入待ち
-        if (SlotMachineStateFsm.ActiveStateName != "WAITPLAY")
+        if( GameMode.Mode == GameModeType.Real)
         {
-            return;
+            // リアルの場合は、
+            // サーバーと通信中のとき、
+            // かつ、コイン投入待ち
+            if (SlotMachineStateFsm.ActiveStateName != "WAITPLAY")
+            {
+                return;
+            }
         }
 
-        ZZ.ZzIntField[Defines.DEF_Z_INT_KEYPRESS] |= (1 << key);
+        ZZ.KeyPress |= (1 << key);
     }
 
     /// <summary>
@@ -781,6 +787,7 @@ public class GameManager : MonoBehaviour
     }
 
     public static bool isUseServerSeed;
+
     public static int GetRandomSeed()
     {
         if (isUseServerSeed) {

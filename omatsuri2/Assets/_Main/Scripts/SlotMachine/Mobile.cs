@@ -7,16 +7,6 @@
     public mOmatsuri mo = new mOmatsuri();
     public static SlotInterface gp = null;
 
-    public void SetKeyTrigger(int key)
-    {
-        keyTrigger = key;
-    }
-
-    public void SetKeyPressing(int key)
-    {
-        keyPressing = key;
-    }
-
     public void exec()
     {
         if (gp == null)
@@ -54,7 +44,8 @@
                 {
                     initConfig();
                     saveMenuData(false);//初期はホールPは保存しない
-                    if (DEF_IS_DOCOMO) {
+                    if (DEF_IS_DOCOMO)
+                    {
                         break;
                     }
                 }
@@ -76,7 +67,8 @@
 
     private void ctrlRun()
     {
-        if (mo.process(keyTrigger)) {
+        if (mo.process(keyTrigger))
+        {
             mOmatsuri.getExitReason();
         }
         mo.restartSlot();
@@ -101,9 +93,11 @@
         return gp.l_m_bEyeSupport;
     }
 
-    public static void setMenuAvarable(bool flag) {
-        int_m_value[Defines.DEF_INT_IS_MENU_AVAILABLE] = (flag) ? Defines.DEF_MENU_AVAILABLE
-                : Defines.DEF_MENU_UNAVAILABLE;
+    public static void setMenuAvarable(bool flag)
+    {
+        int_m_value[Defines.DEF_INT_IS_MENU_AVAILABLE] 
+            = (flag) ? Defines.DEF_MENU_AVAILABLE
+                     : Defines.DEF_MENU_UNAVAILABLE;
     }
 
     public static bool isJacCut()
@@ -147,6 +141,7 @@
     }
 
     /**
+     * 静的コンストラクタ
      * 初期化ブロックです、 ロードは既に終わっているはずなので
      * タイトルモードから開始するようにアプリモードを初期化。
      */
@@ -164,7 +159,6 @@
         // 設定初期値
         int_m_value[Defines.DEF_INT_GMODE] = Defines.DEF_GMODE_GAME;
         int_m_value[Defines.DEF_INT_SETUP_VALUE_CURSOL] = 3;// 設定４
-        //int_m_value[Defines.DEF_INT_SETUP_VALUE] = 3;// 設定４
         setSetUpValue(3);	// 設定４
         int_m_value[Defines.DEF_INT_SUB_MENU_ITEM] = -1; // 選択メニューアイテムの初期化
         int_m_value[Defines.DEF_INT_IS_SOUND] = 1;// 音鳴るよ
@@ -190,7 +184,8 @@
      */
     public static void saveMenuData(bool isHall)
     {
-        if (!isHall) {
+        if (!isHall)
+        {
             mOmatsuri.prevHttpTime = 0;
             mOmatsuri.kasidasiMedal = 0;
         }
@@ -200,7 +195,8 @@
 
         len = ZZ.getRecord(ref buf);
 
-        if (len <= 0) {
+        if (len <= 0)
+        {
             return;
         }
 
@@ -234,11 +230,13 @@
 
         len = ZZ.getRecord(ref buf);
 
-        if (len <= 0) {
+        if (len <= 0)
+        {
             return false;
         }
 
-        if (buf[Defines.DEF_SAVE_WRITTEN] == 0) {
+        if (buf[Defines.DEF_SAVE_WRITTEN] == 0)
+        {
             return false;
         }
 

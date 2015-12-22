@@ -3,7 +3,6 @@
 /// </summary>
 public class clRAND8
 {
-    static ushort mBak;
     public static ushort mRndwl;
     public static ushort mRndwh;
     public static ushort[] mRndbuf = new ushort[256];
@@ -35,7 +34,6 @@ public class clRAND8
 		
 		int	i;
 
-		mBak = 0xFFFF;
 		mRndwl = 0;
 		mRndwh = 31;
 

@@ -24,9 +24,6 @@ public partial class SlotInterface
     public class G7NetworkParam { 
     }
 
-    // TODO C#移植 GP処理コメントアウト
-    //public G7Network sync_con = null; // 定期通信用スレッド
-
     //	public bool sync_retry   = false; // 
 	public bool sync_reswait = false; // レスポンス待ちの場合true
 	public long    sync_next  = 0L;

@@ -2,48 +2,17 @@
 
 public class ZZ
 {
-    /** int 変数 */
-    public static readonly int[] ZzIntField = new int[Defines.DEF_Z_INT_MAX];
+    /// 入力キー種別
+    /// 1=左リール停止
+    /// 2=中リール停止
+    /// 3=右リール停止
+    /// 5=ワンキープレイ用キー(コイン投入、プレイ開始、リール停止を共用)
+    public static int KeyPressing { get; set; }
+    public static int KeyPress { get; set; }
 
     /** イメージ */
     static readonly Image[] images = new Image[Defines.DEF_RES_IMAGE_MAX];
     public class Image { }
-
-    /** 音 */
-    static readonly MediaSound[] medias = new MediaSound[Defines.DEF_RES_SOUND_MAX];
-    class MediaSound { }// TODO C#移植 スタブ
-
-    /** TOBE サウンド処理キュー */
-    static readonly int[,] soundQueue = new int[2, Defines.DEF_Z_SOUND_QUE_MAX];
-
-    /** jar test */
-    //private static JarInflater[] jif = new JarInflater[Defines.DEF_RES_JAR_MAX];
-    /** reschar */
-    public static readonly char[][] reschar = new char[Defines.DEF_RES_JAR_MAX][];
-
-    /** 3D Figure_data in resource.d_* */
-    static readonly Figure[] figures = new Figure[Defines.DEF_RES_FIGURE_MAX];
-    class Figure { }// TODO C#移植 スタブ
-
-    /** Figureに複数Textureを貼る場合のwork */
-    static readonly Texture[][] figures_texture = new Texture[Defines.DEF_RES_FIGURE_MAX][];
-    class Texture { }// TODO C#移植 スタブ
-
-    /** 3D Action_data in resource.d_* */
-    static readonly ActionTable[] actions = new ActionTable[Defines.DEF_RES_ACTIONTABLE_MAX];
-    class ActionTable { }// TODO C#移植 スタブ
-
-    /** 3D Texture_data in resource.d_* */
-    static readonly Texture[] textures = new Texture[Defines.DEF_RES_TEXTURE_MAX];
-    /** 3D Texture_data in resource.d_* */
-    static Texture env_texture = null;
-
-    /** ActionTableのFrame*/
-    static int[] arrFrame = new int[Defines.DEF_RES_ACTIONTABLE_MAX];
-    /** ActionTableNo */
-    static int[] arrActNo = new int[Defines.DEF_RES_FIGURE_MAX];
-
-    public static readonly int[] clipRegion = new int[4];
 
     /** offsetX */
     static int ofX;
@@ -54,78 +23,8 @@ public class ZZ
     /** 1ループ時間(ms) */
     static int threadSpeed;
 
-    /** 接続先URL */
-    static string serverURL;
-
-    /** 通信フラグ */
-    static bool isUpdate;
-
-    /** サーバーコイン:初期値 -2 */
-    static int serverCoin;
-
-    /** 獲得コイン数 */
-    static int winCoin;
-
-    /** 送信パラメータ */
-    static int[] sendParam;
-
-    /** ブラウザ連携 */
-    static bool isWebTo;
-
-    /** ブラウザリンク先ＵＲＬ */
-    private static string webURL = ""; // TOBE ＷＥＢ　ＴＯ変更
-
-    /** バージョンアップ */
-    private static bool isWebToVerUp; // TOBE 旧バージョンアプリ 
-
-    /** 広告文 */
-    public static string http_content = "";
-
-    private static int authResult = Defines.DEF_AUTHMEMBER_NON;//DEF_AUTH_ERROR;
-
-    /** アプリバージョンを取得 */
-    private static int getAppVersion()
-    {
-        int ret = 0;
-        string str = Defines.DEF_APPLI_VER;
-        string strTmp = "";
-        char cTmp;
-        try
-        {
-            for (int i = 0; i < str.Length; i++)
-            {
-                cTmp = str[i];// TODO C#移植 str.charAt(i) -> str[i]に変更
-                if (cTmp == '.')
-                {
-                    continue;
-                }
-                strTmp = strTmp + cTmp;
-            }
-        }
-        catch (Exception e)
-        { // TODO C#移植 Throwable -> Exceptionに変更
-            Defines.TRACE("ダメ = " + e);
-        }
-
-        ret = int.Parse(strTmp);// TODO C#移植 Integer.parseInt -> int.Parseに変更
-
-        Defines.TRACE("アプリバージョン:(10進)" + ret);
-        return ret;
-    }
-
     /** ランダム */
     public static Random RANDOM = new Random();
-
-    /**
-	 * ランダム取得 上位ビットほどランダム具合がいいので２の乗数の時は #getBitRandom(int) を使うこと！
-	 * @see #getBitRandom(int)
-	 * @param n	値の範囲
-	 * @return (RANDOM.nextInt() >>> 1) % n;
-	 */
-    public static int getRandom(int n)
-    {
-        return getBitRandom(31) % n;
-    }
 
     /**
 	 * ランダム値の取得にはこれを使う
@@ -149,7 +48,6 @@ public class ZZ
 
     /**
 	 * メインスレッドの間隔取得
-	 *
 	 * @return ミリ秒
 	 */
     public static void setThreadSpeed(int n)
@@ -163,9 +61,9 @@ public class ZZ
 	 */
     public static int getKeyPressed()
     {
-        int returnKey = ZzIntField[Defines.DEF_Z_INT_KEYPRESS];
-        ZzIntField[Defines.DEF_Z_INT_KEYPRESS] = 0;
-        return returnKey;
+        var key = KeyPress;
+        KeyPress = 0;
+        return key;
     }
 
     /**
@@ -174,7 +72,7 @@ public class ZZ
 	 */
     public static int getKeyPressing()
     {
-        return ZzIntField[Defines.DEF_Z_INT_KEYPRESSING];
+        return KeyPressing;
     }
 
     public static int getColor(int r, int g, int b)
@@ -269,10 +167,6 @@ public class ZZ
         GameManager.PlaySE(id);
     }
 
-    public static void setVolume(int vol, int mode)
-    {
-    }
-
     /**
 	 * 本体からデータを読み出す.
 	 * @param return_buff データを読み込む配列.
@@ -343,29 +237,12 @@ public class ZZ
         return write_size;
     }
 
-
     public static void setLight(int x, int y, int z, int d, int a) { }
     public static void flush3D() { }
-    public static void activateEnvMap() { }
-    public static void rotateX(int d) { }
-    public static void rotateY(int d) { }
-    public static void rotateZ(int d) { }
-
-    public static void rotateV(int d, int x, int y, int z) { }
-
     public static void scale3D(int percent) { }
-
-    public static void setViewTrans(
-        int px, int py, int pz,
-        int lx, int ly, int lz,
-        int ux, int uy, int uz
-    )
-    { }
-
     public static void drawPolygonRect(int[] poly, int[] col) { }
     public static void drawPolygonRectAdd(int[] poly, int[] col) { }
     public static void drawPolygonRectSub(int[] poly, int[] col) { }
-    public static void executeCommandListTextures(int[] cmd_list) { }
 
     public static void dbgYakuDraw()
     {
@@ -440,5 +317,3 @@ public class ZZ
         return @hex2str(dd & 0x0000ffff, 4);
     }
 }
-
-
