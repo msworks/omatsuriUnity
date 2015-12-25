@@ -18,11 +18,22 @@ public class MenuButton : MonoBehaviour
     [SerializeField]
     List<GameObject> HidePanels;
 
+    [SerializeField]
+    PlayMakerFSM RealMachineState;
+
     /// <summary>
     /// タップ時処理
     /// </summary>
     public void OnClick()
     {
+        // メニューはベット待ち以外開けなくする
+        var state = RealMachineState.ActiveStateName;
+        if( state != "WaitBet" && state != "Start" )
+        {
+            // WaitBet以外はキャンセル
+            return;
+        }
+
         // アプリをポーズ状態にする
         GameManager.Instance.pauseState = GameManager.PauseStatus.Pause;
 

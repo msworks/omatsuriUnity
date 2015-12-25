@@ -3,19 +3,11 @@
 /// </summary>
 public partial class Defines
 {
-	// ////////////////////////////////////////////////////////////////////
-	// スロット汎用：今のところ固定だが新基準では？
-
 	/**
 	 * １リールの絵柄総数
 	 */
 	public static readonly int DEF_N_FRAME = 21;
-	
-	// 		======================================================================================
-	// 			 図柄コード
-	// 		======================================================================================
 
-	// TODO 画像ファイルの並び順にあわせる
 	/** BLUE_7 */
 	public static readonly int DEF_ID_REEL_BSVN = 0;
 	/** RED_7 */
@@ -34,9 +26,6 @@ public partial class Defines
 	/** リール絵柄種類数 */
 	public static readonly int DEF_N_ID_REEL = 7;
 
-	// ////////////////////////////////////////////////////////////////////
-	// 遊技状態
-
 	/** RB作動中 */
 	public static readonly int DEF_PS_RB_RUN = 0;
 
@@ -54,31 +43,6 @@ public partial class Defines
 
 	/** 遊技状態数 */
 	public static readonly int DEF_N_PLAY = 5;
-
-	/** RB作動中 */
-    // TODO 未定義値を使用
-	//public static readonly int DEF_GMLVSTS_RB_RUN = (1<<PS_RB_RUN);
-
-	/** BB作動中 */
-    // TODO 未定義値を使用
-    //public static readonly int DEF_GMLVSTS_BB_RUN = (1<<PS_BB_RUN);
-
-	/** 一般遊技中 */
-    // TODO 未定義値を使用
-    //public static readonly int DEF_GMLVSTS_NORMAL = (1<<PS_NORMAL);
-
-	/** RBフラグ間 */
-    // TODO 未定義値を使用
-    //public static readonly int DEF_GMLVSTS_RB_FLAG = (1<<PS_RB_FLAG);
-
-	/** BBﾌﾗｸﾞ間 */
-    // TODO 未定義値を使用
-    //public static readonly int DEF_GMLVSTS_BB_FLAG = (1<<PS_BB_FLAG);
-
-
-	// ////////////////////////////////////////////////////////////////////
-	// 当選フラグ：頂いたデータ順
-//	はずれ, 中ﾁｪﾘｰ, 上下ﾁｪﾘｰ, ﾌﾞｯｸ, ｶｰﾄﾞ, JAC
 
 	/** ハズレ */
 	public static readonly int DEF_HF_HAZURE = 0;
@@ -112,37 +76,28 @@ public partial class Defines
 	 */
 	public static readonly int DEF_N_HIT = 9;
 
-	// ////////////////////////////////////////////////////////////////////
-	// ランダム：頂いたデータによる
-
 	/**
 	 * テーブルラインの選択肢の最大数
 	 */
 	public static readonly int DEF_TL_RAND_MAX = 4;
 
-
-	// ////////////////////////////////////////////////////////////////////
 	// ライン
 	public static readonly int DEF_LINE_CENTER = 0;
 	public static readonly int DEF_LINE_TOP = 1;
 	public static readonly int DEF_LINE_BOTTOM = 2;
 	public static readonly int DEF_LINE_CROSS_UP = 3;
 	public static readonly int DEF_LINE_CROSS_DOWN = 4;
+
 	/**ライン数*/
 	public static readonly int DEF_N_LINE = 5;
-	// ////////////////////////////////////////////////////////////////////
+
 	// リール
 	public static readonly int DEF_REEL_LEFT = 0;
 	public static readonly int DEF_REEL_CENTER = 1;
 	public static readonly int DEF_REEL_RIGHT = 2;
-	/**
-	 * リールの数
-	 */
-	public static readonly int DEF_N_REELS = 3;
-	
-	
-	// ////////////////////////////////////////////////////////////////////
-	// 当選枚数：当たった時の払い出し数
+
+    // リールの数
+    public static readonly int DEF_N_REELS = 3;
 
 	/** リプレイビット */
 	public static readonly int DEF_COIN_REPLAY_BIT = 0x1000;
@@ -155,6 +110,4 @@ public partial class Defines
 
 	/** 最大獲得数 */
 	public static readonly int DEF_COIN_MAX = 15;
-
-
 }

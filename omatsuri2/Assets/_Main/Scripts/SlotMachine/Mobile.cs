@@ -1,4 +1,6 @@
-﻿public class Mobile
+﻿using System;
+
+public class Mobile
 {
     public const bool DEF_IS_DOCOMO = true;
     public static int keyTrigger = 0;
@@ -7,7 +9,7 @@
     public mOmatsuri mo = new mOmatsuri();
     public static SlotInterface gp = null;
 
-    public void exec()
+    public void exec(CallbackToController callbacks)
     {
         if (gp == null)
         {
@@ -21,6 +23,11 @@
 
         keyTrigger = ZZ.getKeyPressed();
         keyPressing = ZZ.getKeyPressing();
+
+        if( keyTrigger != 0 )
+        {
+            callbacks.KeyTrigger(keyTrigger);
+        }
 
         if (keyPressing == 0)
         {
@@ -59,19 +66,18 @@
 
             /* ゲーム中 */
             case Defines.DEF_MODE_RUN:
-                ctrlRun();
+                ctrlRun(callbacks);
                 break;
         }
     }
 
-    private void ctrlRun()
+    private void ctrlRun(CallbackToController callbacks)
     {
-        if (mo.process(keyTrigger))
+        if (mo.process(keyTrigger, callbacks))
         {
             mOmatsuri.getExitReason();
         }
         mo.restartSlot();
-        int pos = (mOmatsuri.int_s_value[Defines.DEF_INT_4TH_REEL_ANGLE] % 414) * (2359296 / 414);
         ZZ.dbgDrawAll();
     }
 

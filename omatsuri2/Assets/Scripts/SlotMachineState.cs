@@ -26,8 +26,16 @@ public class SlotMachineState : MonoBehaviour
 
     public void InsertCoin()
     {
+        var maxbet = 3;
+
+        // JACの回数が１カウント以上
+        if(clOHHB_V23.getWork(Defines.DEF_JAC_CTR) > 0)
+        {
+            maxbet = 1;
+        }
+
         Bet++;
-        if (Bet == 3)
+        if (Bet >= maxbet)
         {
             fsm.SendEvent("BetEnd");
         }

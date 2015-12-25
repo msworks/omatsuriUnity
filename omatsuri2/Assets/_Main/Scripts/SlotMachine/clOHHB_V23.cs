@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 public class clOHHB_V23 : clZ80RAM
 {
@@ -301,19 +302,11 @@ public class clOHHB_V23 : clZ80RAM
 					setDE(pushDE);
                     mLD_A_Nm(Defines.DEF_STOPRND);
 
-/*
-					//デバッグモード時は乱数値は取らず、BET数で固定とする。
-					if( ( getWork(DfOHHB_V23_DEF.DEF_GAMEST) & (0x01<<DfOHHB_V23_DEF.DEF_STOPRND_FLN) ) > 0)
-					{
-						setA(getE());
-					}
-*/
 					setA(getA() & getE());
 					setA(getA() & 0x03);
 					setA(getA()*2);				
 					mSB_ADRA_00(getA());
 					mSB_DTST_00(0);
-//					mSTSB_GPCX_00(0);
 
                     mLD_A_Nm((ushort)(getIX() + Defines.DEF_CCCPOS));
 					mSTSB_GPCY_00();
@@ -1914,7 +1907,7 @@ public class clOHHB_V23 : clZ80RAM
 	//-----------------------------------------------------------------------
 	public static void mSetForceFlag(Defines.ForceYakuFlag flagIndex)
 	{
-		Defines.RAM_TRACE("mSetForceFlag:["+Defines.DEF_FORCE_FLAG+"]" + flagIndex);
+		Debug.Log("mSetForceFlag:["+Defines.DEF_FORCE_FLAG+"]" + flagIndex);
         setWork(Defines.DEF_FORCE_FLAG, (ushort)((int)flagIndex & (Enum.GetNames(typeof(Defines.ForceYakuFlag)).Length - 1)));	
 	}
 

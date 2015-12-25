@@ -1,6 +1,8 @@
-﻿using UnityEngine;
+﻿using System;
 using System.Collections;
-using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
@@ -94,7 +96,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        slotMachineState = GameObject.Find("SlotMachineState").GetComponent<SlotMachineState>();
+        slotMachineState = GameObject.Find("RealMachineState").GetComponent<SlotMachineState>();
 
         // リールをセットアップ
         Setup4thReelTexture();
@@ -106,6 +108,15 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
+    /// ボタンとボタン押下時リール位置クラス
+    /// </summary>
+    class ButtonWithReelIndex
+    {
+        public int Button;
+        public int ReelIndex;
+    }
+
+    /// <summary>
     /// メインループ
     /// メインループを外だしにすっか
     /// </summary>
@@ -113,14 +124,113 @@ public class GameManager : MonoBehaviour
     IEnumerator MainLoop()
     {
         var core = new Mobile();
+        var pressed = new List<ButtonWithReelIndex>();
+        var betCoins = 0;
+
+        // マシンからのコールバック群
+
+        Action<int> Payout = (coinCount) =>
+        {
+            // sorottaは役が揃った＝１　揃わなかった＝０
+            var sorotta = coinCount > 0 ? "1" : "0";
+
+            // 押し順をFSMにストア
+            var msg = String.Join("", pressed.Select(pr => (pr.Button + 1).ToString()).ToArray());
+            msg += sorotta;
+            var fsmStr = SlotMachineStateFsm.FsmVariables.FindFsmString("PressOrder");
+            fsmStr.Value = msg;
+
+            SlotMachineStateFsm.SendEvent("Payout");
+        };
+
+        Action<int> ReelStart = (yaku) =>
+        {
+            SlotMachineStateFsm.FsmVariables.FindFsmInt("Yaku").Value = yaku;
+            Yaku y = (Yaku)yaku;
+            Debug.Log("クライアント成立役:" + y.ToString());
+            pressed.Clear();
+            betCoins = 0;
+        };
+
+        Action<int, int> ButtonStop = (button, reelIndex) =>
+        {
+            //Debug.Log("ButtonStop:" + button + "," + reelIndex);
+
+            var p = new ButtonWithReelIndex()
+            {
+                Button = button,
+                ReelIndex = reelIndex
+            };
+
+            var table = new[]
+            {
+                new
+                {
+                    index = 0,
+                    fsmInt = SlotMachineStateFsm.FsmVariables.FindFsmInt("ReelIndex0")
+                },
+                new
+                {
+                    index = 1,
+                    fsmInt = SlotMachineStateFsm.FsmVariables.FindFsmInt("ReelIndex1")
+                },
+                new
+                {
+                    index = 2,
+                    fsmInt = SlotMachineStateFsm.FsmVariables.FindFsmInt("ReelIndex2")
+                },
+            };
+
+            // ボタン押下リール位置をFSMにストア
+            var fsmInt = table.Where(e => e.index == button).First().fsmInt;
+            fsmInt.Value = reelIndex;
+
+            // すでにボタンが押下してあるなら登録しない
+            if ( pressed.Any(prs=>prs.Button==button))
+            {
+                return;
+            }
+
+            pressed.Add(p);
+
+            if( pressed.Count == 3)
+            {
+                // ３ボタン押した
+                SlotMachineStateFsm.SendEvent("AllButtonPushed");
+            }
+        };
+
+        Action<int> KeyTrigger = (key) =>
+        {
+            //Debug.Log("Key:" + key);
+        };
+
+        Action Bet = () =>
+        {
+            betCoins++;
+            SlotMachineStateFsm.FsmVariables.FindFsmInt("BetCount").Value = betCoins;
+
+            if (betCoins >= 3)
+            {
+                //Debug.Log("Bet:" + betCoins);
+            }
+        };
+
+        var callbacks = new CallbackToController() {
+            Payout = Payout,
+            ReelStart = ReelStart,
+            ButtonStop = ButtonStop,
+            KeyTrigger = KeyTrigger,
+            Bet = Bet
+        };
 
         while (true)
         {
             try
             {
-                core.exec();
+                core.exec(callbacks);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Debug.Log(e);
             }
@@ -128,10 +238,61 @@ public class GameManager : MonoBehaviour
             if (IsAllReelStopped() && Is4thReelStopped())
             {
                 slotMachineState.PlayEnd();
+                SlotMachineStateFsm.SendEvent("AllReelsStopped");
             }
 
             yield return new WaitForSeconds(0.02f);
         }
+    }
+
+    [SerializeField]
+    PlayMakerFSM SlotMachineStateFsm;
+
+    /// <summary>
+    /// キー入力
+    /// </summary>
+    /// <param name="key">
+    /// 入力キー種別
+    /// 1=左リール停止
+    /// 2=中リール停止
+    /// 3=右リール停止
+    /// 5=ワンキープレイ用キー(コイン投入、プレイ開始、リール停止を共用)
+    /// </param>
+    public void KeyInput(int key)
+    {
+        // 前回との時間差分が
+
+        // ポーズ中であれば入力をキャンセルする
+        if (pauseState == PauseStatus.Pause)
+        {
+            return;
+        }
+
+        if (GameMode.Mode == GameModeType.Real)
+        {
+            // リアル
+            // MachineStateに応じて入力をキャンセル
+            // ベット待ち
+            // レバー待ち
+            // 3ボタン押下待ち
+            // 以外は入力をキャンセル
+            var state = SlotMachineStateFsm.ActiveStateName;
+
+            if( !(state == "WaitBet" ||
+                  state == "WaitLever" ||
+                  state == "WaitButton" ))
+            {
+                return;
+            }
+        }
+        else if (GameMode.Mode == GameModeType.Demo)
+        {
+            // デモであれば入力キャンセルしない
+        }
+
+        // ZZに入力
+        // ZZとは何か
+        ZZ.KeyPress |= (1 << key);
     }
 
     /// <summary>
@@ -387,7 +548,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void OnCoinInsert()
     {
-        Debug.Log("OnCoinInsert");
+        //Debug.Log("OnCoinInsert");
         LitCoinInsertSlotLamp();
         Invoke("UnLitCoinInsertSlotLamp", 0.03f);
 
@@ -504,11 +665,11 @@ public class GameManager : MonoBehaviour
                 break;
         }
         currentAutoPlayPattern = patterns[UnityEngine.Random.Range(0, 100) % patterns.Length];
-        Debug.Log("自動プレイパターン:" + 
-            (currentAutoPlayPattern.isStopReverse ? "右から" : "左から") + 
-            currentAutoPlayPattern.targetRow[0] + "-" +
-            currentAutoPlayPattern.targetRow[1] + "-" +
-            currentAutoPlayPattern.targetRow[2]);
+        //Debug.Log("自動プレイパターン:" + 
+        //    (currentAutoPlayPattern.isStopReverse ? "右から" : "左から") + 
+        //    currentAutoPlayPattern.targetRow[0] + "-" +
+        //    currentAutoPlayPattern.targetRow[1] + "-" +
+        //    currentAutoPlayPattern.targetRow[2]);
     }
 
     /// <summary>
@@ -632,11 +793,25 @@ public class GameManager : MonoBehaviour
         yield return 0;
     }
 
+    float time = 0f;
+
     /// <summary>
     /// オートプレイ処理
     /// </summary>
     public void AutoPlay()
     {
+        // オートプレイは 0.5Hz
+        var hz = 0.5f;
+        time += Time.deltaTime;
+        if (time > hz)
+        {
+            time -= hz;
+        }
+        else
+        {
+            return;
+        }
+
         // 全部止まってるならコイン投入＆リール回して抜ける
         if (IsAllReelStopped())
         {
@@ -695,41 +870,6 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-    }
-
-    [SerializeField]
-    PlayMakerFSM SlotMachineStateFsm;
-
-    /// <summary>
-    /// キー入力
-    /// </summary>
-    /// <param name="key">
-    /// 入力キー種別
-    /// 1=左リール停止
-    /// 2=中リール停止
-    /// 3=右リール停止
-    /// 5=ワンキープレイ用キー(コイン投入、プレイ開始、リール停止を共用)
-    /// </param>
-    public void KeyInput(int key)
-    {
-        // ポーズ中であれば入力をキャンセルする
-        if (pauseState == PauseStatus.Pause)
-        {
-            return;
-        }
-
-        if( GameMode.Mode == GameModeType.Real)
-        {
-            // リアルの場合は、
-            // サーバーと通信中のとき、
-            // かつ、コイン投入待ち
-            if (SlotMachineStateFsm.ActiveStateName != "WAITPLAY")
-            {
-                return;
-            }
-        }
-
-        ZZ.KeyPress |= (1 << key);
     }
 
     /// <summary>

@@ -20,7 +20,7 @@
 	public short gpif_bonus_n;		//通常0～設定時BB＝1、RB＝2
 	public short gpif_kakuhen_n = 1; // 確率アップ(通常1～設定時33)
 
-    // メニューの押し順リスト
+    // ボタンの押し順リスト
     public short[][] gpif_oshijun_list = 
 	{ 
 		new short[]{0,1,2},	//0:左、中、右（順押し）

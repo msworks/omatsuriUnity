@@ -17,7 +17,7 @@ public class Post : MonoBehaviour
 
     // WEB - 本番
     // DESKTOP - TEST MODE
-    //MODE mode = MODE.WEB;
+    // MODE mode = MODE.WEB;
     Mode mode = Mode.Desktop;
 
     static string serverHead = "../pachinko/";
@@ -56,6 +56,51 @@ public class Post : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// コインチャージ - デモ用
+    /// </summary>
+    [ActionCategory("Ginpara")]
+    public class Charge : FsmStateAction
+    {
+        public FsmInt fsmCoinCount;
+
+        public override void OnEnter()
+        {
+            var coinCount = fsmCoinCount.Value;
+            mOmatsuri.GPW_chgCredit(coinCount);
+            CasinoData.Instance.Exchange = coinCount * Rate.Instanse.GetRate();
+        }
+    }
+
+    /// <summary>
+    /// 役に応じてリプレイかベット待ちかイベントを発行
+    /// </summary>
+    [ActionCategory("Ginpara")]
+    public class ReplayCheck : FsmStateAction
+    {
+        public FsmInt CurrentYaku;
+        public FsmEvent WaitBet;
+        public FsmEvent Replay;
+
+        public override void OnEnter()
+        {
+            var replay = CurrentYaku.Value == (int)Yaku.Replay ? true : false;
+
+            if(replay)
+            {
+                Fsm.Event(Replay);
+            }
+            else
+            {
+                Fsm.Event(WaitBet);
+            }
+        }
+    }
+
+    /// <summary>
+    /// WebPageにパラメータを要求
+    /// レスポンスは Response(string) で得られることを期待
+    /// </summary>
     [ActionCategory("Ginpara")]
     public class GetParameter : FsmStateAction
     {
@@ -63,6 +108,42 @@ public class Post : MonoBehaviour
         {
             // Webページに対してパラメータ送信要求
             Application.ExternalCall("GetParameter");
+        }
+    }
+
+    /// <summary>
+    /// Webページからのレスポンス
+    /// </summary>
+    /// <param name="msg">gameId=2&token=aaa&language=ja&operatorId=1&mode=1</param>
+    public void Response(string msg)
+    {
+        var param = new Dictionary<string, string>();
+        var fsm = GetComponent<PlayMakerFSM>();
+
+        var kvs = msg.Split('&')
+           .Select(query => query.Split('='))
+           .Select(strings => new KeyValuePair<string, string>(strings[0], strings[1]));
+
+        foreach (var kv in kvs)
+        {
+            param.Add(kv.Key, kv.Value);
+        }
+
+        if (param["mode"] == "0")
+        {
+            // デモモード
+            GameMode.Mode = GameModeType.Demo;
+            fsm.SendEvent("Demo");
+        }
+        else if(param["mode"] == "1")
+        {
+            // リアルモード
+            GameMode.Mode = GameModeType.Real;
+            fsm.SendEvent("Succeed");
+        }
+        else
+        {
+            fsm.SendEvent("Failed");
         }
     }
 
@@ -148,10 +229,23 @@ public class Post : MonoBehaviour
     public class Collect : FsmStateAction
     {
         public Post post;
+        public FsmInt Reel0Index;
+        public FsmInt Reel1Index;
+        public FsmInt Reel2Index;
+        public FsmString ReelStopOrder;
 
         public override void OnEnter()
         {
-            post.PostCollect();
+            var reelStopIndex = new []
+            {
+                Reel0Index.Value,
+                Reel1Index.Value,
+                Reel2Index.Value,
+            };
+
+            var order = ReelStopOrder.Value;
+
+            post.PostCollect(reelStopIndex, order);
         }
     }
 
@@ -202,7 +296,7 @@ public class Post : MonoBehaviour
             var status = "ok";
 
             // 1000枚セット
-            var coinCount = 1000;
+            var coinCount = 100;
             mOmatsuri.GPW_chgCredit(coinCount);
             CasinoData.Instance.Exchange = coinCount * Rate.Instanse.GetRate();
 
@@ -262,7 +356,7 @@ public class Post : MonoBehaviour
                 setting = 1;
             }
 
-            mOmatsuri.chgPrayer();
+            //mOmatsuri.chgPrayer();
             clOHHB_V23.mInitializaion(seed);
             clOHHB_V23.setWork(Defines.DEF_WAVENUM, (ushort)setting);
 
@@ -316,7 +410,7 @@ public class Post : MonoBehaviour
 
         Action<WWW> desktopAction = (www) =>
         {
-            Debug.Log(www.text);
+            //Debug.Log(www.text);
             //var json = new JSONObject(www.text);
             fsm.SendEvent("Succeed");
         };
@@ -399,9 +493,48 @@ public class Post : MonoBehaviour
 
         Action<WWW> desktopAction = (www) =>
         {
-            Debug.Log(www.text);
-            //var json = new JSONObject(www.text);
-            //var yaku = json.GetField("yaku").ToString().ParseInt();
+            //Debug.Log(www.text);
+            var json = new JSONObject(www.text);
+            var yaku = json.GetField("yaku").ToString().ParseInt();
+            fsm.FsmVariables.FindFsmInt("ServerYaku").Value = yaku;
+
+            //mOmatsuri.currentYaku = (Yaku)yaku;
+
+            var dic = new Dictionary<Yaku, Defines.ForceYakuFlag>()
+            {
+                { Yaku.None, Defines.ForceYakuFlag.HAZURE },
+                { Yaku.Cherry, Defines.ForceYakuFlag.CHERRY },
+                { Yaku.Bell, Defines.ForceYakuFlag.BELL },
+                { Yaku.YAKU_WMLN, Defines.ForceYakuFlag.SUIKA },
+                { Yaku.Replay, Defines.ForceYakuFlag.REPLAY },
+                { Yaku.RegulerBonus, Defines.ForceYakuFlag.REG },
+                { Yaku.JAC, Defines.ForceYakuFlag.REPLAY },
+                { Yaku.BigBonus, Defines.ForceYakuFlag.BIG },
+                //{ Yaku.JACIN, Defines.ForceYakuFlag.REPLAY },
+            };
+
+            var forceYaku = Defines.ForceYakuFlag.HAZURE;
+
+            if(dic.ContainsKey((Yaku)yaku))
+            {
+                forceYaku = dic[(Yaku)yaku];
+            }
+            else
+            {
+                forceYaku = Defines.ForceYakuFlag.HAZURE;
+                Debug.Log("UNDEFINED YAKU");
+            }
+            
+            if((clOHHB_V23.getWork(Defines.DEF_GAMEST) & 0x01) != 0)
+            {
+                forceYaku = Defines.ForceYakuFlag.REG;
+            }
+
+            // 役強制
+            GameManager.forceYakuValue = (Defines.ForceYakuFlag)forceYaku;
+
+            Debug.Log("サーバー成立役："+ forceYaku.ToString()+"["+ (int)forceYaku + "]");
+
             fsm.SendEvent("Succeed");
         };
 
@@ -434,7 +567,38 @@ public class Post : MonoBehaviour
                 Debug.Log(e);
             }
 
-            Debug.Log("Yaku:" + yaku);
+            Debug.Log("ServerYaku:" + yaku);
+            fsm.FsmVariables.FindFsmInt("ServerYaku").Value = yaku;
+            //mOmatsuri.currentYaku = (Yaku)yaku;
+
+            var dic = new Dictionary<Yaku, Defines.ForceYakuFlag>()
+            {
+                { Yaku.None, Defines.ForceYakuFlag.HAZURE },
+                { Yaku.Cherry, Defines.ForceYakuFlag.CHERRY },
+                { Yaku.Bell, Defines.ForceYakuFlag.BELL },
+                { Yaku.YAKU_WMLN, Defines.ForceYakuFlag.SUIKA },
+                { Yaku.Replay, Defines.ForceYakuFlag.REPLAY },
+                { Yaku.RegulerBonus, Defines.ForceYakuFlag.REG },
+                { Yaku.JAC, Defines.ForceYakuFlag.REPLAY },
+                { Yaku.BigBonus, Defines.ForceYakuFlag.BIG },
+                //{ Yaku.JACIN, Defines.ForceYakuFlag.REPLAY },
+            };
+
+            var forceYaku = Defines.ForceYakuFlag.HAZURE;
+
+            if (dic.ContainsKey((Yaku)yaku))
+            {
+                forceYaku = dic[(Yaku)yaku];
+            }
+            else
+            {
+                forceYaku = Defines.ForceYakuFlag.HAZURE;
+                Debug.Log("UNDEFINED YAKU");
+            }
+
+            // 役強制
+            GameManager.forceYakuValue = (Defines.ForceYakuFlag)forceYaku;
+            Debug.Log("サーバー成立役：" + forceYaku.ToString() + "[" + (int)forceYaku + "]");
 
             CasinoData.Instance.Exchange = balance;
 
@@ -456,7 +620,12 @@ public class Post : MonoBehaviour
 
     }
 
-    public void PostCollect()
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="reelStopIndex">ボタン押下リール位置</param>
+    /// <param name="order">押し順</param>
+    public void PostCollect(int[] reelStopIndex, string order)
     {
         var verb = verbs["collect"];
         var url = head + verb;
@@ -464,20 +633,20 @@ public class Post : MonoBehaviour
 
         var webParam = new Dictionary<string, string>()
         {
-            { "reelStopLeft", "1" },
-            { "reelStopCenter", "1" },
-            { "reelStopRight", "1" },
-            { "oshijun", "1" },
+            { "reelStopLeft", reelStopIndex[0].ToString() },
+            { "reelStopCenter", reelStopIndex[1].ToString() },
+            { "reelStopRight", reelStopIndex[2].ToString() },
+            { "oshijun", order },
         };
 
         var desktopParam = new Dictionary<string, string>()
         {
             { "gameId", "101" },
             { "userId", "1" },
-            { "reelStopLeft", "1" },
-            { "reelStopCenter", "1" },
-            { "reelStopRight", "1" },
-            { "oshijun", "1" },
+            { "reelStopLeft", reelStopIndex[0].ToString() },
+            { "reelStopCenter", reelStopIndex[1].ToString() },
+            { "reelStopRight", reelStopIndex[2].ToString() },
+            { "oshijun", order },
         };
 
         Action<WWW> failed = (www) =>
@@ -487,10 +656,21 @@ public class Post : MonoBehaviour
 
         Action<WWW> desktopAction = (www) =>
         {
-            Debug.Log(www.text);
+            Debug.Log("Collet Response:"+www.text);
             //var json = new JSONObject(www.text);
             //var result = json.GetField("result").ToString();
             //var winnings = Decimal.Parse(json.GetField("winnings").ToString());
+
+            var yaku = (Yaku)fsm.FsmVariables.FindFsmInt("ServerYaku").Value;
+
+            if (yaku == Yaku.BigBonus)
+            {
+                fsm.SendEvent("BigBonusCut");
+            } else if(yaku == Yaku.RegulerBonus)
+            {
+                fsm.SendEvent("RegBonusCut");
+            }
+
             fsm.SendEvent("Succeed");
         };
 
@@ -524,6 +704,17 @@ public class Post : MonoBehaviour
 
             CasinoData.Instance.Exchange = balance;
 
+            var yaku = (Yaku)fsm.FsmVariables.FindFsmInt("ServerYaku").Value;
+
+            if (yaku == Yaku.BigBonus)
+            {
+                fsm.SendEvent("BigBonusCut");
+            }
+            else if (yaku == Yaku.RegulerBonus)
+            {
+                fsm.SendEvent("RegBonusCut");
+            }
+
             if (status.Contains("error"))
             {
                 ErrorCode.Set("2", "4", "0");
@@ -550,7 +741,7 @@ public class Post : MonoBehaviour
 
         if (mode == Mode.Desktop)
         {
-            var msg = "gameId=101&token=aaa&language=ja&operatorId=1&mode=0";
+            var msg = "gameId=101&token=aaa&language=ja&operatorId=1&mode=1";
             Response(msg);
         }
         else if (mode == Mode.Web)
@@ -565,41 +756,6 @@ public class Post : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Webページからのレスポンス
-    /// </summary>
-    /// <param name="msg">gameId=2&token=aaa&language=ja&operatorId=1&mode=1</param>
-    public void Response(string msg)
-    {
-        // デバッグ用にアラートを出す
-        //Application.ExternalCall("AlertByUnity", msg);
-
-        var param = new Dictionary<string, string>();
-        var fsm = GetComponent<PlayMakerFSM>();
-
-        var kvs = msg.Split('&')
-           .Select(query => query.Split('='))
-           .Select(strings => new KeyValuePair<string, string>(strings[0], strings[1]));
-
-        foreach (var kv in kvs)
-        {
-            param.Add(kv.Key, kv.Value);
-        }
-
-        if(param["mode"]=="0")
-        {
-            // デモモード
-            GameMode.Mode = GameModeType.Demo;
-            fsm.SendEvent("Demo");
-        }
-        else
-        {
-            // リアルモード
-            GameMode.Mode = GameModeType.Real;
-            fsm.SendEvent("Succeed");
-        }
-    }
-
     void PostWWW(
         string url,
         Dictionary<string, string> post,
@@ -610,9 +766,17 @@ public class Post : MonoBehaviour
         StartCoroutine(PostWWWCore(url, post, success, failed));
     }
 
+    /// <summary>
+    /// WWW Post
+    /// </summary>
+    /// <param name="url"></param>
+    /// <param name="post"></param>
+    /// <param name="success">成功時のコールバック</param>
+    /// <param name="failed">失敗時のコールバック</param>
+    /// <returns></returns>
     IEnumerator PostWWWCore(string url, Dictionary<string, string> post, Action<WWW> success, Action<WWW> failed)
     {
-        Debug.Log("POST:url=" + url);
+        //Debug.Log("POST:url=" + url);
 
         WWWForm form = new WWWForm();
 

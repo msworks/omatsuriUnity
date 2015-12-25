@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using UnityEngine;
 
 public partial class mOmatsuri
 {
@@ -28,12 +30,55 @@ public partial class mOmatsuri
 		EYE_TYPE_TIMEOUT	// 自動停止
 	};
 
+    public enum MeoshiType
+    {
+        AtariKotei,
+        HazureKotei,
+    }
+
+    // 目押し制御用
+    // 引数   stopNum	第？回胴停止(左=0, 中=1, 右=2)
+    // 戻り値  true		目押し制御あり
+    //        false		目押し制御なし
+    public static int EyeSniperBB(int buttonId)
+    {
+        int result_index;
+        ushort pos = 0;
+
+        var p = new[] { 12, 5, 4 };
+
+        pos = (ushort)p[buttonId];
+
+        result_index = clOHHB_V23.mReelStop(buttonId, pos);
+
+        return result_index;
+    }
+
+    // 目押し制御用
+    // 引数   stopNum	第？回胴停止(左=0, 中=1, 右=2)
+    // 戻り値  true		目押し制御あり
+    //        false		目押し制御なし
+    public static int EyeSniperRB(int buttonId)
+    {
+        int result_index;
+        ushort pos = 0;
+
+        var p = new[] { 2, 1, 17 };
+
+        pos = (ushort)p[buttonId];
+
+        result_index = clOHHB_V23.mReelStop(buttonId, pos);
+
+        return result_index;
+    }
+
+
     /// <summary>
     /// 目押し制御用
     /// </summary>
-    /// <param name="stopNum">第？回胴停止(左=0, 中=1, 右=2)</param>
+    /// <param name="button">第？回胴停止(左=0, 中=1, 右=2)</param>
     /// <returns>true:目押し制御あり false:目押し制御なし</returns>
-    public static int EyeSniper(int stopNum)
+    public static int EyeSniper(int button)
     {
 	    int result_index;
 	    int tmp;
@@ -73,15 +118,15 @@ public partial class mOmatsuri
 	    {
 	    case EYE_TYPE.EYE_TYPE_BB:
 		    // BB
-            pos = (ushort)meoshi[mOmatsuri.int_s_value[Defines.DEF_INT_BIG_COUNT] % 2][stopNum];
+            pos = (ushort)meoshi[mOmatsuri.int_s_value[Defines.DEF_INT_BIG_COUNT] % 2][button];
 		    break;
 	    case EYE_TYPE.EYE_TYPE_RB:
 		    // RB
-            pos = (ushort)meoshi[2][stopNum];
+            pos = (ushort)meoshi[2][button];
 		    break;
 	    case EYE_TYPE.EYE_TYPE_BONUS:
 		    // 三連ドン狙い
-		    if( stopNum == 0)
+		    if( button == 0)
 		    {
                 pos = (ushort)9;
 		    }
@@ -91,10 +136,10 @@ public partial class mOmatsuri
 	    case EYE_TYPE.EYE_TYPE_SP_REP:
             if (EyeType == EYE_TYPE.EYE_TYPE_SP_NO) {
                 // 達人オート通常時
-                pos = (ushort)meoshi[3][stopNum];
+                pos = (ushort)meoshi[3][button];
             }
 		    // ボーナス中リプレイ外し
-		    if( stopNum == 0)
+		    if( button == 0)
 		    {
                 pos = (ushort)1;
 		    }
@@ -102,19 +147,19 @@ public partial class mOmatsuri
 
 	    case EYE_TYPE.EYE_TYPE_TIMEOUT:
 		    // 自動停止
-			    tmp = 0x1F & (mOmatsuri.int_s_value[Defines.DEF_INT_PREV_GAME] >> (stopNum * 5));
+			    tmp = 0x1F & (mOmatsuri.int_s_value[Defines.DEF_INT_PREV_GAME] >> (button * 5));
 			    tmp = (tmp + Defines.DEF_N_FRAME + 2) % Defines.DEF_N_FRAME;
                 pos = (ushort)tmp;
 		    break;
 	    default:
 		    // 目押しサポートなしの通常リール停止テーブル参照。
-		    pos = (ushort) ANGLE2INDEX(mOmatsuri.int_s_value[Defines.DEF_INT_REEL_ANGLE_R0 + stopNum]);
+		    pos = (ushort) ANGLE2INDEX(mOmatsuri.int_s_value[Defines.DEF_INT_REEL_ANGLE_R0 + button]);
 		    break;
 	    }
 
-	    result_index = clOHHB_V23.mReelStop(stopNum, pos);
-	    Defines.APP_TRACE("ﾘｰﾙ["+ stopNum+ "] = "+(pos&0xFFFF)+" 停止位置:" + result_index);
-        ZZ.reelStopStatus[stopNum] = "ﾘｰﾙ[" + stopNum + "] = " + (pos & 0xFFFF) + " 停止位置:" + result_index;
+	    result_index = clOHHB_V23.mReelStop(button, pos);
+	    Defines.APP_TRACE("ﾘｰﾙ["+ button+ "] = "+(pos&0xFFFF)+" 停止位置:" + result_index);
+        ZZ.reelStopStatus[button] = "ﾘｰﾙ[" + button + "] = " + (pos & 0xFFFF) + " 停止位置:" + result_index;
 
 	    return result_index;
     }
@@ -124,18 +169,18 @@ public partial class mOmatsuri
     /// </summary>
     /// <param name="index">ストップさせるリール番号(0-2)</param>
     /// <param name="limit">特定の押し順で押したい場合</param>
-    /// <returns><ストップさせるリール番号(0-2)/returns>
+    /// <returns><ストップさせるリール番号(0-2)</returns>
     static int getStopReel(int index, bool limit )
     {
 	    int ret;
 	    int num = 0;
-	    //int stop[][] = {{0,1,2}, {2,1,0}};// 順押しと逆押し
 	
 	    if( limit == true )
 	    {
             // 自動停止の場合は順押しにする
 		    num = 0;
 	    }
+
         ret = gp.gpif_oshijun_list[num][index];
 	
 	    return ret;
@@ -174,11 +219,15 @@ public partial class mOmatsuri
 
         flag = GameManager.forceYakuValue;
 
-	    if( flag != Defines.ForceYakuFlag.NONE )
-	    {
+        Debug.Log("FORCE YAKU:" + GameManager.forceYakuValue + 
+            "[" + (int)GameManager.forceYakuValue + "]");
+
+        //clOHHB_V23.mSetForceFlag(flag);
+        if (flag != Defines.ForceYakuFlag.NONE)
+        {
             // 強制役のセット
-		    clOHHB_V23.mSetForceFlag(flag);
-	    }
+            clOHHB_V23.mSetForceFlag(flag);
+        }
     }
 
     // 設定変更が必要ならば、変更する
